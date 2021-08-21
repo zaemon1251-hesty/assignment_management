@@ -1,3 +1,7 @@
+## assignment_management
+moodleで提示された課題を取得して管理するアプリです
+
+
 ## quick start
 1. docker-composeで環境構築
 ```sh
