@@ -1,0 +1,38 @@
+version: "3"
+services:
+  waitfordb:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+        - postgres
+    command: postgres:5432
+  postgres:
+    image: postgres:10-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: moodle
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
+    restart: always
+  selenium:
+    image: selenium/standalone-chrome-debug:3.2.0-actinium
+    ports:
+      - 4444:4444
+      - 5900:5900
+  app:
+    build: ./app
+    depends_on:
+      - postgres
+      - waitfordb
+    volumes:
+      - ./app:/app
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@moodle_postgres_1:5432/moodle
+      SELENIUM_URL: http://selenium:4444/wd/hub
+      TZ: "Asia/Tokyo"
+    tty: true
+    volumes:
+      - /dev/shm:/dev/shm
+    
