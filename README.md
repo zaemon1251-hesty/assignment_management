@@ -17,5 +17,5 @@ $ docker-compose exec app bash
 ```
 3. 実行する
 ```sh
-# python app.py main
+# python servise.py main
 ```

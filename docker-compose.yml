@@ -34,4 +34,6 @@ services:
     tty: true
     volumes:
       - /dev/shm:/dev/shm
+    ports:
+      - 8888:8888
     
