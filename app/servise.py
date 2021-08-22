@@ -1,14 +1,26 @@
 import sys
+from datetime import datetime, timezone, timedelta
+
+from sqlalchemy import exc
 # セッション変数の取得
 from model.setting import session
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, and_
 from sqlalchemy.exc import ArgumentError, IntegrityError
 # モデルの取得
 from model.models import *
 from task.task import get_assignments
 
-# config
-status = {0:"end",1:"normal",2:"semi",3:"hot"}
+#config
+TZ = timezone(timedelta(hours=+9), 'JST')
+THIS_YEAR = datetime.now(TZ).year
+
+def get_user(name=None, id=None):
+    if not name and not id:
+        return None
+    conditions = {'user_name':name, 'user_id':id}
+    cond = create_conditions(conditions)
+    return session.query(Users).filter(and_(*cond)).first()
+
 
 def add_user(name, userid, passwd):
     user = session.query(Users).filter(Users.name == name).first()
@@ -23,9 +35,21 @@ def add_user(name, userid, passwd):
                      moodle_passwd = passwd)
         session.add(user)
     session.commit()
+    return user.id
 
 
-def add(courses, assignments, user_id=None):
+def add(user_id=None, keywords=[]):
+    no_problem = True
+    if user_id:
+        user = session.query(Users).filter(Users.id == user_id).first()
+        moodle_userid, moodle_passwd = user.moodle_userid, user.moodle_passwd
+    else:
+        moodle_userid, moodle_passwd = '', ''
+    if keywords == []:
+        keywords = [str(THIS_YEAR)]
+    else:
+        pass
+    courses, assignments = get_assignments(moodle_userid, moodle_passwd, keywords=keywords)
     # log
     lectures = []
     works = []
@@ -36,22 +60,26 @@ def add(courses, assignments, user_id=None):
         # Entity検索
         lecture = session.query(Courses).filter(Courses.id == lec_id).first()
         if lecture:
-            lecture.title=course['course_title'], 
+            lecture.title=course['course_title']
             lecture.url=course['course_url']
             # Insert
             try:
-                session.add(lecture)
                 session.commit()
             except:
-                # idが重複するものは無視するだけでいい
-                pass
+                no_problem = False
+                session.rollback()
         else:
             lecture = Courses(id=lec_id, 
                           title=course['course_title'], 
                           url=course['course_url'])
             lectures.append(lecture)
     session.add_all(lectures)
-    session.commit()
+    
+    try:
+        session.commit()
+    except:
+        no_problem = False
+        session.rollback()
     # assignments
     for assignment_id,assignment in assignments.items():
         assignment_ids.append(assignment_id)
@@ -69,23 +97,26 @@ def add(courses, assignments, user_id=None):
             try:
                 session.commit()
             except:
-                # idが重複するものは無視するだけでいい
-                pass
+                no_problem = False
+                session.rollback()
         else:
             work = Assignments(id=assignment_id, 
-                           title=assignment['assignment_title'],
+                            title=assignment['assignment_title'],
                             state=1,
                             info=assignment['info'], 
                             url=assignment['assignment_url'], 
                             course_id=assignment['course_id'])
             works.append(work)
     session.add_all(works)
-    session.commit()
+    try:
+        session.commit()
+    except:
+        no_problem = False
+        session.rollback()    
     # userassignment
     if not user_id:
-        # user_idがなかったら先にリターン
-        print("SUCCESS")
-        return lectures, works
+        # user_idがなかったら終了
+        return no_problem
     for assignment_id in assignment_ids:
         user_assigment = session.query(UserAssignment)\
             .filter(UserAssignment.user_id == user_id)\
@@ -102,59 +133,93 @@ def add(courses, assignments, user_id=None):
             )
             user_assigments.append(user_assigment)
     session.add_all(user_assigments)
-    session.commit()
+    try:
+        session.commit()
+    except:
+        no_problem = False
+        session.rollback()
+    return no_problem
 
-    print("SUCCESS")
-    return lectures, works, user_assigments
 
-
-def get(request=None, state=1):
-    if not request:
-        data = session.query(Courses.title, Assignments.title, Assignments.info, Assignments.url, Assignments.state)\
+def get(state=1, user_id=None, conditions=None):
+    if conditions:
+        cond = create_conditions(conditions)
+    else:
+        cond = []
+    if not user_id:
+        data = session.query(Assignments.id,Courses.title, Assignments.title, Assignments.info, Assignments.url, Assignments.state)\
                 .filter(Courses.id == Assignments.course_id)\
                 .filter(Assignments.state >= state)\
+                .filter(and_(*cond))\
+                    .order_by(desc(Assignments.state))\
+                        .all()
+        data = session.query(Assignments,Courses)\
+                .filter(Courses.id == Assignments.course_id)\
+                .filter(Assignments.state >= state)\
+                .filter(and_(*cond))\
                     .order_by(desc(Assignments.state))\
                         .all()
     else:
-        data = []
-    return data
-
-
-def get_with_user(user_id, request=None, state=1):
-    if not request:
-        data = session.query(Courses.title, Assignments.title, Assignments.info, Assignments.url, UserAssignment.state)\
+        data = session.query(UserAssignment.id, Courses.title, Assignments.title, Assignments.info, Assignments.url, UserAssignment.state)\
                 .filter(UserAssignment.user_id == user_id)\
                 .filter(UserAssignment.assignment_id == Assignments.id)\
                 .filter(Courses.id == Assignments.course_id)\
                 .filter(UserAssignment.state >= state)\
+                .filter(and_(*cond))\
                     .order_by(desc(UserAssignment.state))\
                         .all()
-    else:
-        data = []
+        data = session.query(Assignments, Courses, UserAssignment)\
+                .filter(UserAssignment.user_id == user_id)\
+                .filter(UserAssignment.assignment_id == Assignments.id)\
+                .filter(Courses.id == Assignments.course_id)\
+                .filter(UserAssignment.state >= state)\
+                .filter(and_(*cond))\
+                    .order_by(desc(UserAssignment.state))\
+                        .all()
     return data
 
 
-def changeStatus(id, state):
-    assignments = session.query(Assignments).filter(Assignments.id == id).first()
-    assignments.state = state
-    session.commit()
-    print("SUCCESS")
+def changeStatus(id, state, user_id=None):
+    no_problem =True
+    if not user_id:
+        assignments = session.query(Assignments).filter(Assignments.id == id).first()
+        assignments.state = state
+    else:
+        user_assignment = session.query(UserAssignment).filter(UserAssignment.id == id).first()
+        user_assignment.state = state
+    try:
+        session.commit()
+    except:
+        no_problem = False
+        session.rollback()
+    return no_problem
 
 
-def changeStatus_with_user(id, state):
-    user_assignment = session.query(UserAssignment).filter(UserAssignment.id == id).first()
-    user_assignment.state = state
-    session.commit()
-    print("SUCCESS")
+def create_conditions(conditions):
+    cond = []
+    for key, value in conditions.items():
+        if key == "course" and value:
+            cond.append(Courses.title.like == value)
+        elif key == "assignment" and value:
+            cond.append(Assignments.title.like == value)
+        elif key == "info" and value:
+            cond.append(Assignments.info.like == value)
+        elif key == "user_name" and value:
+            cond.append(Users.name == value)
+        elif key == "user_id" and value:
+            cond.append(Users.id == value)
+    return cond
 
 
 def main():
-    pass
-    
+    add_user('zaemon', 'id', 'passwd')
+    user_id = get_user(name='zaemon').id
+    add(user_id=user_id)
+    print(*get(), sep='\n')
 
 
 if  __name__ == "__main__":
-    if len(sys.argv) <= 1:
+    if len(sys.argv) < 2:
         print("引数が足りません")
         exit()
     f_name = sys.argv[1]
@@ -169,14 +234,12 @@ if  __name__ == "__main__":
             print(*get(), sep='\n')
         else:
             try:
-                request = None
                 state = int(datas[0])
+                user_id = None
             except:
-                request = datas[0]
-                state = datas[1]
-            print(*get(request=request, state=state), sep='\n')
-            
-                
+                state = int(datas[0])
+                user_id = int(datas[1])
+            print(*get(user_id=user_id, state=state), sep='\n')
     elif f_name == "changeStatus":
         if len(sys.argv) <= 4:
             raise ArgumentError("引数が足りません")
