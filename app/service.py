@@ -18,8 +18,9 @@ def get_user(name=None, id=None):
     if not name and not id:
         return None
     conditions = {'user_name':name, 'user_id':id}
-    cond = create_conditions(conditions)
-    return session.query(Users).filter(and_(*cond)).first()
+    data = session.query(Users)
+    data = add_conditions(data, conditions=conditions)
+    return data.first()
 
 
 def add_user(name, userid, passwd):
@@ -141,41 +142,21 @@ def add(user_id=None, keywords=[]):
     return no_problem
 
 
-def get(state=1, user_id=None, conditions=None):
-    if conditions:
-        cond = create_conditions(conditions)
-    else:
-        cond = []
+def get(state=1, user_id=None, conditions={}):
     if not user_id:
-        data = session.query(Assignments.id,Courses.title, Assignments.title, Assignments.info, Assignments.url, Assignments.state)\
-                .filter(Courses.id == Assignments.course_id)\
-                .filter(Assignments.state >= state)\
-                .filter(and_(*cond))\
-                    .order_by(desc(Assignments.state))\
-                        .all()
         data = session.query(Assignments,Courses)\
                 .filter(Courses.id == Assignments.course_id)\
-                .filter(Assignments.state >= state)\
-                .filter(and_(*cond))\
-                    .order_by(desc(Assignments.state))\
-                        .all()
+                .filter(Assignments.state >= state)
+        data = add_conditions(data, conditions=conditions)
+        data = data.order_by(desc(Assignments.state)).all()
     else:
-        data = session.query(UserAssignment.id, Courses.title, Assignments.title, Assignments.info, Assignments.url, UserAssignment.state)\
-                .filter(UserAssignment.user_id == user_id)\
-                .filter(UserAssignment.assignment_id == Assignments.id)\
-                .filter(Courses.id == Assignments.course_id)\
-                .filter(UserAssignment.state >= state)\
-                .filter(and_(*cond))\
-                    .order_by(desc(UserAssignment.state))\
-                        .all()
         data = session.query(Assignments, Courses, UserAssignment)\
                 .filter(UserAssignment.user_id == user_id)\
                 .filter(UserAssignment.assignment_id == Assignments.id)\
                 .filter(Courses.id == Assignments.course_id)\
-                .filter(UserAssignment.state >= state)\
-                .filter(and_(*cond))\
-                    .order_by(desc(UserAssignment.state))\
-                        .all()
+                .filter(UserAssignment.state >= state)
+        data = add_conditions(data, conditions=conditions)
+        data = data.order_by(desc(UserAssignment.state)).all()
     return data
 
 
@@ -195,20 +176,20 @@ def changeStatus(id, state, user_id=None):
     return no_problem
 
 
-def create_conditions(conditions):
-    cond = []
+def add_conditions(q, conditions={}):
+    # 動的に条件を追加する
     for key, value in conditions.items():
         if key == "course" and value:
-            cond.append(Courses.title.like == value)
+            q = q.filter(Courses.title.like(value))
         elif key == "assignment" and value:
-            cond.append(Assignments.title.like == value)
+            q = q.filter(Assignments.title.like(value))
         elif key == "info" and value:
-            cond.append(Assignments.info.like == value)
+            q = q.filter(Assignments.info.like == value)
         elif key == "user_name" and value:
-            cond.append(Users.name == value)
+            q = q.filter(Users.name == value)
         elif key == "user_id" and value:
-            cond.append(Users.id == value)
-    return cond
+            q = q.filter(Users.id == value)
+    return q
 
 
 def main():
