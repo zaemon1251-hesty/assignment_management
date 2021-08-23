@@ -22,6 +22,8 @@ services:
       - 5900:5900
   app:
     build: ./app
+    container_name: app-server
+    hostname: app-server
     depends_on:
       - postgres
       - waitfordb
@@ -36,4 +38,23 @@ services:
       - /dev/shm:/dev/shm
     ports:
       - 8888:8888
+    restart: always
+  web:
+    container_name: web-server
+    hostname: web-server
+    build: ./web
+    volumes:
+        - "./web/nginx.conf:/etc/nginx/nginx.conf"
+        # nginxのログをホストOS側に出力
+        - "/tmp/nginx_log:/var/log/nginx"
+    depends_on:
+      - app
+    links:
+      - app
+    ports:
+      - "80:80"
+    environment:
+      TZ: Asia/Tokyo
+    restart: always
+
     
