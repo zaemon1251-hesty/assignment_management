@@ -22,6 +22,8 @@ class Users(Base):
     moodle_userid = Column('moodle_userid', String(30))
     moodle_passwd = Column('moodle_passwd', String(30))
     assignments = relationship("UserAssignment", backref="users")
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 
@@ -37,6 +39,8 @@ class Courses(Base):
     title = Column('title', String(200))
     url = Column('url', String(200))
     assignments = relationship("Assignments", backref="courses")
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class Assignments(Base):
@@ -58,6 +62,8 @@ class Assignments(Base):
     url = Column('url', String(200))
     course_id =  Column('course_id', Integer, ForeignKey('courses.id',onupdate='CASCADE', ondelete='CASCADE'))
     assignments = relationship("UserAssignment", backref="assignments")
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class UserAssignment(Base):
@@ -74,6 +80,8 @@ class UserAssignment(Base):
     user_id = Column('user_id', ForeignKey('users.id',onupdate='CASCADE', ondelete='CASCADE'))
     assignment_id = Column('assignment_id', ForeignKey('assignments.id',onupdate='CASCADE', ondelete='CASCADE'))
     state = Column('state', Integer, nullable = False)
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     
 def main(args):

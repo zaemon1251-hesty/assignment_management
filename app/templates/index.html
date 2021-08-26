@@ -4,12 +4,20 @@
 
 {% block header %}
 
+{%if message%}
+<div style="color: green;">{{message}}</div>
+{% endif %}
 
 {% if user %}
-<a href="{{url_for('index')}}">ログアウト</a>
+<div id="UrlForJs" hidden>{{ api.url_for('add', user_id=user.id)}}</div>
+
+<a href="{{api.url_for('index')}}">ログアウト</a>
 
 <h1>ようこそ {{user.name}} さん</h1>
-<form action="{{ url_for('index', user_id=user.id)}}" method="POST">
+
+<a href="{{ api.url_for('user', user_id=user.id)}}">moodleの番号やパスワードを変更する</a>
+
+<form action="{{ api.url_for('index', user_id=user.id)}}" method="POST">
     <h3>課題検索</h3>
     <p>コース名<input type="text" name="course" label="course"></p>
     <p>課題名<input type="text" name="assignment" label="assignment"></p>
@@ -27,24 +35,28 @@
     <p><input type="reset" value="取消する"></p>
 </form>
 
-<form action="{{ url_for('add', user_id=user.id)}}" method="POST">
+<form action="{{api.url_for('add', user_id=user.id)}}" method="POST" id="add_form">
     <h3>課題取得</h3>
-    <p>取得キーワード<input type="text" name="keywords" label="keywords"></p>
-    <p><input type="submit" value="送信"></p>
-    <p><input type="reset" value="取消する"></p>
+    <p>取得キーワード<input id="keywords"></p>
+    <input type="submit" id="add" >クリックで課題取得</input>
+    <button id="watchlog" >取得状況を見る</button>
 </form>
-<a href="{{ url_for('user', user_id=user.id)}}">moodleの番号やパスワードを変更する</a>
 
 {% else %}
+
+<div id="UrlForJs" hidden>{{ api.url_for('add')}}</div>
+
 <h1>ようこそ ゲスト さん</h1>
 
-<form action="{{ url_for('login')}}" method="GET">
+<form action="{{ api.url_for('login')}}" method="GET">
     <h3>ログイン</h3>
     <p>ユーザー名を入れてください<input type="text" name="name" label="name"></p>
     <p><input type="submit" value="送信"></p>
 </form>
 
-<form action="{{ url_for('index')}}" method="POST">
+<a href="{{ api.url_for('user')}}">新規ユーザー作成</a>
+
+<form action="{{ api.url_for('index')}}" method="POST">
     <h3>課題検索</h3>
     <p>コース名<input type="text" name="course" label="course"></p>
     <p>課題名<input type="text" name="assignment" label="assignment"></p>
@@ -62,15 +74,16 @@
     <p><input type="reset" value="取消する"></p>
 </form>
 
-<form action="{{ url_for('add')}}" method="POST">
+<div class="adding">
     <h3>課題取得</h3>
-    <p>取得キーワード<input type="text" name="keywords" label="keywords"></p>
-    <p><input type="submit" value="送信"></p>
-    <p><input type="reset" value="取消する"></p>
-</form>
-<a href="{{ url_for('user')}}">新規ユーザー作成</a>
+    <p>取得キーワード<input id="keywords"></p>
+    <button id="add" >クリックで課題取得</button>
+    <button id="watchlog">取得状況を見る</button>
+</div>
 
 {% endif %}
+
+<div id="result"></div>
 
 {% endblock %}
 
@@ -94,7 +107,7 @@
             {% for key, state_name in status.items() %}
                 <li>
                 {% if data[2].state != key %}
-                    <a href="{{ url_for('change', id=data[2].id, state=key, user_id=user.id) }}">ステータスを{{state_name}} にする</a>
+                    <a href="{{ api.url_for('change', id=data[2].id, state=key, user_id=user.id) }}">ステータスを{{state_name}} にする</a>
                 </li>
                 {% else %}
                     <p> 現在のステータス：{{state_name}}</p>
@@ -116,7 +129,7 @@
             {% for key, state_name in status.items() %}
                 <li>
                 {% if data[0].state != key %}
-                    <a href="{{ url_for('change', id=data[0].id, state=key) }}">ステータスを{{state_name}} にする</a>
+                    <a href="{{ api.url_for('change', id=data[0].id, state=key) }}">ステータスを{{state_name}} にする</a>
                 </li>
                 {% else %}
                     <p> 現在のステータス：{{state_name}}</p>

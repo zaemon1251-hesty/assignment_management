@@ -8,7 +8,7 @@ from sqlalchemy import func, desc, and_
 from sqlalchemy.exc import ArgumentError, IntegrityError
 # モデルの取得
 from model.models import *
-from task.task import get_assignments
+from task import get_assignments
 
 #config
 TZ = timezone(timedelta(hours=+9), 'JST')
@@ -142,7 +142,7 @@ def add(user_id=None, keywords=[]):
     return no_problem
 
 
-def get(state=1, user_id=None, conditions={}):
+def get(state=1, user_id=None, conditions={}, to_dict=False):
     if not user_id:
         data = session.query(Assignments,Courses)\
                 .filter(Courses.id == Assignments.course_id)\
@@ -157,6 +157,14 @@ def get(state=1, user_id=None, conditions={}):
                 .filter(UserAssignment.state >= state)
         data = add_conditions(data, conditions=conditions)
         data = data.order_by(desc(UserAssignment.state)).all()
+    if to_dict:
+        tmp = []
+        for items in data:
+            row = {}
+            for item in items:
+                row[item.__table__.name] = item.as_dict()
+            tmp.append(row)
+        data = tmp
     return data
 
 

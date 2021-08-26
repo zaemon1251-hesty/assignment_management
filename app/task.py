@@ -1,6 +1,8 @@
 import os
 import time
 import re
+import json
+import requests
 from urllib import parse
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -43,6 +45,7 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
     keywords: ゲットしたい課題のタグの条件
     """
     # config
+    lines = []
     LOGIN_URL = "https://moodle.s.kyushu-u.ac.jp/login/index.php"
     TARGET_URL = "https://moodle.s.kyushu-u.ac.jp/my/"
     waitSelector = "#page-container-0 > div > div > div > a"
@@ -63,7 +66,9 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
     # ログインページにアクセス
     driver.get(LOGIN_URL)
     if "Maintenance" in driver.find_element(By.TAG_NAME, 'title').text:
-        print("Now Maintenance...")
+        lines.append("Now Maintenance...")
+        sendmessages(lines, "w")
+        lines=[]
         return {}, {}
     # ID/PASSを入力
     id = driver.find_element_by_id("username")
@@ -77,13 +82,15 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
     
     # ログイン後遷移
     driver.get(TARGET_URL)
-    wait = WebDriverWait(driver, 10).until(
+    wait = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, waitSelector))
     )
     # BeautifulSoup
     soup = BeautifulSoup(driver.page_source.encode('utf-8'), features="html.parser")
     courses = soup.select(Selector)
-    print("全コース数: %s" % len(courses))
+    lines.append("全コース数: %s\n" % len(courses))
+    sendmessages(lines, "w")
+    lines = []
     # 保存するデータを格納する
     lectures = {}
     assignments = {}
@@ -110,10 +117,10 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
             # BeautifulSoup
             assigns_soup = BeautifulSoup(driver.page_source.encode('utf-8'), features="html.parser")
             assigns = assigns_soup.find_all("li", class_=AssignClasses)
-            print("このページの課題数: %s" % len(assigns))
+            lines.append("このページの課題数: %s\n" % len(assigns))
             for assign in assigns:
                 lec_cnt += 1
-                print(" %s 個目の課題が見つかりました" % lec_cnt)
+                lines.append(" %s 個目の課題が見つかりました\n" % lec_cnt)
                 # 課題があるページに移動
                 assign_href = assign.findAll("a")[0].get("href")
                 param = dict(parse.parse_qsl(parse.urlsplit(assign_href).query))
@@ -122,8 +129,8 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
                 # コース名と課題名をゲットする
                 lec_title =  driver.find_element(By.TAG_NAME, "h1").text
                 assign_title = driver.find_element(By.TAG_NAME, "h2").text  
-                print("コース名: ", lec_title)
-                print("課題名: ", assign_title)
+                lines.append("コース名: %s\n"% lec_title)
+                lines.append("課題名: %s\n"% assign_title)
                 wait = WebDriverWait(driver, 10)
                 last_soup =BeautifulSoup(driver.page_source, features="html.parser")
                 # 締切時間をゲットする
@@ -147,9 +154,26 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
                     "info":end_at,
                     "assignment_url":assign_href, 
                 }
+        if lines != []:
+            sendmessages(lines, "a")
+            lines = []
 
     driver.quit()
+    lines.append("MOODLE ADD DONE!!!\n")
+    sendmessages(lines, "w")
+    lines = []
     return lectures, assignments
+
+
+def sendmessages(lines, method):
+    message = "\n".join(lines)
+    if method in ["a", "w"]:
+        with open('templates/log.html', method) as f:
+            f.write('<div class="logmessage">')
+            f.write(message)
+            f.write('</div>')
+    print(message)
+    
 
 
 if __name__ == '__main__':

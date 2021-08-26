@@ -1,85 +1,128 @@
-from flask import Flask, request, render_template, redirect, url_for
+import responder
+from sqlalchemy.sql import type_api
 import service
+import json
+import asyncio
 # config
 status = {0:"end",1:"normal",2:"semi",3:"hot"}
-app = Flask(__name__)
+api = responder.API()
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    user_id = request_user_id(request)
+@api.route('/')
+async def index(req, resp):
+    user_id = req_user_id(req)
     print("user_id got: %s" % user_id)
     user = service.get_user(id=user_id)
     print("got user///")
     print(user)
-    if request.method == 'POST':
-        conditions = {}
-        state = int(request.form['state'])
-        conditions['course'] = "%{}%".format(request.form['course']) if request.form['course'] != '' else None
-        conditions['assignment'] = "%{}%".format(request.form['assignment']) if request.form['assignment'] != '' else None
-        conditions['info'] = "%{}%".format(request.form['info']) if request.form['info'] != '' else None
-        datas = service.get(state=state, user_id=user_id, conditions=conditions)
+    
+    job_state = req.params.get('job_state', None)
+    if job_state in ['True', True]:
+        message = "全てのデータを正常に保存しました"
+    elif job_state in ['False', False]:
+        message = "なんらかのデータを保存できませんでした"
+    elif type(job_state) == str:
+        message = job_state
     else:
-        datas = service.get(user_id=user_id)
-    return render_template('index.html', datas=datas, user=user, status=status)
+        message = None
+    
+    if req.method == 'POST':
+        data = await req.media(format="form")
+        conditions = {}
+        state = int(data['state'])
+        conditions['course'] = "%{}%".format(data['course']) if data['course'] != '' else None
+        conditions['assignment'] = "%{}%".format(req.form['assignment']) if data['assignment'] != '' else None
+        conditions['info'] = "%{}%".format(req.form['info']) if data['info'] != '' else None
+        datas = service.get(state=state, user_id=user_id, conditions=conditions, to_dict=True)
+    else:
+        datas = service.get(user_id=user_id, to_dict=True)
+    resp.headers["Content-Type"] = "application/json; charset=UTF-8"
+    resp.media = {"data": datas}
 
 
-@app.route('/add', methods=['GET', 'POST'])
-def add():
-    user_id = request_user_id(request)
-    if request.method == 'POST':
-        keywords = request.form['keywords'].split()
+@api.route('/add')
+async def add(req, resp):
+    user_id = req_user_id(req)
+    user = service.get_user(id=user_id)
+    if not user_id:
+        job_state="課題追加はログイン必須です"
+    else:
+        job_state = "課題を追加します"
+    if req.method == 'POST':
+        print(req.get_data())
+        print(req.form)
+        print(req.json)
+        try:
+            data = await req.media(format="form")
+            keywords = data["keywords"].split()
+        except:
+            keywords = []
     else:
         keywords = []
-    no_problem = service.add(user_id=user_id, keywords=keywords)
-    return redirect(url_for('index', user_id=user_id))
+        
+    @api.background.task
+    def async_add(user_id, keywords):
+        no_problem = service.add(user_id=user_id, keywords=keywords)
+        return no_problem
+    no_probelm = async_add(user_id, keywords)
+
+    resp.headers["Content-Type"] = "application/json; charset=UTF-8"
+    resp.media = {"message" : job_state}
 
 
-@app.route('/change/<int:id>/<int:state>', methods=['GET'])
-def change(id, state):
-    user_id = request_user_id(request)
-    if user_id == -1:
-        user_id = None
-    print("user_id got: %s" % user_id)
-    if request.method == 'GET':
-        no_problem = service.changeStatus(state=state, id=id, user_id=user_id)
-    return redirect(url_for('index', user_id=user_id))
+@api.route('/change/{id}/{state}')
+def change(req, resp, *, id, state):
+    user_id = req_user_id(req)
+    no_problem = None
+    if req.method == 'GET':
+        no_problem = service.changeStatus(state=state, id=int(id), user_id=int(user_id))
+    resp.headers["Content-Type"] = "application/json; charset=UTF-8"
+    resp.media ={"message":no_problem}
 
 
-@app.route('/login', methods=['GET'])
-def login():
+@api.route('/login')
+def login(req, resp):
     # id passwd でのログイン処理などの実装もできたらしたい
-    name = request.args.get('name')
+    name = req.params.get('name', None)
     user  =service.get_user(name=name)
     if user:
         user_id=user.id
     else:
         user_id = -1
-    return redirect(url_for('index', user_id=user_id))
+    resp.headers["Content-Type"] = "application/json; charset=UTF-8"
+    resp.media = {"message": user_id}
 
 
-@app.route('/user', methods=['GET', 'POST'])
-def user():
-    user_id = request_user_id(request)
-    if request.method == 'POST':
-        name = request.form['name']
-        userid = request.form['moodle_userid']
-        passwd = request.form['moodle_passwd']
+@api.route('/user')
+async def user(req, resp):
+    user_id = req_user_id(req)
+    if req.method == 'POST':
+        data = await req.media(format="form")
+        name = data['name']
+        userid = data['moodle_userid']
+        passwd = data['moodle_passwd']
         user_id = service.add_user(name, userid, passwd)
-        return redirect(url_for('index', user_id=user_id))
     else:
         user = service.get_user(id=user_id)
-        return render_template('user.html', user=user)
+    resp.headers["Content-Type"] = "application/json; charset=UTF-8"
+    resp.media = {"message":user_id}
+    
+
+@api.route('/log')
+def log(req, resp): 
+    resp.headers["Content-Type"] = "text/html; charset=UTF-8"
+    resp.media = api.template("log.html")
 
 
-def request_user_id(request):
+def req_user_id(req):
     try:
-        user_id = int(request.args.get('user_id', -1))
+        user_id = int(req.params.get('user_id', -1))
     except:
         user_id = -1
     if user_id == -1:
         user_id = None
     return user_id
 
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8888, debug=True)
+    api.run(address='0.0.0.0', port=8889, debug=True)

@@ -38,6 +38,7 @@ services:
       - /dev/shm:/dev/shm
     ports:
       - 8888:8888
+      - 8889:8889
     restart: always
   web:
     container_name: web-server

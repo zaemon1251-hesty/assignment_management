@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}add{% endblock %}
+
+{% block content %}
+<h1>ADDING ASSIGNMENTS...</h1>
+{% if user %}
+<a href="{{ api.url_for('index', user_id=user.id)}}">戻る</a>
+{% else %}
+<a href="{{ api.url_for('index')}}">戻る</a>
+{% endif %}
+
+<button id="watchlog">取得状況を見る</button>
+<div id="result"></div>
+
+{% endblock %}

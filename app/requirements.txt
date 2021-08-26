@@ -4,5 +4,6 @@ lxml
 urllib3
 psycopg2
 sqlalchemy
-flask
+responder
+requests
 uwsgi
