@@ -14,16 +14,13 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: moodle
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
-    restart: always
   selenium:
     image: selenium/standalone-chrome-debug:3.2.0-actinium
     ports:
       - 4444:4444
       - 5900:5900
   app:
-    build: ./app
-    container_name: app-server
-    hostname: app-server
+    image: 149492578180.dkr.ecr.ap-northeast-1.amazonaws.com/moodle_app
     depends_on:
       - postgres
       - waitfordb
@@ -33,16 +30,12 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@moodle_postgres_1:5432/moodle
       SELENIUM_URL: http://selenium:4444/wd/hub
       TZ: "Asia/Tokyo"
-    tty: true
     volumes:
       - /dev/shm:/dev/shm
     ports:
       - 8888:8888
-    restart: always
   web:
-    container_name: web-server
-    hostname: web-server
-    build: ./web
+    image: 149492578180.dkr.ecr.ap-northeast-1.amazonaws.com/moodle_web
     volumes:
         - "./web/nginx.conf:/etc/nginx/nginx.conf"
         # nginxのログをホストOS側に出力
@@ -55,6 +48,5 @@ services:
       - "80:80"
     environment:
       TZ: Asia/Tokyo
-    restart: always
 
     

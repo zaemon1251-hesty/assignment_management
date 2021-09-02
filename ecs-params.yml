@@ -1,0 +1,14 @@
+# ecs-params.yml
+version: 1
+task_definition:
+  services:
+    database:
+      cpu_shares: 100
+      mem_limit: 524288000
+  docker_volumes:
+    - name: database
+      scope: shared
+      autoprovision: true
+      driver: local
+      labels:
+        database: database_name
