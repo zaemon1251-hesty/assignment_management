@@ -1,52 +1,54 @@
 version: "3"
-services:
-  waitfordb:
-    image: dadarek/wait-for-dependencies
-    depends_on:
+task_definition:
+  services:
+    waitfordb:
+      image: dadarek/wait-for-dependencies
+      depends_on:
+          - postgres
+      command: postgres:5432
+    postgres:
+      image: postgres:10-alpine
+      ports:
+        - "5432:5432"
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: moodle
+        POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
+      mem_limit: "1g"
+    selenium:
+      image: selenium/standalone-chrome-debug:3.2.0-actinium
+      ports:
+        - 4444:4444
+        - 5900:5900
+      mem_limit: "1g"
+    app:
+      image: 149492578180.dkr.ecr.ap-northeast-1.amazonaws.com/moodle_app
+      depends_on:
         - postgres
-    command: postgres:5432
-  postgres:
-    image: postgres:10-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: moodle
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
-  selenium:
-    image: selenium/standalone-chrome-debug:3.2.0-actinium
-    ports:
-      - 4444:4444
-      - 5900:5900
-  app:
-    image: 149492578180.dkr.ecr.ap-northeast-1.amazonaws.com/moodle_app
-    depends_on:
-      - postgres
-      - waitfordb
-    volumes:
-      - ./app:/app
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@moodle_postgres_1:5432/moodle
-      SELENIUM_URL: http://selenium:4444/wd/hub
-      TZ: "Asia/Tokyo"
-    volumes:
-      - /dev/shm:/dev/shm
-    ports:
-      - 8888:8888
-  web:
-    image: 149492578180.dkr.ecr.ap-northeast-1.amazonaws.com/moodle_web
-    volumes:
-        - "./web/nginx.conf:/etc/nginx/nginx.conf"
-        # nginxのログをホストOS側に出力
-        - "/tmp/nginx_log:/var/log/nginx"
-    depends_on:
-      - app
-    links:
-      - app
-    ports:
-      - "80:80"
-    environment:
-      TZ: Asia/Tokyo
-
-    
+        - waitfordb
+      volumes:
+        - ./app:/app
+      environment:
+        DATABASE_URL: postgresql://postgres:postgres@moodle_postgres_1:5432/moodle
+        SELENIUM_URL: http://selenium:4444/wd/hub
+        TZ: "Asia/Tokyo"
+      volumes:
+        - /dev/shm:/dev/shm
+      ports:
+        - 8888:8888
+      mem_limit: "1g"
+    web:
+      image: 149492578180.dkr.ecr.ap-northeast-1.amazonaws.com/moodle_web
+      volumes:
+          - "./web/nginx.conf:/etc/nginx/nginx.conf"
+          # nginxのログをホストOS側に出力
+          - "/tmp/nginx_log:/var/log/nginx"
+      depends_on:
+        - app
+      links:
+        - app
+      ports:
+        - "80:80"
+      environment:
+        TZ: Asia/Tokyo
