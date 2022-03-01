@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}Index{% endblock %}
+
+{% block content %}
+{%if user%}
+<form action="{{ url_for('user', user_id=user.id) }}", method="POST">
+<p>お名前<input type="text" name="name" label="name" value="{{user.name}}"></p>
+<p>moodleのid<input type="text" name="userid" label="userid" value="{{user.moodle_userid}}"></p>
+<p>moodleのpassward<input type="text" name="passwd" label="passwd" value="{{user.moodle_passwd}}"></p>
+<input type="submit" value="送信"></p>
+<p><input type="reset" value="取消する"></p>
+</form>
+{% else %}
+<form action="{{ url_for('user') }}", method="POST">
+<p>お名前<input type="text" name="name" label="name" value=""></p>
+<p>moodleのid<input type="text" name="userid" label="userid" value=""></p>
+<p>moodleのpassward<input type="text" name="passwd" label="passwd" value=""></p>
+<input type="submit" value="送信"></p>
+<p><input type="reset" value="取消する"></p>
+</form>
+{% endif %}
+{% endblock %}
