@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "moodle"
+version = "0.1.0"
+description = ""
+authors = ["zaemon1251-hesty <hisakawa1251@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+selenium = "^4.1.2"
+lxml = "^4.8.0"
+urllib3 = "^1.26.8"
+psycopg2 = "^2.9.3"
+SQLAlchemy = "^1.4.31"
+Flask = "^2.0.3"
+uWSGI = "^2.0.20"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "^1.6.0"
+flake8 = "^4.0.1"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
