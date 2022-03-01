@@ -29,13 +29,12 @@ services:
       - waitfordb
     volumes:
       - ./app:/app
+      - /dev/shm:/dev/shm
     environment:
       DATABASE_URL: postgresql://postgres:postgres@moodle_postgres_1:5432/moodle
       SELENIUM_URL: http://selenium:4444/wd/hub
       TZ: "Asia/Tokyo"
     tty: true
-    volumes:
-      - /dev/shm:/dev/shm
     ports:
       - 8888:8888
     restart: always
