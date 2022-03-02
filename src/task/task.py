@@ -2,7 +2,7 @@ import os
 import time
 import re
 from urllib import parse
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -49,7 +49,10 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
     Selector = "div[id^=course-info-container] > div > div.w-100.text-truncate"
     CategorySelector = "div > span.categoryname.text-truncate"
     SubCategorySelector = "div > span.text-truncate"
-    AssignClasses = ["activity assign modtype_assign","activity quiz modtype_quiz", "activity workshop modtype_workshop"]
+    AssignClasses = [
+        "activity assign modtype_assign",
+        "activity quiz modtype_quiz",
+        "activity workshop modtype_workshop"]
     date_pattern = r'([12]\d{3}[/\-年])?\s?(0?[1-9]|1[0-2])[/\-月]\s?(0?[1-9]|[12][0-9]|3[01])日?'
     end_pattern = ['終了', '終了日時', '〆切']
     # Selenium サーバーへ接続する。
@@ -59,7 +62,7 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
     )
     # 任意のHTMLの要素が特定の状態になるまで待つ
     # ドライバとタイムアウト値を指定
-    wait = WebDriverWait(driver, 10)
+    WebDriverWait(driver, 10)
     # ログインページにアクセス
     driver.get(LOGIN_URL)
     if "Maintenance" in driver.find_element(By.TAG_NAME, 'title').text:
@@ -74,15 +77,17 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
     # ログインボタンをクリック
     login_button = driver.find_element_by_id("loginbtn")
     login_button.click()
-    
+
     # ログイン後遷移
     driver.get(TARGET_URL)
-    wait = WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, waitSelector))
     )
     # BeautifulSoup
-    soup = BeautifulSoup(driver.page_source.encode('utf-8'), features="html.parser")
-    courses = soup.select(Selector)
+    soup = BeautifulSoup(
+        driver.page_source.encode('utf-8'),
+        features="html.parser")
+    courses: ResultSet = soup.select(Selector)
     print("全コース数: %s" % len(courses))
     # 保存するデータを格納する
     lectures = {}
@@ -96,7 +101,7 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
             category = lecture.select_one(SubCategorySelector).string
         else:
             category = 'None'
-            
+
         # カテゴリ（年別や期間など）で条件に合うものだけを探す
         conditions = any(key in category for key in keywords)
         if conditions:
@@ -106,9 +111,11 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
             print()
             # ターゲットの講義の課題情報を取り出す
             driver.get(href)
-            wait = WebDriverWait(driver, 10)
+            WebDriverWait(driver, 10)
             # BeautifulSoup
-            assigns_soup = BeautifulSoup(driver.page_source.encode('utf-8'), features="html.parser")
+            assigns_soup = BeautifulSoup(
+                driver.page_source.encode('utf-8'),
+                features="html.parser")
             assigns = assigns_soup.find_all("li", class_=AssignClasses)
             print("このページの課題数: %s" % len(assigns))
             for assign in assigns:
@@ -116,20 +123,24 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
                 print(" %s 個目の課題が見つかりました" % lec_cnt)
                 # 課題があるページに移動
                 assign_href = assign.findAll("a")[0].get("href")
-                param = dict(parse.parse_qsl(parse.urlsplit(assign_href).query))
+                param = dict(
+                    parse.parse_qsl(
+                        parse.urlsplit(assign_href).query))
                 assignment_id = param['id']
                 driver.get(assign_href)
                 # コース名と課題名をゲットする
-                lec_title =  driver.find_element(By.TAG_NAME, "h1").text
-                assign_title = driver.find_element(By.TAG_NAME, "h2").text  
+                lec_title = driver.find_element(By.TAG_NAME, "h1").text
+                assign_title = driver.find_element(By.TAG_NAME, "h2").text
                 print("コース名: ", lec_title)
                 print("課題名: ", assign_title)
                 wait = WebDriverWait(driver, 10)
-                last_soup =BeautifulSoup(driver.page_source, features="html.parser")
+                last_soup = BeautifulSoup(
+                    driver.page_source, features="html.parser")
                 # 締切時間をゲットする
                 end_at = ''
                 if last_soup.find("td", class_="cell c1 lastcol"):
-                    end_at = last_soup.find("td", class_="cell c1 lastcol").string
+                    end_at = last_soup.find(
+                        "td", class_="cell c1 lastcol").string
                 if not re.match(date_pattern, end_at):
                     dates = last_soup.find_all(re.compile(date_pattern))
                     for date in dates:
@@ -138,14 +149,14 @@ def get_assignments(userid='', passwd='', keywords=["2021"]):
                     else:
                         end_at = None
                 lectures[int(lec_id)] = {
-                    "course_title":lec_title,
-                    "course_url":href,
+                    "course_title": lec_title,
+                    "course_url": href,
                 }
                 assignments[int(assignment_id)] = {
-                    "course_id":int(lec_id),
-                    "assignment_title":assign_title, 
-                    "info":end_at,
-                    "assignment_url":assign_href, 
+                    "course_id": int(lec_id),
+                    "assignment_title": assign_title,
+                    "info": end_at,
+                    "assignment_url": assign_href,
                 }
 
     driver.quit()
