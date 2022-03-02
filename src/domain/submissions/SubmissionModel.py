@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from pydantic.dataclasses import dataclass
 from typing import Optional
 
@@ -7,25 +8,18 @@ from src.domain.submissions.SubmissionState import SUBMISSION_STATE, submission_
 from src.domain.users.UserModel import User
 
 
-@dataclass(init=False, eq=True, frozen=True)
-class Submission:
+class Submission(BaseModel):
     """submission represents your registerd assignment as an entity."""
 
-    def __init__(
-        self,
-        id: int,
-        user: User,
-        assignment: Assignment,
-        state: Optional[submission_state] = SUBMISSION_STATE.NORMAL,
-        created_at: Optional[int] = None,
-        updated_at: Optional[int] = None,
-    ):
-        self.id: int = id
-        self.user: User = user,
-        self.assignment: Assignment = assignment,
-        self.state: submission_state = state
-        self.created_at: Optional[int] = created_at
-        self.updated_at: Optional[int] = updated_at
+    id: int
+    user: User
+    assignment: Assignment
+    state: Optional[submission_state] = SUBMISSION_STATE.NORMAL
+    created_at: Optional[int] = None
+    updated_at: Optional[int] = None
+
+    class Config:
+        orm_mode = True
 
     def is_already_expired(self) -> bool:
         """ this condition is not expected
