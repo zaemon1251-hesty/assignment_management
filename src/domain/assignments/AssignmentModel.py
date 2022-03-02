@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from pydantic.dataclasses import dataclass
 from typing import Optional
 
 from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE, assignment_state
@@ -11,7 +11,7 @@ class Assignment:
 
     def __init__(
         self,
-        id: str,
+        id: int,
         title: str,
         url: str,
         state: Optional[assignment_state] = ASSIGNMENT_STATE.ALIVE,
@@ -19,13 +19,10 @@ class Assignment:
         created_at: Optional[int] = None,
         updated_at: Optional[int] = None,
     ):
-        self.id: str = id
+        self.id: int = id
         self.title: str = title
         self.url: int = url
         self.state: assignment_state = state
         self.course: Optional[Course] = course
         self.created_at: Optional[int] = created_at
         self.updated_at: Optional[int] = updated_at
-
-    def is_already_read(self) -> bool:
-        return self.page == self.read_page

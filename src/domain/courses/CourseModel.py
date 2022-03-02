@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from pydantic.dataclasses import dataclass
 from typing import Optional
 
 
@@ -8,13 +8,13 @@ class Course:
 
     def __init__(
         self,
-        id: str,
+        id: int,
         title: str,
         url: str,
         created_at: Optional[int] = None,
         updated_at: Optional[int] = None,
     ):
-        self.id: str = id
+        self.id: int = id
         self.title: str = title
         self.url: int = url
         self.created_at: Optional[int] = created_at
