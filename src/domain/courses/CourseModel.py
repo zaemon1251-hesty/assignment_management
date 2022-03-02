@@ -1,21 +1,16 @@
 from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 from typing import Optional
 
 
-@dataclass(init=False, eq=True, frozen=True)
-class Course:
+class Course(BaseModel):
     """course represents your collection of course as an entity."""
 
-    def __init__(
-        self,
-        id: int,
-        title: str,
-        url: str,
-        created_at: Optional[int] = None,
-        updated_at: Optional[int] = None,
-    ):
-        self.id: int = id
-        self.title: str = title
-        self.url: int = url
-        self.created_at: Optional[int] = created_at
-        self.updated_at: Optional[int] = updated_at
+    id: int
+    title: str
+    url: str
+    created_at: Optional[int] = None
+    updated_at: Optional[int] = None
+
+    class Config:
+        orm_mode = True
