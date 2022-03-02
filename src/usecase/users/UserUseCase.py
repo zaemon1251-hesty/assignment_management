@@ -2,6 +2,24 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.users.UserModel import User
+from src.interface.repository import UserRepository
+
+
+class UserUseCaseUnitOfWork(ABC):
+    """UseCaseUnitOfWork defines an interface based on Unit of Work pattern."""
+    user_repository: UserRepository
+
+    @abstractmethod
+    def begin(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def commit(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def rollback(self):
+        raise NotImplementedError
 
 
 class UserUsecase(ABC):

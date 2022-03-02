@@ -4,6 +4,24 @@ from typing import List, Optional
 from src.domain.assignments.AssignmentModel import Assignment
 from src.domain.assignments.AssignmentState import assignment_state
 from src.domain.courses.CourseModel import Course
+from src.interface.repository.AssignmentRepository import AssignmentRepository
+
+
+class AssignmentUseCaseUnitOfWork(ABC):
+    """UseCaseUnitOfWork defines an interface based on Unit of Work pattern."""
+    assignment_repository: AssignmentRepository
+
+    @abstractmethod
+    def begin(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def commit(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def rollback(self):
+        raise NotImplementedError
 
 
 class AssignmentUseCase(ABC):
