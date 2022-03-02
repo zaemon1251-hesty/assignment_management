@@ -3,10 +3,10 @@ from dataclasses import dataclass
 
 
 class SUBMISSION_STATE(Enum):
-    NORMAL = auto()
-    DANGER = auto()
-    SUBMITTED = auto()
-    EXPIRED = auto()
+    NORMAL = 1
+    DANGER = 2
+    SUBMITTED = 3
+    EXPIRED = 4
 
     def __str__(self):
         return self.name
