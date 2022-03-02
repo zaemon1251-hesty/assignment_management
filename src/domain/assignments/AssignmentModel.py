@@ -19,3 +19,4 @@ class Assignment(BaseModel):
 
     class Config:
         orm_mode = True
+        validate_assignment = True

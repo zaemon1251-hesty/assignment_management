@@ -20,6 +20,7 @@ class Submission(BaseModel):
 
     class Config:
         orm_mode = True
+        validate_assignment = True
 
     def is_already_expired(self) -> bool:
         """ this condition is not expected
