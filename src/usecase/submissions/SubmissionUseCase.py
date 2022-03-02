@@ -5,6 +5,24 @@ from src.domain.assignments.AssignmentModel import Assignment
 from src.domain.submissions.SubmissionModel import Submission
 from src.domain.submissions.SubmissionState import submission_state
 from src.domain.users.UserModel import User
+from src.interface.repository.SubmissionRepository import SubmissionRepository
+
+
+class SubmissionUseCaseUnitOfWork(ABC):
+    """UseCaseUnitOfWork defines an interface based on Unit of Work pattern."""
+    submission_repository: SubmissionRepository
+
+    @abstractmethod
+    def begin(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def commit(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def rollback(self):
+        raise NotImplementedError
 
 
 class SubmissionUseCase(ABC):
