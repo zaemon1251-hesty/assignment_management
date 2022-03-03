@@ -1,20 +1,17 @@
-from pydantic import BaseModel
-from pydantic.dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
+from src.domain import OrmBase
 
-class User(BaseModel):
+
+class User(OrmBase):
     """User represents your collection of user as an entity."""
 
     id: int
     name: str
     email: str
     password: str
-    moodle_user_id: Optional[str] = None
-    moodle_user_password: Optional[str] = None
-    created_at: Optional[int] = None
-    updated_at: Optional[int] = None
-
-    class Config:
-        orm_mode = True
-        validate_assignment = True
+    moodle_id: Optional[str] = None
+    moodle_password: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

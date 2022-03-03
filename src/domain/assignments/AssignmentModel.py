@@ -1,22 +1,19 @@
-from pydantic.dataclasses import dataclass
-from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
+from src.domain import OrmBase
 
-from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE, assignment_state
+from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE
 from src.domain.courses.CourseModel import Course
 
 
-class Assignment(BaseModel):
+class Assignment(OrmBase):
     """assignment represents your collection of assignment as an entity."""
 
     id: int
     title: str
-    url: str
-    state: Optional[assignment_state] = ASSIGNMENT_STATE.ALIVE
+    url: Optional[str]
+    info: Optional[str]
+    state: Optional[ASSIGNMENT_STATE] = ASSIGNMENT_STATE.ALIVE
     course: Optional[Course] = None
-    created_at: Optional[int] = None
-    updated_at: Optional[int] = None
-
-    class Config:
-        orm_mode = True
-        validate_assignment = True
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
