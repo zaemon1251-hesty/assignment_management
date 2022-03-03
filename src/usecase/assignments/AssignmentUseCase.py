@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.assignments.AssignmentModel import Assignment
-from src.domain.assignments.AssignmentState import assignment_state
+from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE
 from src.domain.courses.CourseModel import Course
 from src.interface.repository.AssignmentRepository import AssignmentRepository
 
@@ -43,7 +43,7 @@ class AssignmentUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def change_status(id: int, state: assignment_state) -> bool:
+    async def change_status(id: int, state: ASSIGNMENT_STATE) -> bool:
         raise NotImplementedError
 
     @abstractmethod
