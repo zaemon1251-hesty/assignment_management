@@ -1,26 +1,22 @@
-from pydantic import BaseModel
-from pydantic.dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
+from src.domain import OrmBase
 from src.domain.assignments.AssignmentModel import Assignment
 from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE
-from src.domain.submissions.SubmissionState import SUBMISSION_STATE, submission_state
+from src.domain.submissions.SubmissionState import SUBMISSION_STATE
 from src.domain.users.UserModel import User
 
 
-class Submission(BaseModel):
+class Submission(OrmBase):
     """submission represents your registerd assignment as an entity."""
 
     id: int
     user: User
     assignment: Assignment
-    state: Optional[submission_state] = SUBMISSION_STATE.NORMAL
-    created_at: Optional[int] = None
-    updated_at: Optional[int] = None
-
-    class Config:
-        orm_mode = True
-        validate_assignment = True
+    state: Optional[SUBMISSION_STATE] = SUBMISSION_STATE.NORMAL
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     def is_already_expired(self) -> bool:
         """ this condition is not expected

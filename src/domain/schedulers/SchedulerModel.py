@@ -1,20 +1,16 @@
-from pydantic.dataclasses import dataclass
-from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
+from src.domain import OrmBase
 
 from src.domain.submissions.SubmissionModel import Submission
 
 
-class Scheduler(BaseModel):
+class Scheduler(OrmBase):
     """Scheduler represents what assignment should be reminded to whom at a certain time """
 
     id: int
     submission: Submission
     remind_at: int
-    reminded: Optional[bool] = False
-    created_at: Optional[int] = None
-    updated_at: Optional[int] = None
-
-    class Config:
-        orm_mode = True
-        validate_assignment = True
+    reminded: bool = False
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

@@ -1,17 +1,14 @@
-from pydantic.dataclasses import dataclass
-from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
 
+from src.domain import OrmBase
 
-class Course(BaseModel):
+
+class Course(OrmBase):
     """course represents your collection of course as an entity."""
 
     id: int
     title: str
-    url: str
-    created_at: Optional[int] = None
-    updated_at: Optional[int] = None
-
-    class Config:
-        orm_mode = True
-        validate_assignment = True
+    url: Optional[str]
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
