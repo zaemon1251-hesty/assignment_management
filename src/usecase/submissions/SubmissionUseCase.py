@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from src.domain.assignments.AssignmentModel import Assignment
 from src.domain.submissions.SubmissionModel import Submission
-from src.domain.submissions.SubmissionState import submission_state
+from src.domain.submissions.SubmissionState import SUBMISSION_STATE
 from src.domain.users.UserModel import User
 from src.interface.repository.SubmissionRepository import SubmissionRepository
 
@@ -44,7 +44,7 @@ class SubmissionUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def change_status(id: int, state: submission_state) -> bool:
+    async def change_status(id: int, state: SUBMISSION_STATE) -> bool:
         raise NotImplementedError
 
     @abstractmethod
