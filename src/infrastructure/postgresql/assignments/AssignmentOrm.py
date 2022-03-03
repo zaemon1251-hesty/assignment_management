@@ -1,21 +1,68 @@
+from datetime import datetime, timezone
+from distutils.log import info
 from pydantic.dataclasses import dataclass
 from pydantic import BaseModel
 from typing import Optional
-
-from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE, assignment_state
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from src.domain.assignments.AssignmentModel import Assignment
+from src.infrastructure.postgresql.database import Base
+from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE
 from src.domain.courses.CourseModel import Course
 
 
-class Assignment(BaseModel):
-    """assignment represents your collection of assignment as an entity."""
+class AssignmentOrm(Base):
+    """
+    Assignments (model)
+    params:
+    id->int
+    title->string
+    status->string
+    info->string
 
-    id: int
-    title: str
-    url: str
-    state: Optional[assignment_state] = ASSIGNMENT_STATE.ALIVE
-    course: Optional[Course] = None
-    created_at: Optional[int] = None
-    updated_at: Optional[int] = None
+    "info" is supposed to convert to "end_at"(datetime)
+    """
+    __tablename__ = 'assignments'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(200))
+    state = Column(Integer, nullable=False)
+    info = Column(String(1000))
+    url = Column(String(200))
+    course_id = Column(Integer, ForeignKey('courses.id'))
+    assignments = relationship(
+        "SubmissionOrm",
+        backref="assignments",
+        lazy="joined"
+    )
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime)
 
-    class Config:
-        orm_mode = True
+    @classmethod
+    def to_domain(self) -> Assignment:
+        """almost same as Domain.from_orm() """
+        _course = Assignment.from_orm(self.assignment)
+        return Assignment(
+            id=self.id,
+            course=_course,
+            title=self.title,
+            info=self.info,
+            url=self.url,
+            state=ASSIGNMENT_STATE(self.state),
+            created_at=self.created_at,
+            updated_at=self.updated_at
+        )
+
+    @staticmethod
+    def from_domain(data: Assignment) -> "AssignmentOrm":
+        now = datetime.now(timezone.utc)
+        return AssignmentOrm(
+            id=data.id,
+            course_id=data.course.id,
+            title=data.title,
+            info=data.info,
+            url=data.url,
+            state=int(data.state),
+            created_at=now,
+            updated_at=now,
+        )
