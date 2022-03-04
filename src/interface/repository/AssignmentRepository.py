@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.assignments.AssignmentModel import Assignment
-from src.domain.courses.CourseModel import Course
+from src.domain.assignment import Assignment
+from src.domain.course import Course
 from src.interface.driver.FetchDriver import crude_assignment
 
 

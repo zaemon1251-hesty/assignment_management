@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.users.UserModel import User
+from src.domain.user import User
 
 
 class UserUsecase(ABC):

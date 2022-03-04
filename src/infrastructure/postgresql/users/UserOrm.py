@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional
-from src.domain.users.UserModel import User
+from src.domain.user import User
 from src.infrastructure.postgresql.database import Base
 import sys
 from sqlalchemy.ext.declarative import declarative_base

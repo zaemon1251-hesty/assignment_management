@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from src.domain import OrmBase
 
-from src.domain.submissions.SubmissionModel import Submission
+from src.domain.submission import Submission
 
 
 class Scheduler(OrmBase):

@@ -3,8 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from src.infrastructure.postgresql.database import Base
-from src.domain.schedulers.SchedulerModel import Scheduler
-from src.domain.submissions.SubmissionModel import Submission
+from src.domain.scheduler import Scheduler
+from src.domain.submission import Submission
 from datetime import timezone, datetime
 
 
