@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.assignments.AssignmentModel import Assignment
-from src.domain.submissions.SubmissionModel import Submission
-from src.domain.users.UserModel import User
+from src.domain.assignment import Assignment
+from src.domain.submission import Submission
+from src.domain.user import User
 
 
 class SubmissionRepository(ABC):

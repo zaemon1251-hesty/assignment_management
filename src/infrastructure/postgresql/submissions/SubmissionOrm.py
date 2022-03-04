@@ -6,12 +6,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from src.infrastructure.postgresql.database import Base
-from src.domain.assignments.AssignmentModel import Assignment
-from src.domain.users.UserModel import User
-from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE
-from src.domain.submissions.SubmissionState import SUBMISSION_STATE
-from src.domain.submissions.SubmissionModel import Submission
-from src.domain.users.UserModel import User
+from src.domain.assignment import Assignment
+from src.domain.user import User
+from src.domain.AssignmentState import ASSIGNMENT_STATE
+from src.domain.SubmissionState import SUBMISSION_STATE
+from src.domain.submission import Submission
+from src.domain.user import User
 
 
 class SubmissionOrm(Base):

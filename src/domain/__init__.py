@@ -1,10 +1,11 @@
 from enum import Enum
 from typing import Union
 
-from src.domain.users.UserModel import User
-from src.domain.courses.CourseModel import Course
-from src.domain.assignments.AssignmentModel import Assignment
-from src.domain.submissions.SubmissionModel import Submission
+from src.domain.user import User
+from src.domain.course import Course
+from src.domain.assignment import Assignment
+from src.domain.submission import Submission
+from src.domain.scheduler import Scheduler
 
 from pydantic import BaseModel, validator
 from sqlalchemy.orm import Query

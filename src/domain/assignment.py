@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Optional
 from src.domain import OrmBase
 
-from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE
-from src.domain.courses.CourseModel import Course
+from src.domain.AssignmentState import ASSIGNMENT_STATE
+from src.domain.course import Course
 
 
 class Assignment(OrmBase):

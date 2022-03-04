@@ -2,10 +2,10 @@ from datetime import datetime
 from typing import Optional
 
 from src.domain import OrmBase
-from src.domain.assignments.AssignmentModel import Assignment
-from src.domain.assignments.AssignmentState import ASSIGNMENT_STATE
-from src.domain.submissions.SubmissionState import SUBMISSION_STATE
-from src.domain.users.UserModel import User
+from src.domain.assignment import Assignment
+from src.domain.AssignmentState import ASSIGNMENT_STATE
+from src.domain.SubmissionState import SUBMISSION_STATE
+from src.domain.user import User
 
 
 class Submission(OrmBase):
