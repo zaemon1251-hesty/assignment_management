@@ -36,4 +36,5 @@ DOMAINS = Union[
     Course,
     Assignment,
     Submission,
+    Scheduler
 ]
