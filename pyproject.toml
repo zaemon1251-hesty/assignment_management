@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moodle"
-version = "0.1.0"
+version = "0.3.0"
 description = ""
 authors = ["zaemon1251-hesty <hisakawa1251@gmail.com>"]
 
@@ -11,10 +11,11 @@ lxml = "^4.8.0"
 urllib3 = "^1.26.8"
 psycopg2 = "^2.9.3"
 SQLAlchemy = "^1.4.31"
-Flask = "^2.0.3"
 uWSGI = "^2.0.20"
 beautifulsoup4 = "^4.10.0"
 pydantic = "^1.9.0"
+fastapi = "^0.74.1"
+uvicorn = "^0.17.5"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"

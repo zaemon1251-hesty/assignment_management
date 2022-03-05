@@ -1,12 +1,24 @@
-from flask import Flask, request, render_template, redirect, url_for
+from fastapi import FastAPI, HTTPException, status
+import json
+
+from src.interface.controller import api_router
 import service
 # config
-status = {0: "end", 1: "normal", 2: "semi", 3: "hot"}
-app = Flask(__name__)
+app = FastAPI(__name__)
+
+app.include_router(api_router, prefix="/api")
+
+
+@app.get(
+    "/",
+    status_code=status.HTTP_200_OK
+)
+async def healthz():
+    return json.dumps({"message": "I am Zaemon."})
 
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def _index():
     user_id = request_user_id(request)
     print("user_id got: %s" % user_id)
     user = service.get_user(id=user_id)
@@ -25,7 +37,6 @@ def index():
                             conditions=conditions)
     else:
         datas = service.get(user_id=user_id)
-    return render_template('index.html', datas=datas, user=user, status=status)
 
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -36,7 +47,6 @@ def add():
     else:
         keywords = []
     no_problem = service.add(user_id=user_id, keywords=keywords)
-    return redirect(url_for('index', user_id=user_id))
 
 
 @app.route('/change/<int:id>/<int:state>', methods=['GET'])
@@ -47,7 +57,6 @@ def change(id, state):
     print("user_id got: %s" % user_id)
     if request.method == 'GET':
         no_problem = service.changeStatus(state=state, id=id, user_id=user_id)
-    return redirect(url_for('index', user_id=user_id))
 
 
 @app.route('/login', methods=['GET'])
@@ -59,7 +68,6 @@ def login():
         user_id = user.id
     else:
         user_id = -1
-    return redirect(url_for('index', user_id=user_id))
 
 
 @app.route('/user', methods=['GET', 'POST'])
@@ -70,10 +78,8 @@ def user():
         userid = request.form['moodle_userid']
         passwd = request.form['moodle_passwd']
         user_id = service.add_user(name, userid, passwd)
-        return redirect(url_for('index', user_id=user_id))
     else:
         user = service.get_user(id=user_id)
-        return render_template('user.html', user=user)
 
 
 def request_user_id(request):
@@ -83,7 +89,6 @@ def request_user_id(request):
         user_id = -1
     if user_id == -1:
         user_id = None
-    return user_id
 
 
 if __name__ == '__main__':
