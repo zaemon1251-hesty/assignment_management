@@ -50,7 +50,7 @@ class UserUsecase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def login(name: str, password: str) -> bool:
+    async def login(id: str, password: str) -> bool:
         raise NotImplementedError
 
     @abstractmethod
