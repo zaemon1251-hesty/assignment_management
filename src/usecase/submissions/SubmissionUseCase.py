@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from src.domain.assignment import Assignment
 from src.domain.submission import Submission
-from src.domain.SubmissionState import SUBMISSION_STATE
 from src.domain.user import User
 from src.interface.repository.SubmissionRepository import SubmissionRepository
 
