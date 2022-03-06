@@ -1,9 +1,11 @@
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+from pydantic import validator
 
 from src.domain import OrmBase
 from src.domain.assignment import Assignment, ASSIGNMENT_STATE
+from src.domain.exception import StateContradictedException
 from src.domain.user import User
 
 
@@ -27,18 +29,32 @@ class Submission(OrmBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    def is_already_expired(self) -> bool:
-        """ this condition is not expected
+    @staticmethod
+    def is_already_expired(state: SUBMISSION_STATE,
+                           assignment_state: ASSIGNMENT_STATE) -> bool:
+        """ this condition is not xpected
             system should prevent this in usecase layer
         """
         return (
-            self.state == SUBMISSION_STATE.NORMAL or
-            self.state == SUBMISSION_STATE.DANGER
-        ) and self.assignment.state == ASSIGNMENT_STATE.DEAD
+            state == SUBMISSION_STATE.NORMAL or
+            state == SUBMISSION_STATE.DANGER
+        ) and assignment_state == ASSIGNMENT_STATE.DEAD
 
-    def is_still_alive(self) -> bool:
+    @staticmethod
+    def is_still_alive(state: SUBMISSION_STATE,
+                       assignment_state: ASSIGNMENT_STATE) -> bool:
         """ this condition is not expected
             system should prevent this in usecase layer
         """
-        return self.state == SUBMISSION_STATE.EXPIRED and \
-            self.assignment.state == ASSIGNMENT_STATE.ALIVE
+        return state == SUBMISSION_STATE.EXPIRED and \
+            assignment_state == ASSIGNMENT_STATE.ALIVE
+
+    @validator("state")
+    async def _validate_state(cls, v, values, **kwargs):
+        if "assignment" in values and "state" in dict(values["assignment"]):
+            if cls.is_already_expired(v, values["assignment"].state) or \
+                    cls.is_still_alive(v, values["assignment"].state):
+                raise StateContradictedException(
+                    "submission_state:%s isn't acceptable because og the related assignment state: %s" % (v, values[
+                        "assignment"].state))
+        return v

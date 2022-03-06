@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, session, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session
 import os
 
 
@@ -8,12 +8,6 @@ engine = create_engine(
     os.getenv('DATABASE_URL'),
     encoding="utf-8",
     echo=True  # Trueだと実行のたびにSQLが出力される
-)
-
-SessionLocal = sessionmaker(
-    bind=engine,
-    autocommit=False,
-    autoflush=False,
 )
 
 # Sessionの作成
