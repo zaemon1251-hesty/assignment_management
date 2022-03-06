@@ -1,9 +1,16 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 from src.domain import OrmBase
-
-from src.domain.AssignmentState import ASSIGNMENT_STATE
 from src.domain.course import Course
+
+
+class ASSIGNMENT_STATE(Enum):
+    ALIVE = 1
+    DEAD = 2
+
+    def __str__(self):
+        return self.name
 
 
 class Assignment(OrmBase):

@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.assignment import Assignment
-from src.domain.AssignmentState import ASSIGNMENT_STATE
+from src.domain.assignment import Assignment, ASSIGNMENT_STATE
 from src.domain.course import Course
 from src.interface.repository.AssignmentRepository import AssignmentRepository
 

@@ -1,11 +1,20 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from src.domain import OrmBase
-from src.domain.assignment import Assignment
-from src.domain.AssignmentState import ASSIGNMENT_STATE
-from src.domain.SubmissionState import SUBMISSION_STATE
+from src.domain.assignment import Assignment, ASSIGNMENT_STATE
 from src.domain.user import User
+
+
+class SUBMISSION_STATE(Enum):
+    NORMAL = 1
+    DANGER = 2
+    SUBMITTED = 3
+    EXPIRED = 4
+
+    def __str__(self):
+        return self.name
 
 
 class Submission(OrmBase):
