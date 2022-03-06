@@ -1,23 +1,23 @@
-from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Dict, List, Optional
+
 import logging
 from logging import config
+from src.domain.course import Course
 
-from src.usecase.users.UserUseCase import UserUseCase
-from src.domain.user import User
+from src.usecase.courses.CourseUseCase import CourseUseCase
 
-user_api_router = APIRouter()
-
+course_api_router = APIRouter()
 
 config.fileConfig("error.log", disable_existing_loggers=False)
 logger = logging.getLogger(__name__)
 
-_user_usecase: UserUseCase
+_course_usecase: CourseUseCase
 
 
-@user_api_router.get(
-    "/{user_id}",
-    response_model=Optional[User],
+@course_api_router.get(
+    "/{course_id}",
+    response_model=Optional[Course],
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_404_NOT_FOUND: {
@@ -25,52 +25,52 @@ _user_usecase: UserUseCase
         }
     }
 )
-async def get(user_id: int, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def get(course_id: int, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        user = user_usecase.fetch(user_id)
+        course = course_usecase.fetch(course_id)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return user
+    return course
 
 
-@user_api_router.get(
+@course_api_router.get(
     "/",
-    response_model=List[User],
+    response_model=List[Course],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(user_data: Optional[User], user_usecase: UserUseCase = Depends(_user_usecase)):
+async def get_all(course_data: Optional[Course], course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        users = user_usecase.fetch_all(user_data)
+        courses = course_usecase.fetch_all(course_data)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return users
+    return courses
 
 
-@user_api_router.post(
+@course_api_router.post(
     "/add",
-    response_model=User,
+    response_model=Course,
     status_code=status.HTTP_200_OK,
 )
-async def create(user_data: User, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def create(course_data: Course, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        user = user_usecase.create(user_data)
+        course = course_usecase.create(course_data)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return user
+    return course
 
 
-@user_api_router.put(
-    "/{user_id}",
-    response_model=User,
+@course_api_router.put(
+    "/{course_id}",
+    response_model=Course,
     status_code=status.HTTP_202_ACCEPTED,
     responses={
         status.HTTP_406_NOT_ACCEPTABLE: {
@@ -81,19 +81,44 @@ async def create(user_data: User, auth_data: Dict, user_usecase: UserUseCase = D
         }
     }
 )
-async def update(user_id: int, user_data: User, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def update(course_id: int, course_data: Course, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        user = user_usecase.update(user_data)
+        course = course_usecase.update(course_data)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return user
+    return course
 
 
-@user_api_router.delete(
-    "/{user_id}",
+@course_api_router.post(
+    "/change/{course_id}/{state}",
+    response_model=Course,
+    status_code=status.HTTP_202_ACCEPTED,
+    responses={
+        status.HTTP_406_NOT_ACCEPTABLE: {
+            "model": "id contradicts with data",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": "not found"
+        }
+    }
+)
+async def change_state(course_id: int, state: int, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
+    try:
+        _course_target: Course
+        course = course_usecase.update(_course_target)
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    return course
+
+
+@course_api_router.delete(
+    "/{course_id}",
     status_code=status.HTTP_202_ACCEPTED,
     response={
         status.HTTP_403_FORBIDDEN: {
@@ -104,47 +129,9 @@ async def update(user_id: int, user_data: User, auth_data: Dict, user_usecase: U
         }
     }
 )
-async def delete(user_id: int, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def delete(course_id: int, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        user_usecase.delete(user_id)
-    except Exception as e:
-        logger.error(e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-
-
-@user_api_router.post(
-    "/login",
-    status_code=status.HTTP_202_ACCEPTED,
-    response={
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
-)
-async def login(user_id: int, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
-    try:
-        user_id = auth_data.get('id')
-        user_password = auth_data.get('password')
-        user_usecase.login(user_id, user_password)
-    except Exception as e:
-        logger.error(e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-
-
-@user_api_router.get(
-    "/auto_scraping",
-    status_code=status.HTTP_200_OK
-)
-async def auto_scraping(user_usecase: UserUseCase = Depends(_user_usecase)):
-    try:
-        user_usecase.periodically_scraper()
+        course_usecase.delete(course_id)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
