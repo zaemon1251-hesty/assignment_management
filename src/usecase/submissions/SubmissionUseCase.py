@@ -44,10 +44,6 @@ class SubmissionUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def change_status(id: int, state: SUBMISSION_STATE) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
     async def delete(id: int) -> bool:
         raise NotImplementedError
 

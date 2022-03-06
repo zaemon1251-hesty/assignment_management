@@ -43,9 +43,5 @@ class AssignmentUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def change_status(id: int, state: ASSIGNMENT_STATE) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
     async def delete(id: int) -> bool:
         raise NotImplementedError

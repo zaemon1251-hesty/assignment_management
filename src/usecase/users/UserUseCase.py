@@ -22,7 +22,7 @@ class UserUseCaseUnitOfWork(ABC):
         raise NotImplementedError
 
 
-class UserUsecase(ABC):
+class UserUseCase(ABC):
     """UserUseCase defines a query usecase inteface related User entity."""
 
     @abstractmethod
@@ -54,5 +54,5 @@ class UserUsecase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def periodically_scraper(superuser: User) -> bool:
+    async def periodically_scraper() -> bool:
         raise NotImplementedError
