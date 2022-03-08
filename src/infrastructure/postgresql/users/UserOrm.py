@@ -18,11 +18,11 @@ class UserOrm(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(200), nullable=False)
-    email = Column(String(200), nullable=False)
+    email = Column(String(200), nullable=False, unique=True)
     password = Column(String(2000), nullable=False)
     moodle_id = Column(String(30))
     moodle_password = Column(String(30))
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
     submissions = relationship("submission", backref="users")
 
@@ -41,7 +41,7 @@ class UserOrm(Base):
 
     @staticmethod
     def from_domain(data: User) -> "UserOrm":
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()
         return UserOrm(
             id=data.id,
             name=data.name,

@@ -20,7 +20,7 @@ class CourseOrm(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(200))
     url = Column(String(200))
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
     assignments = relationship("Assignments", backref="courses")
@@ -37,7 +37,7 @@ class CourseOrm(Base):
 
     @staticmethod
     def from_domain(data: Course) -> "CourseOrm":
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()
         return CourseOrm(
             id=data.id,
             title=data.title,

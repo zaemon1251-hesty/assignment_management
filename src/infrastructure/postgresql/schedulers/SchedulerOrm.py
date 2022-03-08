@@ -13,7 +13,7 @@ class SchedulerOrm(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     reminded = Column(Boolean, nullable=False)
     remind_at = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
     submission_id = Column(
         Integer,
@@ -40,7 +40,7 @@ class SchedulerOrm(Base):
 
     @staticmethod
     def from_domain(data: Scheduler) -> "SchedulerOrm":
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()
         return SchedulerOrm(
             id=data.id,
             reminded=data.reminded,
