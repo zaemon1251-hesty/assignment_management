@@ -1,18 +1,18 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.user import User
+from src.domain.user import User, AuthedUser
 
 
-class UserUsecase(ABC):
-    """UserUseCase defines a query usecase inteface related User entity."""
+class UserRepository(ABC):
+    """UserRepository a query usecase inteface related User entity."""
 
     @abstractmethod
-    async def fetch(id: int) -> Optional[User]:
+    async def fetch(id: int) -> Optional[AuthedUser]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_by_name(name: Optional[str] = None) -> Optional[User]:
+    async def fetch_by_email(name: Optional[str] = None) -> Optional[AuthedUser]:
         raise NotImplementedError
 
     @abstractmethod
@@ -29,8 +29,4 @@ class UserUsecase(ABC):
 
     @abstractmethod
     async def delete(id: int) -> User:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def deadline_reminder() -> bool:
         raise NotImplementedError

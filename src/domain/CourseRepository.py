@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.course import Course
-from src.interface.driver.FetchDriver import crude_course
+from src.interface.driver.ScrapingDriver import crude_course
 
 
 class CourseRepository(ABC):
