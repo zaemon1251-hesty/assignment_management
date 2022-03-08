@@ -17,7 +17,7 @@ class UserOrm(Base):
     """
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(200), nullable=False)
+    name = Column(String(200), nullable=False, unique=True)
     email = Column(String(200), nullable=False, unique=True)
     password = Column(String(2000), nullable=False)
     moodle_id = Column(String(30))

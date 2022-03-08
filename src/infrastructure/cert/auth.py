@@ -16,11 +16,11 @@ class AuthDriverImpl(AuthDriver):
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
-    async def authenticate_user(self, email: str, password: str) -> Token:
+    async def create_access_token(self, name: str, password: str) -> Token:
         try:
-            user: AuthedUser = await self.user_repository.fetch_by_email(email)
+            user: AuthedUser = await self.user_repository.fetch_by_name(name)
             if self.authenticate_password(password, user.hash_password):
-                payload = TokenData(user, TOKEN_EXPIRE.timestamp())
+                payload = TokenData(user.name, TOKEN_EXPIRE.timestamp())
                 token = jwt.encode(
                     payload.json(),
                     PRIVATE_PEM,
@@ -30,16 +30,16 @@ class AuthDriverImpl(AuthDriver):
                 return Token({"access_token": token, "token_type": "Bearer"})
             else:
                 raise UnauthorizedException(
-                    "Not the correct password: email '%s'" % email)
+                    "Not the correct password: user-name '%s'" % name)
         except TargetNotFoundException:
             raise UnauthorizedException(
-                "User Not Found. please confirm this email is right: '%s' " %
-                email)
+                "User Not Found. please confirm this user-name is right: '%s'" %
+                name)
 
     async def get_user_by_token(self, token: str) -> User:
         try:
             payload = self.authenticate_token(token)
-            user = User(**payload["user"])
+            user = self.user_repository.fetch_by_name(payload.user_name)
         except ValidationError or ValueError:
             raise CredentialsException("token has wrong payload.")
         return user
@@ -48,7 +48,7 @@ class AuthDriverImpl(AuthDriver):
     def authenticate_password(
             cls,
             password: str,
-            hashed_password: str):
+            hashed_password: str) -> bool:
         if not cls.verify_password(password, hashed_password):
             return False
         return True
@@ -73,16 +73,16 @@ class AuthDriverImpl(AuthDriver):
                 public_key,
                 algorituhms=JWK["keys"][0]["alg"])
             payload = TokenData(**payload)
-            if payload.exp < datetime.utcnow().timestamp():
-                raise CredentialsException("token has expired.")
+            if payload.exp <= datetime.utcnow().timestamp():
+                raise CredentialsException("this token has expired.")
         except Exception:
             CredentialsException("something went wrong.")
         return payload
 
     @classmethod
-    def get_password_hash(cls, password: str):
+    def get_password_hash(cls, password: str) -> str:
         return cls.pwd_context.hash(password)
 
     @classmethod
-    def verify_password(cls, plain_password, hashed_password):
+    def verify_password(cls, plain_password: str, hashed_password: str):
         return cls.pwd_context.verify(plain_password, hashed_password)

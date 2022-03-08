@@ -17,6 +17,6 @@ class crude_assignment:
 class ScrapeDriver(ABC):
     """ driver (interface of web scraper html parser) """
 
-    @ abstractmethod
+    @abstractmethod
     async def run(moodle_id: str, moodle_password: str, keywords: List[str]) -> Tuple[List[crude_assignment], List[crude_course]]:
         raise NotImplementedError

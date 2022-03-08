@@ -1,26 +1,13 @@
 from abc import ABC, abstractclassmethod, abstractmethod
-from ctypes import Union
-from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel
 from src.domain.user import User
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    user: Optional[User]
-    exp: float
+from src.usecase.token import Token, TokenData
 
 
 class AuthDriver(ABC):
     """driver (interface of the authorizing process)"""
 
     @abstractmethod
-    async def authenticate_user(self, email: str, password: str) -> Token:
+    async def create_access_token(self, email: str, password: str) -> Token:
         raise NotImplementedError
 
     @abstractmethod
