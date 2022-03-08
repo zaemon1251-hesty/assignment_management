@@ -1,16 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
 
-import logging
-from logging import config
-from src.domain.scheduler import Scheduler
+from src.settings import loggerfrom src.domain.scheduler import Scheduler
 
 from src.usecase.schedulers.SchedulerUseCase import SchedulerUseCase
 
 scheduler_api_router = APIRouter()
-
-config.fileConfig("error.log", disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
 
 _scheduler_usecase: SchedulerUseCase
 

@@ -1,16 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
-
-import logging
-from logging import config
 from src.domain.course import Course
-
+from src.settings import logger
 from src.usecase.courses.CourseUseCase import CourseUseCase
 
 course_api_router = APIRouter()
-
-config.fileConfig("error.log", disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
 
 _course_usecase: CourseUseCase
 
