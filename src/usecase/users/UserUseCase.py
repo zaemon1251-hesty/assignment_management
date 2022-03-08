@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from src.domain.user import User, AuthedUser
 from src.domain.UserRepository import UserRepository
+from src.usecase.token import Token
 
 
 class UserUseCaseUnitOfWork(ABC):
@@ -50,9 +51,9 @@ class UserUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def auth_verify(id: str, password: str) -> str:
+    async def auth_verify(token: str) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    async def issue_token(id: str, password: str) -> bool:
+    async def create_token(name: str, password: str) -> Token:
         raise NotImplementedError

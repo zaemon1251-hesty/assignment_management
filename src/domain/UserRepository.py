@@ -12,7 +12,7 @@ class UserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_by_email(name: Optional[str] = None) -> Optional[AuthedUser]:
+    async def fetch_by_name(name: Optional[str] = None) -> Optional[AuthedUser]:
         raise NotImplementedError
 
     @abstractmethod
