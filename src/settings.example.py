@@ -1,5 +1,11 @@
 import datetime
 import uuid
+import json
+from logging import config, getLogger
+
+log_conf = open("logging.json", "r").read()
+config.dictConfig(json.load(log_conf))
+logger = getLogger(__name__)
 
 # openssl genrsa 2048 > private_key.pem
 PRIVATE_PEM = open("infrastructure/cert/private_key.pem", "r").read()

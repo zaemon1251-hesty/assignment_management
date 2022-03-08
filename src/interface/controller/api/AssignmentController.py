@@ -1,16 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
 
-import logging
-from logging import config
-from src.domain.assignment import Assignment
+from src.settings import loggerfrom src.domain.assignment import Assignment
 
 from src.usecase.assignments.AssignmentUseCase import AssignmentUseCase
 
 assignment_api_router = APIRouter()
-
-config.fileConfig("error.log", disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
 
 _assignment_usecase: AssignmentUseCase
 

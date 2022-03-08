@@ -1,17 +1,12 @@
 from fastapi import APIRouter
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
-import logging
-from logging import config
-
+from src.settings import logger
 from src.domain.submission import Submission
 from src.domain.user import User
 from src.usecase.submissions.SubmissionUseCase import SubmissionUseCase
 
 submission_api_router = APIRouter()
-
-config.fileConfig("error.log", disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
 
 _submission_usecase: SubmissionUseCase
 

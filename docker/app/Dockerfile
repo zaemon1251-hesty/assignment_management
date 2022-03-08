@@ -1,13 +1,13 @@
-FROM python:3.7
+# python3.9のイメージをダウンロード
+FROM python:3.9-buster
+ENV PYTHONUNBUFFERED=1
 
-ENV PYTHONIOENCODING utf-8
+RUN pip install poetry
 
-WORKDIR /app
+COPY pyproject.toml* poetry.lock* ./
 
-COPY . .
+RUN poetry config virtualenvs.in-project true
+RUN if [ -f pyproject.toml ]; then poetry install; fi
 
-RUN apt-get update
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-CMD ["uwsgi","--ini","uwsgi.ini"]
+# uvicornのサーバーを立ち上げる
+ENTRYPOINT ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
