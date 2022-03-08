@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from src.domain.assignment import Assignment, ASSIGNMENT_STATE
 from src.domain.course import Course
-from src.interface.repository.AssignmentRepository import AssignmentRepository
+from src.domain.AssignmentRepository import AssignmentRepository
 
 
 class AssignmentUseCaseUnitOfWork(ABC):

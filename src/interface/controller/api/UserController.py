@@ -136,17 +136,3 @@ async def login(user_id: int, auth_data: Dict, user_usecase: UserUseCase = Depen
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
-
-@user_api_router.get(
-    "/auto_scraping",
-    status_code=status.HTTP_200_OK
-)
-async def auto_scraping(user_usecase: UserUseCase = Depends(_user_usecase)):
-    try:
-        user_usecase.periodically_scraper()
-    except Exception as e:
-        logger.error(e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )

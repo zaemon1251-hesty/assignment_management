@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.course import Course
-from src.interface.repository.CourseRepository import CourseRepository
+from src.domain.CourseRepository import CourseRepository
 
 
 class CourseUseCaseUnitOfWork(ABC):
@@ -42,4 +42,8 @@ class CourseUseCase(ABC):
 
     @abstractmethod
     async def delete(id: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def periodically_scraper() -> bool:
         raise NotImplementedError
