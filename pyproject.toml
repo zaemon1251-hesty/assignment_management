@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "moodle"
+name = "assignment_management"
 version = "0.3.0"
 description = ""
 authors = ["zaemon1251-hesty <hisakawa1251@gmail.com>"]
@@ -16,6 +16,9 @@ beautifulsoup4 = "^4.10.0"
 pydantic = "^1.9.0"
 fastapi = "^0.74.1"
 uvicorn = "^0.17.5"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+jose = "^1.0.0"
+PyJWT = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"
