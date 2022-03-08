@@ -34,7 +34,7 @@ class AssignmentOrm(Base):
         backref="assignments",
         lazy="joined"
     )
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
     @classmethod
@@ -54,7 +54,7 @@ class AssignmentOrm(Base):
 
     @staticmethod
     def from_domain(data: Assignment) -> "AssignmentOrm":
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()
         return AssignmentOrm(
             id=data.id,
             course_id=data.course.id,

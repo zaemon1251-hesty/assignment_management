@@ -40,7 +40,7 @@ class SubmissionOrm(Base):
         )
     )
     state = Column(Integer, nullable=False)
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
     @classmethod
@@ -59,7 +59,7 @@ class SubmissionOrm(Base):
 
     @staticmethod
     def from_domain(data: Submission) -> "SubmissionOrm":
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()
         return SubmissionOrm(
             id=data.id,
             user_id=data.user.id,
