@@ -10,8 +10,12 @@ class User(OrmBase):
     id: int
     name: str
     email: str
-    password: str
     moodle_id: Optional[str] = None
     moodle_password: Optional[str] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+
+class AuthedUser(User):
+    token: str
+    hash_password: str
