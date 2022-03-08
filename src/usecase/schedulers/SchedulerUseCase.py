@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.scheduler import Scheduler
-from src.interface.repository.SchedulerRepository import SchedulerRepository
+from src.domain.SchedulerRepository import SchedulerRepository
 
 
 class SchedulerUseCaseUnitOfWork(ABC):

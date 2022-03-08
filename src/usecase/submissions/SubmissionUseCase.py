@@ -4,7 +4,7 @@ from typing import List, Optional
 from src.domain.assignment import Assignment
 from src.domain.submission import Submission
 from src.domain.user import User
-from src.interface.repository.SubmissionRepository import SubmissionRepository
+from src.domain.SubmissionRepository import SubmissionRepository
 
 
 class SubmissionUseCaseUnitOfWork(ABC):

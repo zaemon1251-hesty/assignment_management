@@ -137,3 +137,17 @@ async def delete(course_id: int, auth_data: Dict, course_usecase: CourseUseCase 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+@course_api_router.get(
+    "/auto_scraping",
+    status_code=status.HTTP_200_OK
+)
+async def scraping(user_usecase: CourseUseCase = Depends(_course_usecase)):
+    try:
+        user_usecase.periodically_scraper()
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
