@@ -4,7 +4,7 @@ from src.domain.user import User
 from src.infrastructure.postgresql.database import Base
 import sys
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
 
@@ -20,8 +20,7 @@ class UserOrm(Base):
     name = Column(String(200), nullable=False, unique=True)
     email = Column(String(200), nullable=False, unique=True)
     password = Column(String(2000), nullable=False)
-    moodle_id = Column(String(30))
-    moodle_password = Column(String(30))
+    disabled = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
     submissions = relationship("submission", backref="users")

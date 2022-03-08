@@ -10,8 +10,7 @@ class User(OrmBase):
     id: int
     name: str
     email: str
-    moodle_id: Optional[str] = None
-    moodle_password: Optional[str] = None
+    disabled: bool = False
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
