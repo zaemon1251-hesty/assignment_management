@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.user import User
-from src.interface.repository import UserRepository
+from src.domain.user import User, AuthedUser
+from src.domain.UserRepository import UserRepository
 
 
 class UserUseCaseUnitOfWork(ABC):
@@ -30,7 +30,7 @@ class UserUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_by_name(name: Optional[str] = None) -> Optional[User]:
+    async def fetch_by_token(token: str) -> AuthedUser:
         raise NotImplementedError
 
     @abstractmethod
@@ -50,9 +50,9 @@ class UserUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def login(id: str, password: str) -> bool:
+    async def auth_verify(id: str, password: str) -> str:
         raise NotImplementedError
 
     @abstractmethod
-    async def periodically_scraper() -> bool:
+    async def issue_token(id: str, password: str) -> bool:
         raise NotImplementedError
