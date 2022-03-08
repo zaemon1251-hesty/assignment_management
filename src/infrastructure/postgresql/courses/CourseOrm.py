@@ -18,12 +18,12 @@ class CourseOrm(Base):
     """
     __tablename__ = 'courses'
     id = Column(Integer, primary_key=True)
-    title = Column(String(200))
+    title = Column(String(200), nullable=False, unique=True)
     url = Column(String(200))
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
-    assignments = relationship("Assignments", backref="courses")
+    assignments = relationship("AssignmentOrm", backref="courses")
 
     @classmethod
     def to_domain(self) -> Course:

@@ -24,16 +24,17 @@ class AssignmentOrm(Base):
     """
     __tablename__ = 'assignments'
     id = Column(Integer, primary_key=True)
-    title = Column(String(200))
+    title = Column(String(200), nullable=False, unique=True)
     state = Column(Integer, nullable=False)
     info = Column(String(1000))
     url = Column(String(200))
     course_id = Column(Integer, ForeignKey('courses.id'))
-    assignments = relationship(
+    course = relationship(
         "SubmissionOrm",
         backref="assignments",
         lazy="joined"
     )
+
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
