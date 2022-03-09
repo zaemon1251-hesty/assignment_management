@@ -133,18 +133,3 @@ async def delete(submission_id: int, auth_data: Dict, submission_usecase: Submis
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
-
-@submission_api_router.post(
-    "/scraping",
-    status_code=status.HTTP_200_OK,
-)
-async def scraping(auth_data: Dict, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
-    try:
-        login_user: User
-        submission_usecase.scraping_add(login_user)
-    except Exception as e:
-        logger.error(e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )

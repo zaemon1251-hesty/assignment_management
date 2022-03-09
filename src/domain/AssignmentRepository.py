@@ -3,13 +3,16 @@ from typing import List, Optional
 
 from src.domain.assignment import Assignment
 from src.domain.course import Course
-from src.interface.driver.ScrapingDriver import crude_assignment
 
 
 class AssignmentRepository(ABC):
     """Assignment"""
     @abstractmethod
     async def fetch(id: int) -> Optional[Assignment]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def fetch_by_title(title: str) -> Optional[Assignment]:
         raise NotImplementedError
 
     @abstractmethod
@@ -26,8 +29,4 @@ class AssignmentRepository(ABC):
 
     @abstractmethod
     async def delete(id: int) -> Assignment:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def commit_by_scrape(data: crude_assignment) -> Assignment:
         raise NotImplementedError

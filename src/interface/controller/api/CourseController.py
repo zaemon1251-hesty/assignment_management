@@ -137,9 +137,9 @@ async def delete(course_id: int, auth_data: Dict, course_usecase: CourseUseCase 
     "/auto_scraping",
     status_code=status.HTTP_200_OK
 )
-async def scraping(user_usecase: CourseUseCase = Depends(_course_usecase)):
+async def scraping(course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        user_usecase.periodically_scraper()
+        course_usecase.periodically_scraper()
     except Exception as e:
         logger.error(e)
         raise HTTPException(
