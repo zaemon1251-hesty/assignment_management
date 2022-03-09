@@ -22,7 +22,7 @@ class AuthDriverImpl(AuthDriver):
             if self.authenticate_password(password, user.hash_password):
                 payload = TokenData(user.name, TOKEN_EXPIRE.timestamp())
                 token = jwt.encode(
-                    payload.json(),
+                    dict(payload),
                     PRIVATE_PEM,
                     algorithm=JWK["keys"][0]["alg"],
                     headers={"kid": JWK["keys"][0]["kid"]}

@@ -22,9 +22,8 @@ class SUBMISSION_STATE(Enum):
 class Submission(OrmBase):
     """submission represents your registerd assignment as an entity."""
 
-    id: int
-    user: User
-    assignment: Assignment
+    user_id: int
+    assignment_id: int
     state: Optional[SUBMISSION_STATE] = SUBMISSION_STATE.NORMAL
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

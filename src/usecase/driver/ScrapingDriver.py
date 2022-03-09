@@ -9,5 +9,5 @@ class ScrapeDriver(ABC):
     """ driver (interface of web scraper html parser) """
 
     @abstractmethod
-    async def run(moodle_id: str, moodle_password: str, keywords: List[str]) -> Tuple[List[Assignment], List[Course]]:
+    async def run(self, keywords: List[str]) -> Tuple[List[Assignment], List[Course]]:
         raise NotImplementedError

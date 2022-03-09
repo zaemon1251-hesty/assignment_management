@@ -7,7 +7,6 @@ from src.domain import OrmBase
 class User(OrmBase):
     """User represents your collection of user as an entity."""
 
-    id: int
     name: str
     email: str
     disabled: bool = False

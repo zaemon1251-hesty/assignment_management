@@ -59,9 +59,6 @@ class ScrapeDriverImpl(ScrapeDriver):
             desired_capabilities=DesiredCapabilities.CHROME.copy()
         )
 
-    class NowInMaintananceExeption(Exception):
-        pass
-
     class wait_for_all(object):
         """ターゲットが出現するまで待つ
             # 使い方
@@ -84,9 +81,11 @@ class ScrapeDriverImpl(ScrapeDriver):
             except StaleElementReferenceException:
                 return False
 
-    async def run(self, moodle_id: str, moodle_password: str, keywords: List[str] = []) -> Tuple[List[Assignment], List[Course]]:
+    async def run(self, keywords: List[str] = []) -> Tuple[List[Assignment], List[Course]]:
         assignments: List[Assignment] = []
         courses: List[Course] = []
+        moodle_id = os.getenv("MOODLE_ID")
+        moodle_password = os.getenv("MOODLE_PASSWORD")
         try:
             curde_assis, crude_cors = await self.get_assignments(moodle_id, moodle_password, keywords)
             for key, crude in curde_assis.items():
@@ -117,7 +116,9 @@ class ScrapeDriverImpl(ScrapeDriver):
         )
         return assign
 
-    async def login(self, url, id, passwd):
+    async def login(self, url: str, id: str, passwd: str):
+        if not isinstance(id, str) or not isinstance(passwd, str):
+            raise Exception("id and password not vaild.")
         # 任意のHTMLの要素が特定の状態になるまで待つ
         # ドライバとタイムアウト値を指定
         WebDriverWait(self.driver, 2)
@@ -126,7 +127,7 @@ class ScrapeDriverImpl(ScrapeDriver):
         if "Maintenance" in self.driver.find_element(
                 By.TAG_NAME, 'title').text:
             logger.warning("Now Maintenance...")
-            raise self.NowInMaintananceExeption
+            raise Exception("%s now in maintenace" % url)
         # ID/PASSを入力
         id = self.driver.find_element_by_id("username")
         id.send_keys(id)
@@ -137,7 +138,7 @@ class ScrapeDriverImpl(ScrapeDriver):
         login_button = self.river.find_element_by_id("loginbtn")
         login_button.click()
 
-    async def get_assignments(self, userid='', passwd='', keywords=["2021"]) -> Tuple[Dict[int, crude_assignment], Dict[int, crude_course]]:
+    async def get_assignments(self, userid: str, passwd: str, keywords: List[str] = ["2021"]) -> Tuple[Dict[int, crude_assignment], Dict[int, crude_course]]:
         """
         moodleのページからコースと課題を取ってくる
         params:
@@ -240,7 +241,7 @@ class ScrapeDriverImpl(ScrapeDriver):
                 )
 
         self.driver.quit()
-        return lectures, assignments
+        return assignments, lectures
 
 
 if __name__ == '__main__':

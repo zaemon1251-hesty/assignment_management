@@ -8,8 +8,7 @@ from src.domain.submission import Submission
 class Scheduler(OrmBase):
     """Scheduler represents what assignment should be reminded to whom at a certain time """
 
-    id: int
-    submission: Submission
+    submission_id: int
     remind_at: int
     reminded: bool = False
     created_at: Optional[datetime] = None
