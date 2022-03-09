@@ -4,6 +4,7 @@ from typing import List, Optional
 from src.domain.assignment import Assignment, ASSIGNMENT_STATE
 from src.domain.course import Course
 from src.domain.AssignmentRepository import AssignmentRepository
+from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 
 
 class AssignmentUseCaseUnitOfWork(ABC):
@@ -26,21 +27,77 @@ class AssignmentUseCaseUnitOfWork(ABC):
 class AssignmentUseCase(ABC):
     """Assignment"""
     @abstractmethod
-    async def fetch(id: int) -> Optional[Assignment]:
+    async def fetch(self, id: int) -> Optional[Assignment]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(domain: Optional[Assignment], course: Optional[Course]) -> List[Assignment]:
+    async def fetch_all(self, domain: Optional[Assignment], course: Optional[Course]) -> List[Assignment]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(domain: Assignment) -> Assignment:
+    async def add(self, domain: Assignment) -> Assignment:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(domain: Assignment) -> Assignment:
+    async def update(self, domain: Assignment) -> Assignment:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> bool:
+    async def delete(self, id: int) -> bool:
         raise NotImplementedError
+
+
+class AssignmentUseCaseImpl(AssignmentUseCase):
+    def __init__(self, uow: AssignmentUseCaseUnitOfWork):
+        self.uow: AssignmentUseCaseUnitOfWork = uow
+
+    async def fetch(self, id: int) -> Optional[Assignment]:
+        try:
+            assignment = await self.uow.assignment_repository.fetch(id)
+            if assignment is None:
+                raise TargetNotFoundException("Not Found", Assignment)
+        except Exception:
+            raise
+        return assignment
+
+    async def fetch_all(self, domain: Optional[Assignment]) -> List[Assignment]:
+        try:
+            assignments = await self.uow.assignment_repository.fetch_all(domain)
+        except Exception:
+            raise
+        return assignments
+
+    async def create(self, domain: Assignment) -> Assignment:
+        try:
+            if self.uow.assignment_repository.fetch_by_title(
+                    domain.title) is not None:
+                raise TargetAlreadyExsitException(
+                    "title %s already exists" % domain.title, Course)
+            assignment = await self.uow.assignment_repository.add(domain)
+            self.uow.commit()
+        except Exception as e:
+            self.uow.rollback()
+            raise
+        return assignment
+
+    async def update(self, id: int, domain: Assignment) -> Assignment:
+        try:
+            if self.uow.assignment_repository.fetch(id) is None:
+                raise TargetNotFoundException("Not Found", Assignment)
+            assignment = await self.uow.assignment_repository.update(domain)
+            self.uow.commit()
+        except Exception as e:
+            self.uow.rollback()
+            raise
+        return assignment
+
+    async def delete(self, id: int) -> bool:
+        try:
+            if self.uow.assignment_repository.fetch(id) is None:
+                raise TargetNotFoundException("Not Found", Assignment)
+            flg = await self.uow.assignment_repository.delete(id)
+            self.uow.commit()
+        except Exception as e:
+            self.uow.rollback()
+            raise
+        return flg

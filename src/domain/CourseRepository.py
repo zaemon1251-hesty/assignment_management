@@ -2,13 +2,16 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.course import Course
-from src.interface.driver.ScrapingDriver import crude_course
 
 
 class CourseRepository(ABC):
     """submission"""
     @abstractmethod
     async def fetch(id: int) -> Optional[Course]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def fetch_by_title(title: str) -> Optional[Course]:
         raise NotImplementedError
 
     @abstractmethod
@@ -25,8 +28,4 @@ class CourseRepository(ABC):
 
     @abstractmethod
     async def delete(id: int) -> Course:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def commit_by_scrape(data: crude_course) -> Course:
         raise NotImplementedError

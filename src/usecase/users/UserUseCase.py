@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from src.domain.exception import TargetNotFoundException
+from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 
 from src.domain.user import User, AuthedUser
 from src.domain.UserRepository import UserRepository
-from src.interface.driver.AuthDriver import AuthDriver
+from src.usecase.driver.AuthDriver import AuthDriver
 from src.usecase.token import Token
 from src.settings import logger
 
@@ -89,35 +89,47 @@ class UserUseCaseImpl(UserUseCase):
 
     async def create(self, domain: UserCommandModel) -> User:
         try:
+            if self.uow.user_repository.fetch_by_name(domain.name) is not None:
+                raise TargetAlreadyExsitException(
+                    "name %s alraedy exists" % domain.name, User)
             if domain.password is not None:
                 domain.password = self.driver.get_password_hash(
                     domain.password)
             user = await self.uow.user_repository.create(domain)
             if user is None:
                 raise TargetNotFoundException("Not Found", User)
+            self.uow.commit()
         except Exception as e:
             logger.error(e)
+            self.uow.rollback()
             raise
         return user
 
-    async def update(self, domain: UserCommandModel) -> User:
+    async def update(self, id: int, domain: UserCommandModel) -> User:
         try:
+            if self.uow.user_repository.fetch(id) is None:
+                raise TargetNotFoundException("Not Found", User)
             if domain.password is not None:
                 domain.password = self.driver.get_password_hash(
                     domain.password)
             user = await self.uow.user_repository.update(domain)
-            if user is None:
-                raise TargetNotFoundException("Not Found", User)
+            self.uow.commit()
         except Exception as e:
             logger.error(e)
+            self.uow.rollback()
             raise
         return user
 
     async def delete(self, id: int) -> bool:
         try:
+            if self.uow.user_repository.fetch(id) is None:
+                raise TargetNotFoundException("Not Found", User)
+
             flg = await self.uow.user_repository.delete(id)
+            self.uow.commit()
         except Exception as e:
             logger.error(e)
+            self.uow.rollback()
             raise
         return flg
 

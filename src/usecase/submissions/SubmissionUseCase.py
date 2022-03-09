@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.domain.assignment import Assignment
-from src.domain.exception import TargetNotFoundException
+from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 from src.domain.submission import Submission
-from src.domain.user import User
+from src.domain.submission import Submission
 from src.domain.SubmissionRepository import SubmissionRepository
 from src.settings import logger
 
@@ -29,81 +29,78 @@ class SubmissionUseCaseUnitOfWork(ABC):
 class SubmissionUseCase(ABC):
     """submission"""
     @abstractmethod
-    async def fetch(id: int) -> Optional[Submission]:
+    async def fetch(self, id: int) -> Optional[Submission]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(domain: Optional[Submission], user: Optional[User], assignment: Optional[Assignment]) -> List[Submission]:
+    async def fetch_all(self, domain: Optional[Submission], submission: Optional[Submission], assignment: Optional[Assignment]) -> List[Submission]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(domain: Submission) -> Submission:
+    async def add(self, domain: Submission) -> Submission:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(domain: Submission) -> Submission:
+    async def update(self, domain: Submission) -> Submission:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def scraping_add(user: User) -> bool:
+    async def delete(self, id: int) -> bool:
         raise NotImplementedError
 
 
-class UserUseCaseImpl(SubmissionUseCase):
-    def __init__(self, uow: SubmissionUseCaseUnitOfWork, driver=AuthDriver):
+class SubmissionUseCaseImpl(SubmissionUseCase):
+    def __init__(self, uow: SubmissionUseCaseUnitOfWork):
         self.uow: SubmissionUseCaseUnitOfWork = uow
-        self.driver = driver
 
-    async def fetch(self, id: int) -> Optional[User]:
+    async def fetch(self, id: int) -> Optional[Submission]:
         try:
-            user = await self.uow.user_repository.fetch(id)
-            if user is None:
-                raise TargetNotFoundException("Not Found", User)
+            submission = await self.uow.submission_repository.fetch(id)
+            if submission is None:
+                raise TargetNotFoundException("Not Found", Submission)
         except Exception:
             raise
-        return user
+        return submission
 
-    async def fetch_all(self, domain: Optional[User]) -> List[User]:
+    async def fetch_all(self, domain: Optional[Submission]) -> List[Submission]:
         try:
-            users = await self.uow.user_repository.fetch_all(domain)
+            submissions = await self.uow.submission_repository.fetch_all(domain)
         except Exception:
             raise
-        return users
+        return submissions
 
-    async def create(self, domain: Submission) -> User:
+    async def create(self, domain: Submission) -> Submission:
         try:
-            if domain.password is not None:
-                domain.password = self.driver.get_password_hash(
-                    domain.password)
-            user = await self.uow.user_repository.create(domain)
-            if user is None:
-                raise TargetNotFoundException("Not Found", User)
-        except Exception as e:
-            logger.error(e)
-            raise
-        return user
+            if self.uow.submission_repository.fetch_all(Submission(
+                    user_id=domain.user_id, assignment_id=domain.assignment_id)) is not []:
+                raise TargetAlreadyExsitException(
+                    "target alraedy exists", Submission)
 
-    async def update(self, domain: Submission) -> User:
-        try:
-            if domain.password is not None:
-                domain.password = self.driver.get_password_hash(
-                    domain.password)
-            user = await self.uow.user_repository.update(domain)
-            if user is None:
-                raise TargetNotFoundException("Not Found", User)
+            submission = await self.uow.submission_repository.add(domain)
+            self.uow.commit()
         except Exception as e:
-            logger.error(e)
+            self.uow.rollback()
             raise
-        return user
+        return submission
+
+    async def update(self, id: int, domain: Submission) -> Submission:
+        try:
+            if self.uow.submission_repository.fetch(id) is None:
+                raise TargetNotFoundException("Not Found", Submission)
+            submission = await self.uow.submission_repository.update(domain)
+            self.uow.commit()
+        except Exception as e:
+            self.uow.rollback()
+            raise
+        return submission
 
     async def delete(self, id: int) -> bool:
         try:
-            flg = await self.uow.user_repository.delete(id)
+            if self.uow.submission_repository.fetch(id) is None:
+                raise TargetNotFoundException("Not Found", Submission)
+            flg = await self.uow.submission_repository.delete(id)
+            self.uow.commit()
         except Exception as e:
-            logger.error(e)
+            self.uow.rollback()
             raise
         return flg
