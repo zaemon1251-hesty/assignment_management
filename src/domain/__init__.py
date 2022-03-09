@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union
+from typing import Optional, Union
 
 from src.domain.user import User
 from src.domain.course import Course
@@ -13,7 +13,7 @@ from sqlalchemy.orm import Query
 
 class OrmBase(BaseModel):
     # Common properties across orm models
-    id: int
+    id: Optional[int] = -1
 
     # Pre-processing validator that evaluates lazy relationships before any other validation
     # NOTE: If high throughput/performance is a concern, you can/should probably apply
