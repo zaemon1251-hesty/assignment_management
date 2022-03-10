@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional
-from src.domain.user import User
+from src.domain.user import User, AuthedUser
 from src.infrastructure.postgresql.database import Base
 import sys
 from sqlalchemy.ext.declarative import declarative_base
@@ -19,11 +19,10 @@ class UserOrm(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(200), nullable=False, unique=True)
     email = Column(String(200), nullable=False, unique=True)
-    password = Column(String(2000), nullable=False)
+    hash_password = Column(String(2000), nullable=False)
     disabled = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
-    submissions = relationship("submission", backref="users")
 
     @classmethod
     def to_domain(self) -> User:
@@ -31,23 +30,31 @@ class UserOrm(Base):
             id=self.id,
             name=self.name,
             email=self.email,
-            password=self.password,
-            moodle_id=self.email,
-            moodle_password=self.password,
+            disabled=self.disabled,
+            created_at=self.created_at,
+            updated_at=self.updated_at
+        )
+
+    @classmethod
+    def to__authed(self) -> AuthedUser:
+        return AuthedUser(
+            id=self.id,
+            name=self.name,
+            email=self.email,
+            disabled=self.disabled,
+            hash_password=self.hash_password,
             created_at=self.created_at,
             updated_at=self.updated_at
         )
 
     @staticmethod
-    def from_domain(data: User) -> "UserOrm":
+    def from_domain(data: AuthedUser) -> "UserOrm":
         now = datetime.utcnow()
         return UserOrm(
             id=data.id,
             name=data.name,
             email=data.email,
-            password=data.password,
-            moodle_id=data.email,
-            moodle_password=data.password,
+            hash_password=data.hash_password,
             created_at=now,
             updated_at=now
         )

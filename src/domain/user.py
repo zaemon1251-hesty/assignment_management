@@ -15,5 +15,4 @@ class User(OrmBase):
 
 
 class AuthedUser(User):
-    token: str
     hash_password: str

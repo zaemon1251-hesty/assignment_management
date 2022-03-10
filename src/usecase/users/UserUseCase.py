@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import List, Optional
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 
@@ -50,7 +51,7 @@ class UserUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, domain: UserCommandModel) -> User:
+    async def update(self, id: int, domain: UserCommandModel) -> User:
         raise NotImplementedError
 
     @abstractmethod
@@ -95,6 +96,7 @@ class UserUseCaseImpl(UserUseCase):
             if domain.password is not None:
                 domain.password = self.driver.get_password_hash(
                     domain.password)
+            domain: AuthedUser = AuthedUser(**dict(domain))
             user = await self.uow.user_repository.create(domain)
             if user is None:
                 raise TargetNotFoundException("Not Found", User)
@@ -112,6 +114,8 @@ class UserUseCaseImpl(UserUseCase):
             if domain.password is not None:
                 domain.password = self.driver.get_password_hash(
                     domain.password)
+            domain: AuthedUser = AuthedUser(**dict(domain))
+            domain.updated_at = datetime.utcnow()
             user = await self.uow.user_repository.update(domain)
             self.uow.commit()
         except Exception as e:
