@@ -1,15 +1,15 @@
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.security import APIKeyHeader
-from src.domain.exception import CredentialsException, UnauthorizedException
+from src.domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException, UnauthorizedException
 from src.settings import logger
 from src.usecase.token import Token
 from src.usecase.users.UserUseCase import UserUseCase
 from src.domain.user import AuthedUser, User
+from src.interface.controller.ApiController import api_key
+
 
 user_api_router = APIRouter()
-
-api_key = APIKeyHeader(name="Authorization", auto_error=False)
 
 _user_usecase: UserUseCase
 
@@ -27,6 +27,10 @@ _user_usecase: UserUseCase
 async def get(user_id: int, user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user = user_usecase.fetch(user_id)
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -48,6 +52,10 @@ async def get(user_id: int, user_usecase: UserUseCase = Depends(_user_usecase)):
 async def authorize_user(token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user = user_usecase.fetch_by_token(token)
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -78,7 +86,7 @@ async def get_all(user_data: Optional[User], user_usecase: UserUseCase = Depends
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
+            "model": "already exists",
         },
         status.HTTP_403_FORBIDDEN: {
             "model": "unauthorized this manipulate"
@@ -89,15 +97,18 @@ async def create(user_data: User, token: str = Depends(api_key), user_usecase: U
     try:
         user_usecase.auth_verify(token)
         user = user_usecase.create(user_data)
+    except TargetAlreadyExsitException as e:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE
+        )
     except CredentialsException as e:
-        logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
         )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
     return user
 
@@ -131,6 +142,10 @@ async def update(user_id: int, user_data: User, token: str = Depends(api_key), u
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
         )
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -156,9 +171,12 @@ async def delete(user_id: int, token: str = Depends(api_key), user_usecase: User
         user_usecase.auth_verify(token)
         user_usecase.delete(user_id)
     except CredentialsException as e:
-        logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
+        )
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
         )
     except Exception as e:
         logger.error(e)
@@ -173,7 +191,7 @@ async def delete(user_id: int, token: str = Depends(api_key), user_usecase: User
     response_model=Token,
     response={
         status.HTTP_401_UNAUTHORIZED: {
-            "model": ""
+            "model": "failed to create token for some reasons."
         },
         status.HTTP_404_NOT_FOUND: {
             "model": "not found"

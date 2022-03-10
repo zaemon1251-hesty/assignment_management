@@ -9,21 +9,21 @@ from src.domain.user import User
 class SubmissionRepository(ABC):
     """submission"""
     @abstractmethod
-    async def fetch(id: int) -> Optional[Submission]:
+    async def fetch(self, id: int) -> Optional[Submission]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(domain: Optional[Submission], user: Optional[User], assignment: Optional[Assignment]) -> List[Submission]:
+    async def fetch_all(self, domain: Optional[Submission], user: Optional[User], assignment: Optional[Assignment]) -> List[Submission]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(domain: Submission) -> Submission:
+    async def add(self, domain: Submission) -> Submission:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(domain: Submission) -> Submission:
+    async def update(self, domain: Submission) -> Submission:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> bool:
+    async def delete(self, id: int) -> bool:
         raise NotImplementedError

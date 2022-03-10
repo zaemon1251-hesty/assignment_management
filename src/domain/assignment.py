@@ -6,7 +6,7 @@ from src.domain import course
 from src.domain.course import Course
 
 
-class ASSIGNMENT_STATE(Enum):
+class ASSIGNMENT_STATE(int, Enum):
     ALIVE = 1
     DEAD = 2
 

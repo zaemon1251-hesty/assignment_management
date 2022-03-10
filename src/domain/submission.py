@@ -10,7 +10,7 @@ from src.domain.exception import StateContradictedException
 from src.domain.user import User
 
 
-class SUBMISSION_STATE(Enum):
+class SUBMISSION_STATE(int, Enum):
     NORMAL = 1
     DANGER = 2
     SUBMITTED = 3
