@@ -13,3 +13,4 @@ class Scheduler(OrmBase):
     reminded: bool = False
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    submission: Optional[Submission]
