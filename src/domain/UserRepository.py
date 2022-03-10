@@ -8,11 +8,11 @@ class UserRepository(ABC):
     """UserRepository a query usecase inteface related User entity."""
 
     @abstractmethod
-    async def fetch(id: int) -> Optional[AuthedUser]:
+    async def fetch(id: int) -> Optional[User]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_by_name(name: Optional[str] = None) -> Optional[AuthedUser]:
+    async def fetch_by_name(name: str = None) -> Optional[AuthedUser]:
         raise NotImplementedError
 
     @abstractmethod
@@ -20,13 +20,13 @@ class UserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def create(domain: User) -> User:
+    async def create(domain: AuthedUser) -> User:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(domain: User) -> User:
+    async def update(domain: AuthedUser) -> User:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> User:
+    async def delete(id: int) -> bool:
         raise NotImplementedError

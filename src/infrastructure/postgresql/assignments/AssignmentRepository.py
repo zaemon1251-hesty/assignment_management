@@ -28,5 +28,5 @@ class AssignmentRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> bool:
+    async def delete(id: int) -> Assignment:
         raise NotImplementedError

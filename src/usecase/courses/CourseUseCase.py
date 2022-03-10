@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from turtle import title
 from typing import List, Optional
 from src.domain.AssignmentRepository import AssignmentRepository
@@ -46,7 +47,7 @@ class CourseUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, domain: Course) -> Course:
+    async def update(self, id: int, domain: Course) -> Course:
         raise NotImplementedError
 
     @abstractmethod
@@ -92,10 +93,11 @@ class CourseUseCaseImpl(CourseUseCase):
             raise
         return course
 
-    async def update(self, domain: Course) -> Course:
+    async def update(self, id: int, domain: Course) -> Course:
         try:
             if self.uow.course_repository.fetch(id) is None:
                 raise TargetNotFoundException("Not Found", Course)
+            domain.updated_at = datetime.utcnow()
             course = await self.uow.course_repository.update(domain)
             self.uow.commit()
         except Exception as e:
