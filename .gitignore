@@ -5,3 +5,5 @@ __pycache__/
 src/settings.py
 
 *.pem
+
+docker/docker-compose.yml
