@@ -28,13 +28,19 @@ services:
       - postgres
       - waitfordb
     volumes:
-      - ./src:/src
-      - /dev/shm:/dev/shm
+      - "./src:/src"
+      - "/dev/shm:/dev/shm"
       # loggerのログをホストOS側に出力
-      # - "/tmp/uvicorn_log:/var/log/nginx"
+      - "/tmp/application_log:./src/logs/application.log"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@moodle_postgres_1:5432/moodle
       SELENIUM_URL: http://selenium:4444/wd/hub
+      # moodleの認証情報
+      MOODLE_ID: "change me"
+      MOODLE_PASSWORD: "change me"
+      # smtpの認証情報
+      GMAIL_ACCOUNT: "change me"
+      GMAIL_PASSWORD: "change me"
       TZ: "Asia/Tokyo"
     tty: true
     ports:
