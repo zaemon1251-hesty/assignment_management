@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from turtle import title
 from typing import List, Optional
+from src.domain.AssignmentRepository import AssignmentRepository
 from src.domain.course import Course
 from src.domain.assignment import Assignment
 
@@ -15,6 +16,7 @@ from src.usecase.driver.ScrapingDriver import ScrapeDriver
 class CourseUseCaseUnitOfWork(ABC):
     """UseCaseUnitOfWork defines an interface based on Unit of Work pattern."""
     course_repository: CourseRepository
+    assignment_repository: AssignmentRepository
 
     @abstractmethod
     def begin(self):
@@ -57,10 +59,8 @@ class CourseUseCase(ABC):
 
 
 class CourseUseCaseImpl(CourseUseCase):
-    def __init__(self, uow: CourseUseCaseUnitOfWork,
-                 assignment_usecase: AssignmentUseCase, driver: ScrapeDriver):
+    def __init__(self, uow: CourseUseCaseUnitOfWork, driver: ScrapeDriver):
         self.uow: CourseUseCaseUnitOfWork = uow
-        self.assignment_usecase: AssignmentUseCase = assignment_usecase
         self.driver: ScrapeDriver = driver
 
     async def fetch(self, id: int) -> Optional[Course]:
@@ -117,17 +117,26 @@ class CourseUseCaseImpl(CourseUseCase):
     async def periodically_scraper(self, keywords) -> bool:
         assignments, courses = await self.driver.run(keywords)
         try:
+            self.uow.begin()
             for course in courses:
-                if self.uow.course_repository.fetch(course.id):
-                    continue
-                self.uow.course_repository.add(course)
+                course_ex = self.uow.course_repository.fetch(course.id)
+                if course_ex:
+                    self.uow.course_repository.update(course)
+                else:
+                    self.uow.course_repository.add(course)
+            self.uow.commit()
+
+            self.uow.begin()
             for assignment in assignments:
-                if self.assignment_usecase.uow.assignment_repository.fetch(
-                        assignment.id):
-                    continue
-                self.assignment_usecase.uow.assignment_repository.add(
-                    assignment)
+                assignment_ex = self.uow.assignment_repository.fetch(
+                    assignment.id)
+                if assignment_ex:
+                    self.uow.course_repository.update(course)
+                else:
+                    self.uow.assignment_repository.add(assignment)
+            self.uow.commit()
         except Exception as e:
+            self.uow.rollback()
             logger.error(e)
             return False
         return True

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
 from src.domain import OrmBase
+from src.domain import course
 from src.domain.course import Course
 
 
@@ -24,3 +25,4 @@ class Assignment(OrmBase):
     end_at: datetime = datetime.fromtimestamp(0) + timedelta(days=10**9 + 7)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    course: Optional[Course]

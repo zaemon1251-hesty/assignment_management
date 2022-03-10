@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import validator
 
 from src.domain import OrmBase
+from src.domain import assignment
 from src.domain.assignment import Assignment, ASSIGNMENT_STATE
 from src.domain.exception import StateContradictedException
 from src.domain.user import User
@@ -27,6 +28,8 @@ class Submission(OrmBase):
     state: Optional[SUBMISSION_STATE] = SUBMISSION_STATE.NORMAL
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    user: Optional[User]
+    assignment: Optional[Assignment]
 
     @staticmethod
     def is_already_expired(state: SUBMISSION_STATE,
