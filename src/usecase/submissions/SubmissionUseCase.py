@@ -7,7 +7,6 @@ from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundExce
 from src.domain.submission import Submission
 from src.domain.submission import Submission
 from src.domain.SubmissionRepository import SubmissionRepository
-from src.settings import logger
 
 
 class SubmissionUseCaseUnitOfWork(ABC):

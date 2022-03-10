@@ -9,7 +9,6 @@ from src.domain.assignment import Assignment
 from src.domain.course import Course
 from src.domain.CourseRepository import CourseRepository
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
-from src.settings import logger
 from src.usecase.assignments.AssignmentUseCase import AssignmentUseCase
 from src.usecase.driver.ScrapingDriver import ScrapeDriver
 
@@ -139,6 +138,5 @@ class CourseUseCaseImpl(CourseUseCase):
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()
-            logger.error(e)
             return False
         return True

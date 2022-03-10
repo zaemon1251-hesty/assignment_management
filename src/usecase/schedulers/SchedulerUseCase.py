@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from src.settings import logger
 from datetime import datetime
 from typing import List, Optional
 from src.domain.AssignmentRepository import AssignmentRepository
@@ -143,9 +142,8 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
                 self.uow.scheduler_repository.update(schedule)
             self.uow.commit()
         except TargetNotFoundException as e:
-            logger.warn(e)
+            pass
         except Exception as e:
             self.uow.rollback()
-            logger.error(e)
             raise
         return True

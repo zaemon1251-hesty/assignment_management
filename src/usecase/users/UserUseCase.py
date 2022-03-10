@@ -7,7 +7,6 @@ from src.domain.user import User, AuthedUser
 from src.domain.UserRepository import UserRepository
 from src.usecase.driver.AuthDriver import AuthDriver
 from src.usecase.token import Token
-from src.settings import logger
 
 
 class UserCommandModel(User):
@@ -102,7 +101,6 @@ class UserUseCaseImpl(UserUseCase):
                 raise TargetNotFoundException("Not Found", User)
             self.uow.commit()
         except Exception as e:
-            logger.error(e)
             self.uow.rollback()
             raise
         return user
@@ -119,7 +117,6 @@ class UserUseCaseImpl(UserUseCase):
             user = await self.uow.user_repository.update(domain)
             self.uow.commit()
         except Exception as e:
-            logger.error(e)
             self.uow.rollback()
             raise
         return user
@@ -132,7 +129,6 @@ class UserUseCaseImpl(UserUseCase):
             flg = await self.uow.user_repository.delete(id)
             self.uow.commit()
         except Exception as e:
-            logger.error(e)
             self.uow.rollback()
             raise
         return flg

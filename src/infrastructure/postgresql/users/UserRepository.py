@@ -80,12 +80,14 @@ class UserRepositoryImpl(UserRepository):
         try:
             user_orm = UserOrm.from_domain(domain)
             target = self.session.query(UserOrm).filter_by(id=domain.id).one()
-            for attr in [
+            updatables = [
                 "name",
                 "email",
                 "disabled",
                 "hash_password",
-                    "update_at"]:
+                "update_at",
+            ]
+            for attr in updatables:
                 value = getattr(user_orm, attr)
                 if value is not None and value != "":
                     setattr(target, attr, value)
