@@ -7,7 +7,7 @@ from src.domain.assignment import Assignment
 from src.domain.submission import Submission
 from src.domain.scheduler import Scheduler
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 from sqlalchemy.orm import Query
 
 

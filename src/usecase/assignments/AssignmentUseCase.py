@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import List, Optional
 
 from src.domain.assignment import Assignment, ASSIGNMENT_STATE
@@ -39,7 +40,7 @@ class AssignmentUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, domain: Assignment) -> Assignment:
+    async def update(self, id: int, domain: Assignment) -> Assignment:
         raise NotImplementedError
 
     @abstractmethod
@@ -84,6 +85,7 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
         try:
             if self.uow.assignment_repository.fetch(id) is None:
                 raise TargetNotFoundException("Not Found", Assignment)
+            domain.updated_at = datetime.utcnow()
             assignment = await self.uow.assignment_repository.update(domain)
             self.uow.commit()
         except Exception as e:
