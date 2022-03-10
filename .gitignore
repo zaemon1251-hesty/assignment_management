@@ -6,4 +6,4 @@ src/settings.py
 
 *.pem
 
-docker/docker-compose.yml
+docker-compose.yml
