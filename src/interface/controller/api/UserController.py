@@ -103,7 +103,7 @@ async def create(user_data: User, auth_data: Dict, user_usecase: UserUseCase = D
 )
 async def update(user_id: int, user_data: User, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        user = user_usecase.update(user_data)
+        user = user_usecase.update(user_id, user_data)
     except Exception as e:
         logger.error(e)
         raise HTTPException(

@@ -48,7 +48,7 @@ class SchedulerUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, domain: Scheduler) -> Scheduler:
+    async def update(self, id: int, domain: Scheduler) -> Scheduler:
         raise NotImplementedError
 
     @abstractmethod
@@ -97,6 +97,7 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
             scheduler = await self.uow.scheduler_repository.update(domain)
             if scheduler is None:
                 raise TargetNotFoundException("Not Found", Scheduler)
+            domain.updated_at = datetime.utcnow()
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()
@@ -133,10 +134,13 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
                 if user is None:
                     user = self.uow.user_repository.fetch(
                         schedule.submission.user_id)
-                res = self.driver.notify(user, schedule, assignment)
+                self.driver.notify(
+                    user,
+                    assignment,
+                    schedule.submission.state
+                )
                 schedule.reminded = True
                 self.uow.scheduler_repository.update(schedule)
-                logger.info(res)
             self.uow.commit()
         except TargetNotFoundException as e:
             logger.warn(e)

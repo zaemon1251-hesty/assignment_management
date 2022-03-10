@@ -5,7 +5,7 @@ import jwt
 from pydantic import ValidationError
 from src.domain.exception import CredentialsException, TargetNotFoundException, UnauthorizedException
 from src.domain.user import AuthedUser, User
-from src.interface.driver.AuthDriver import AuthDriver, Token, TokenData
+from src.usecase.driver.AuthDriver import AuthDriver, Token, TokenData
 from src.domain.UserRepository import UserRepository
 from src.settings import JWK, PRIVATE_PEM, TOKEN_EXPIRE
 
@@ -67,6 +67,7 @@ class AuthDriverImpl(AuthDriver):
         id_token = auth[1]
         public_key = jwt.algorithms.RSAAlgorithm.from_jwk(
             json.dumps(JWK["keys"][0]))
+
         try:
             payload = jwt.decode(
                 id_token,

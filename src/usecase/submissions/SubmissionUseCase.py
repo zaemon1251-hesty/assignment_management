@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import List, Optional
 
 from src.domain.assignment import Assignment
@@ -41,7 +42,7 @@ class SubmissionUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, domain: Submission) -> Submission:
+    async def update(self, id: int, domain: Submission) -> Submission:
         raise NotImplementedError
 
     @abstractmethod
@@ -88,6 +89,7 @@ class SubmissionUseCaseImpl(SubmissionUseCase):
             if self.uow.submission_repository.fetch(id) is None:
                 raise TargetNotFoundException("Not Found", Submission)
             submission = await self.uow.submission_repository.update(domain)
+            domain.updated_at = datetime.utcnow()
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()
