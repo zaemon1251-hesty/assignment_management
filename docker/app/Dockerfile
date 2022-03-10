@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1
 
 RUN pip install poetry
 
-COPY pyproject.toml* poetry.lock* ./
+COPY ../pyproject.toml* ../poetry.lock* ./
 
 RUN poetry config virtualenvs.in-project true
 RUN if [ -f pyproject.toml ]; then poetry install; fi

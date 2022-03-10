@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.security import APIKeyHeader
-from src.domain.exception import CredentialsException
+from src.domain.exception import CredentialsException, UnauthorizedException
 from src.settings import logger
 from src.usecase.token import Token
 from src.usecase.users.UserUseCase import UserUseCase
@@ -76,10 +76,24 @@ async def get_all(user_data: Optional[User], user_usecase: UserUseCase = Depends
     "/add",
     response_model=User,
     status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_406_NOT_ACCEPTABLE: {
+            "model": "id contradicts with data",
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "model": "unauthorized this manipulate"
+        }
+    }
 )
-async def create(user_data: User, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def create(user_data: User, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
+        user_usecase.auth_verify(token)
         user = user_usecase.create(user_data)
+    except CredentialsException as e:
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -94,16 +108,29 @@ async def create(user_data: User, auth_data: Dict, user_usecase: UserUseCase = D
     status_code=status.HTTP_202_ACCEPTED,
     responses={
         status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
+            "model": "id contradicts with this data",
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "model": "unauthorize this manipulate"
         },
         status.HTTP_404_NOT_FOUND: {
             "model": "not found"
         }
     }
 )
-async def update(user_id: int, user_data: User, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def update(user_id: int, user_data: User, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
+        user_usecase.auth_verify(token)
+        if user_id != user_data.id:
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE
+            )
         user = user_usecase.update(user_id, user_data)
+    except CredentialsException as e:
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -124,9 +151,15 @@ async def update(user_id: int, user_data: User, auth_data: Dict, user_usecase: U
         }
     }
 )
-async def delete(user_id: int, auth_data: Dict, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def delete(user_id: int, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
+        user_usecase.auth_verify(token)
         user_usecase.delete(user_id)
+    except CredentialsException as e:
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -139,7 +172,7 @@ async def delete(user_id: int, auth_data: Dict, user_usecase: UserUseCase = Depe
     status_code=status.HTTP_202_ACCEPTED,
     response_model=Token,
     response={
-        status.HTTP_400_BAD_REQUEST: {
+        status.HTTP_401_UNAUTHORIZED: {
             "model": ""
         },
         status.HTTP_404_NOT_FOUND: {
@@ -151,10 +184,10 @@ async def create_token(name: Form(""), password: Form(""), user_usecase: UserUse
     try:
         token: Token = await user_usecase.create_token(name, password)
         return token
-    except CredentialsException as e:
+    except UnauthorizedException as e:
         logger.error(e)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e)
         )
     except Exception as e:
