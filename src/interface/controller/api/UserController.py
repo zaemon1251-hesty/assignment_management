@@ -26,7 +26,7 @@ _user_usecase: UserUseCase
 )
 async def get(user_id: int, user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        user = user_usecase.fetch(user_id)
+        user = await user_usecase.fetch(user_id)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND
@@ -71,7 +71,7 @@ async def authorize_user(token: str = Depends(api_key), user_usecase: UserUseCas
 )
 async def get_all(user_data: Optional[User], user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        users = user_usecase.fetch_all(user_data)
+        users = await user_usecase.fetch_all(user_data)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -96,7 +96,7 @@ async def get_all(user_data: Optional[User], user_usecase: UserUseCase = Depends
 async def create(user_data: User, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        user = user_usecase.create(user_data)
+        user = await user_usecase.create(user_data)
     except TargetAlreadyExsitException as e:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE
@@ -136,7 +136,7 @@ async def update(user_id: int, user_data: User, token: str = Depends(api_key), u
             raise HTTPException(
                 status_code=status.HTTP_406_NOT_ACCEPTABLE
             )
-        user = user_usecase.update(user_id, user_data)
+        user = await user_usecase.update(user_id, user_data)
     except CredentialsException as e:
         logger.error(e)
         raise HTTPException(
@@ -169,7 +169,7 @@ async def update(user_id: int, user_data: User, token: str = Depends(api_key), u
 async def delete(user_id: int, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        user_usecase.delete(user_id)
+        await user_usecase.delete(user_id)
     except CredentialsException as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
@@ -200,7 +200,7 @@ async def delete(user_id: int, token: str = Depends(api_key), user_usecase: User
 )
 async def create_token(name: Form(""), password: Form(""), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        token: Token = await user_usecase.create_token(name, password)
+        token: Token = user_usecase.create_token(name, password)
         return token
     except UnauthorizedException as e:
         logger.error(e)

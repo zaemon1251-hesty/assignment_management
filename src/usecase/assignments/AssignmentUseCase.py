@@ -5,12 +5,15 @@ from typing import List, Optional
 from src.domain.assignment import Assignment, ASSIGNMENT_STATE
 from src.domain.course import Course
 from src.domain.AssignmentRepository import AssignmentRepository
+from src.domain.SubmissionRepository import SubmissionRepository
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
+from src.domain.submission import SUBMISSION_STATE, Submission
 
 
 class AssignmentUseCaseUnitOfWork(ABC):
     """UseCaseUnitOfWork defines an interface based on Unit of Work pattern."""
     assignment_repository: AssignmentRepository
+    submission_repository: SubmissionRepository
 
     @abstractmethod
     def begin(self):
@@ -83,10 +86,29 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
 
     async def update(self, id: int, domain: Assignment) -> Assignment:
         try:
-            if self.uow.assignment_repository.fetch(id) is None:
+            target = await self.uow.assignment_repository.fetch(id)
+            if target is None:
                 raise TargetNotFoundException("Not Found", Assignment)
             domain.updated_at = datetime.utcnow()
             assignment = await self.uow.assignment_repository.update(domain)
+            if domain.state and domain.state != target.state:
+                submission_cond = Submission(assignment_id=assignment.id)
+                correct = None
+                if domain.state == ASSIGNMENT_STATE.DEAD:
+                    submission_cond.state = [
+                        SUBMISSION_STATE.NORMAL,
+                        SUBMISSION_STATE.DANGER
+                    ]
+                    correct = SUBMISSION_STATE.EXPIRED
+                elif domain.state == ASSIGNMENT_STATE.ALIVE:
+                    submission_cond.state = SUBMISSION_STATE.EXPIRED
+                    correct = SUBMISSION_STATE.NORMAL
+                if correct:
+                    submissions: List[Submission] = await self.uow.submission_repository.fetch_all(
+                        submission_cond)
+                    for submission in submissions:
+                        submission.state = correct
+                        await self.uow.submission_repository.update(submission)
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()

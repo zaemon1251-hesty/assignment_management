@@ -9,7 +9,7 @@ class Scheduler(OrmBase):
     """Scheduler represents what assignment should be reminded to whom at a certain time """
 
     submission_id: int
-    remind_at: int
+    remind_at: datetime
     reminded: bool = False
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
