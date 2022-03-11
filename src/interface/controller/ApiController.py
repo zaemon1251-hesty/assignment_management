@@ -1,15 +1,7 @@
+from .api import assignment_api_router, user_api_router, course_api_router, submission_api_router, scheduler_api_router
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import RedirectResponse
-from fastapi.security import APIKeyHeader
 
-
-from src.interface.controller.api import (
-    assignment_api_router,
-    user_api_router,
-    course_api_router,
-    submission_api_router,
-    scheduler_api_router
-)
 
 api_router = APIRouter(prefix="/api")
 
@@ -20,8 +12,6 @@ routers["users"] = user_api_router
 routers["courses"] = course_api_router
 routers["submissions"] = submission_api_router
 routers["schedulers"] = scheduler_api_router
-
-api_key = APIKeyHeader(name="Authorization", auto_error=False)
 
 for router_name, router in routers.items():
     api_router.include_router(router)

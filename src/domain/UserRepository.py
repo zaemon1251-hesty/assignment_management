@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.user import User, AuthedUser
+from domain.user import User, AuthedUser
 
 
 class UserRepository(ABC):

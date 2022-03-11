@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
-from src.domain.user import User, AuthedUser
-from src.infrastructure.postgresql.database import Base
+from domain.user import User, AuthedUser
+from infrastructure.postgresql.database import Base
 import sys
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime, ForeignKey

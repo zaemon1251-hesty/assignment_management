@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.course import Course
+from domain.course import Course
 
 
 class CourseRepository(ABC):

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.domain.assignment import Assignment
-from src.domain.course import Course
+from domain.assignment import Assignment
+from domain.course import Course
 
 
 class AssignmentRepository(ABC):

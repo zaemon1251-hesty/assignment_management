@@ -2,9 +2,9 @@ from pydantic.dataclasses import dataclass
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from src.infrastructure.postgresql.database import Base
-from src.domain.scheduler import Scheduler
-from src.domain.submission import Submission
+from infrastructure.postgresql.database import Base
+from domain.scheduler import Scheduler
+from domain.submission import Submission
 from datetime import timezone, datetime
 
 
