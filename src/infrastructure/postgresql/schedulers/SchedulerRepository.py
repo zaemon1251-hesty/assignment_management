@@ -12,10 +12,10 @@ class SchedulerUseCaseUnitOfWorkImpl(SchedulerUseCaseUnitOfWork):
     def __init__(
         self,
         session: Session,
-        book_repository: SchedulerRepository,
+        scheduler_repository: SchedulerRepository,
     ):
         self.session: Session = session
-        self.book_repository: SchedulerRepository = book_repository
+        self.book_repository: SchedulerRepository = scheduler_repository
 
     def begin(self):
         self.session.begin()

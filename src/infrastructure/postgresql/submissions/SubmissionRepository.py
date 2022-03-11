@@ -14,10 +14,10 @@ class SubmissionUseCaseUnitOfWorkImpl(SubmissionUseCaseUnitOfWork):
     def __init__(
         self,
         session: Session,
-        book_repository: SubmissionRepository,
+        submission_repository: SubmissionRepository,
     ):
         self.session: Session = session
-        self.book_repository: SubmissionRepository = book_repository
+        self.submission_repository: SubmissionRepository = submission_repository
 
     def begin(self):
         self.session.begin()
