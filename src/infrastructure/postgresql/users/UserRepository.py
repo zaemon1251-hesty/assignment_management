@@ -56,6 +56,8 @@ class UserRepositoryImpl(UserRepository):
         try:
             q = self.session.query(UserOrm)
             for attr, value in targets.items():
+                if attr == "id":
+                    continue
                 q = q.filter(getattr(UserOrm, attr) == value)
             q = q.order_by(UserOrm.updated_at)
             user_orms = q.all()

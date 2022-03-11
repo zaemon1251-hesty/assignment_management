@@ -7,25 +7,25 @@ from src.domain.course import Course
 class CourseRepository(ABC):
     """submission"""
     @abstractmethod
-    async def fetch(id: int) -> Optional[Course]:
+    async def fetch(self, id: int) -> Optional[Course]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_by_title(title: str) -> Optional[Course]:
+    async def fetch_by_title(self, title: str) -> Optional[Course]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(domain: Course) -> List[Course]:
+    async def fetch_all(self, domain: Course) -> List[Course]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(domain: Course) -> Course:
+    async def add(self, domain: Course) -> Course:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(domain: Course) -> Course:
+    async def update(self, domain: Course) -> Course:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> bool:
+    async def delete(self, id: int) -> bool:
         raise NotImplementedError
