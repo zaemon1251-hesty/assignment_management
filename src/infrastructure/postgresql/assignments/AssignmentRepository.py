@@ -13,10 +13,10 @@ class AssignmentUseCaseUnitOfWorkImpl(AssignmentUseCaseUnitOfWork):
     def __init__(
         self,
         session: Session,
-        book_repository: AssignmentRepository,
+        assignment_repository: AssignmentRepository,
     ):
         self.session: Session = session
-        self.book_repository: AssignmentRepository = book_repository
+        self.assignment_repository: AssignmentRepository = assignment_repository
 
     def begin(self):
         self.session.begin()

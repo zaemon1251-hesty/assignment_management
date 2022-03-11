@@ -12,10 +12,10 @@ class CourseUseCaseUnitOfWorkImpl(CourseUseCaseUnitOfWork):
     def __init__(
         self,
         session: Session,
-        book_repository: CourseRepository,
+        course_repository: CourseRepository,
     ):
         self.session: Session = session
-        self.book_repository: CourseRepository = book_repository
+        self.course_repository: CourseRepository = course_repository
 
     def begin(self):
         self.session.begin()
