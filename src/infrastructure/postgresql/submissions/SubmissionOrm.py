@@ -5,11 +5,11 @@ import sys
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from src.infrastructure.postgresql.database import Base
-from src.domain.assignment import Assignment
-from src.domain.user import User
-from src.domain.submission import Submission, SUBMISSION_STATE
-from src.domain.user import User
+from infrastructure.postgresql.database import Base
+from domain.assignment import Assignment
+from domain.user import User
+from domain.submission import Submission, SUBMISSION_STATE
+from domain.user import User
 
 
 class SubmissionOrm(Base):

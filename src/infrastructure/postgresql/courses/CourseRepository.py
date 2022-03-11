@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
-from src.domain.CourseRepository import CourseRepository
-from src.domain.course import Course
-from src.infrastructure.postgresql.courses.CourseOrm import CourseOrm
-from src.usecase.courses.CourseUseCase import CourseUseCaseUnitOfWork
+from domain.CourseRepository import CourseRepository
+from domain.course import Course
+from infrastructure.postgresql.courses.CourseOrm import CourseOrm
+from usecase.courses.CourseUseCase import CourseUseCaseUnitOfWork
 
 
 class CourseUseCaseUnitOfWorkImpl(CourseUseCaseUnitOfWork):

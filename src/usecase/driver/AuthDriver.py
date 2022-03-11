@@ -1,6 +1,6 @@
 from abc import ABC, abstractclassmethod, abstractmethod
-from src.domain.user import User, AuthedUser
-from src.usecase.token import Token, TokenData
+from domain.user import User, AuthedUser
+from usecase.token import Token, TokenData
 
 
 class AuthDriver(ABC):

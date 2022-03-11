@@ -12,11 +12,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, NoSuchWindowException
-from src.domain import assignment
-from src.domain.assignment import Assignment
-from src.domain.course import Course
-from src.interface.driver.ScrapingDriver import ScrapeDriver
-from src.settings import logger
+from domain import assignment
+from domain.assignment import Assignment
+from domain.course import Course
+from interface.driver.ScrapingDriver import ScrapeDriver
+from settings import logger
 
 # config
 LOGIN_URL = "https://moodle.s.kyushu-u.ac.jp/login/index.php"

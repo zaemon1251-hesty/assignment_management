@@ -3,11 +3,15 @@ from enum import Enum
 from typing import Optional
 from pydantic import validator
 
-from src.domain import OrmBase
-from src.domain import assignment
-from src.domain.assignment import Assignment, ASSIGNMENT_STATE
-from src.domain.exception import StateContradictedException
-from src.domain.user import User
+from domain.base import OrmBase
+from domain import assignment
+from domain.assignment import Assignment, ASSIGNMENT_STATE
+from domain.user import User
+
+
+class StateContradictedException(Exception):
+    """課題の状態と、提出物の状態が矛盾するときの例外"""
+    pass
 
 
 class SUBMISSION_STATE(int, Enum):

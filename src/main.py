@@ -1,9 +1,8 @@
 from typing import Iterator
 from fastapi import FastAPI, status
 import json
-from src.infrastructure.postgresql.database import SessionLocal
-from src.interface.controller import api_router
-
+from interface.controller import api_router
+from domain import AuthedUser
 # config
 app = FastAPI(__name__)
 

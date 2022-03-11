@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple
 
-from src.domain.assignment import Assignment
-from src.domain.course import Course
-from src.domain.scheduler import Scheduler
-from src.domain.submission import SUBMISSION_STATE
-from src.domain.user import User
+from domain.assignment import Assignment
+from domain.course import Course
+from domain.scheduler import Scheduler
+from domain.submission import SUBMISSION_STATE
+from domain.user import User
 
 
 class NotifyDriver(ABC):

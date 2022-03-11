@@ -1,16 +1,15 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from turtle import title
 from typing import List, Optional
-from src.domain.AssignmentRepository import AssignmentRepository
-from src.domain.course import Course
-from src.domain.assignment import Assignment
+from domain.AssignmentRepository import AssignmentRepository
+from domain.course import Course
+from domain.assignment import Assignment
 
-from src.domain.course import Course
-from src.domain.CourseRepository import CourseRepository
-from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
-from src.usecase.assignments.AssignmentUseCase import AssignmentUseCase
-from src.usecase.driver.ScrapingDriver import ScrapeDriver
+from domain.course import Course
+from domain.CourseRepository import CourseRepository
+from domain.exception import TargetAlreadyExsitException, TargetNotFoundException
+from usecase.assignments.AssignmentUseCase import AssignmentUseCase
+from usecase.driver.ScrapingDriver import ScrapeDriver
 
 
 class CourseUseCaseUnitOfWork(ABC):

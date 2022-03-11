@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
-from src.domain.AssignmentRepository import AssignmentRepository
-from src.domain.assignment import Assignment
-from src.domain.assignment import ASSIGNMENT_STATE, Assignment
-from src.infrastructure.postgresql.assignments.AssignmentOrm import AssignmentOrm
-from src.usecase.assignments.AssignmentUseCase import AssignmentUseCaseUnitOfWork
+from domain.AssignmentRepository import AssignmentRepository
+from domain.assignment import Assignment
+from domain.assignment import ASSIGNMENT_STATE, Assignment
+from infrastructure.postgresql.assignments.AssignmentOrm import AssignmentOrm
+from usecase.assignments.AssignmentUseCase import AssignmentUseCaseUnitOfWork
 
 
 class AssignmentUseCaseUnitOfWorkImpl(AssignmentUseCaseUnitOfWork):

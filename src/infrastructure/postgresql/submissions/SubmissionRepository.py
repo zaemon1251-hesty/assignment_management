@@ -3,11 +3,11 @@ from typing import List, Optional
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
 
-from src.domain.SubmissionRepository import SubmissionRepository
-from src.domain.assignment import Assignment
-from src.domain.submission import SUBMISSION_STATE, Submission
-from src.infrastructure.postgresql.submissions.SubmissionOrm import SubmissionOrm
-from src.usecase.submissions.SubmissionUseCase import SubmissionUseCaseUnitOfWork
+from domain.SubmissionRepository import SubmissionRepository
+from domain.assignment import Assignment
+from domain.submission import SUBMISSION_STATE, Submission
+from infrastructure.postgresql.submissions.SubmissionOrm import SubmissionOrm
+from usecase.submissions.SubmissionUseCase import SubmissionUseCaseUnitOfWork
 
 
 class SubmissionUseCaseUnitOfWorkImpl(SubmissionUseCaseUnitOfWork):

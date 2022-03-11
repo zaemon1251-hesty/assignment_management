@@ -1,18 +1,21 @@
 from typing import Dict, List, Optional
 from sqlalchemy.orm.session import Session
 from fastapi import APIRouter, Depends, Form, HTTPException, status
-from src.domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException, UnauthorizedException
-from src.settings import logger
-from src.usecase.token import Token
-from src.usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
-from src.domain.user import AuthedUser, User
-from src.interface.controller.ApiController import api_key
+from domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException, UnauthorizedException
+from settings import logger
+from usecase.token import Token
+from usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
+from domain.user import AuthedUser, User
 
-from src.infrastructure.postgresql.database import get_session
-from src.infrastructure.postgresql.users.UserRepository import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
-from src.usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
-from src.domain.UserRepository import UserRepository
+from infrastructure.postgresql.database import get_session
+from infrastructure.postgresql.users.UserRepository import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
+from usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
+from domain.UserRepository import UserRepository
 from sqlalchemy.orm.session import Session
+
+from fastapi.security import APIKeyHeader
+api_key = APIKeyHeader(name="Authorization", auto_error=False)
+
 
 user_api_router = APIRouter(prefix="/users")
 

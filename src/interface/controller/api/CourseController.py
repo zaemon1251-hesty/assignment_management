@@ -1,18 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
-from src.domain.course import Course
-from src.domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
-from src.settings import logger
-from src.usecase.courses.CourseUseCase import CourseUseCase
-from src.interface.controller.ApiController import api_key
-from src.usecase.users.UserUseCase import UserUseCase
+from domain.course import Course
+from domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
+from settings import logger
+from usecase.courses.CourseUseCase import CourseUseCase
+from .UserController import api_key
+from usecase.users.UserUseCase import UserUseCase
 
-from src.infrastructure.postgresql.database import get_session
-from src.infrastructure.postgresql.courses.CourseRepository import CourseRepositoryImpl, CourseUseCaseUnitOfWorkImpl
-from src.usecase.courses.CourseUseCase import CourseUseCase, CourseUseCaseImpl, CourseUseCaseUnitOfWork
-from src.domain.CourseRepository import CourseRepository
+from infrastructure.postgresql.database import get_session
+from infrastructure.postgresql.courses.CourseRepository import CourseRepositoryImpl, CourseUseCaseUnitOfWorkImpl
+from usecase.courses.CourseUseCase import CourseUseCase, CourseUseCaseImpl, CourseUseCaseUnitOfWork
+from domain.CourseRepository import CourseRepository
 from sqlalchemy.orm.session import Session
-from src.interface.controller.api.UserController import _user_usecase
+from interface.controller.api.UserController import _user_usecase
 
 
 course_api_router = APIRouter(prefix="/courses")

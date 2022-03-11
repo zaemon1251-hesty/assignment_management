@@ -1,6 +1,5 @@
 ###
-
-from src.domain import DOMAINS
+from .conf import DOMAINS
 
 
 class TargetNotFoundException(Exception):
@@ -23,11 +22,6 @@ class TargetAlreadyExsitException(Exception):
         message += "\n"
         message += str(domain)
         super().__init__(message)
-
-
-class StateContradictedException(Exception):
-    """課題の状態と、提出物の状態が矛盾するときの例外"""
-    pass
 
 
 class UnauthorizedException(Exception):
