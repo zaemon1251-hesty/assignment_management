@@ -31,7 +31,7 @@ _user_usecase: UserUseCase
 )
 async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
-        submission = submission_usecase.fetch(submission_id)
+        submission = await submission_usecase.fetch(submission_id)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND
@@ -51,7 +51,7 @@ async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depend
 )
 async def get_all(submission_data: Optional[Submission], submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
-        submissions = submission_usecase.fetch_all(submission_data)
+        submissions = await submission_usecase.fetch_all(submission_data)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -76,7 +76,7 @@ async def get_all(submission_data: Optional[Submission], submission_usecase: Sub
 async def add(submission_data: Submission, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        submission = submission_usecase.add(submission_data)
+        submission = await submission_usecase.add(submission_data)
     except TargetAlreadyExsitException as e:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE
@@ -116,7 +116,7 @@ async def update(submission_id: int, submission_data: Submission, token: str = D
             raise HTTPException(
                 status_code=status.HTTP_406_NOT_ACCEPTABLE
             )
-        submission = submission_usecase.update(submission_data)
+        submission = await submission_usecase.update(submission_data)
     except CredentialsException as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
@@ -152,7 +152,7 @@ async def change_state(submission_id: int, state: int, token: str = Depends(api_
         _submission_target: Submission = submission_usecase.fetch(
             submission_id)
         _submission_target.state = SUBMISSION_STATE(state)
-        submission = submission_usecase.update(_submission_target)
+        submission = await submission_usecase.update(_submission_target)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND
@@ -184,7 +184,7 @@ async def change_state(submission_id: int, state: int, token: str = Depends(api_
 async def delete(submission_id: int, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        submission_usecase.delete(submission_id)
+        await submission_usecase.delete(submission_id)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND

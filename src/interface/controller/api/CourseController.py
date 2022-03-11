@@ -1,12 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
 from src.domain.course import Course
+from src.domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 from src.settings import logger
 from src.usecase.courses.CourseUseCase import CourseUseCase
+from src.interface.controller.ApiController import api_key
+from src.usecase.users.UserUseCase import UserUseCase
+
 
 course_api_router = APIRouter()
 
 _course_usecase: CourseUseCase
+
+_user_usecase: UserUseCase
 
 
 @course_api_router.get(
@@ -21,7 +27,11 @@ _course_usecase: CourseUseCase
 )
 async def get(course_id: int, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        course = course_usecase.fetch(course_id)
+        course = await course_usecase.fetch(course_id)
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -37,7 +47,7 @@ async def get(course_id: int, course_usecase: CourseUseCase = Depends(_course_us
 )
 async def get_all(course_data: Optional[Course], course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        courses = course_usecase.fetch_all(course_data)
+        courses = await course_usecase.fetch_all(course_data)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -51,9 +61,18 @@ async def get_all(course_data: Optional[Course], course_usecase: CourseUseCase =
     response_model=Course,
     status_code=status.HTTP_200_OK,
 )
-async def create(course_data: Course, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
+async def add(course_data: Course, token: str = Depends(api_key), course_usecase: CourseUseCase = Depends(_course_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        course = course_usecase.create(course_data)
+        user_usecase.auth_verify(token)
+        course = await course_usecase.add(course_data)
+    except TargetAlreadyExsitException as e:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE
+        )
+    except CredentialsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -72,37 +91,28 @@ async def create(course_data: Course, auth_data: Dict, course_usecase: CourseUse
         },
         status.HTTP_404_NOT_FOUND: {
             "model": "not found"
-        }
-    }
-)
-async def update(course_id: int, course_data: Course, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
-    try:
-        course = course_usecase.update(course_data)
-    except Exception as e:
-        logger.error(e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-    return course
-
-
-@course_api_router.post(
-    "/change/{course_id}/{state}",
-    response_model=Course,
-    status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
         },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
+        status.HTTP_403_FORBIDDEN: {
+            "model": "unauthorized this manipulate"
         }
     }
 )
-async def change_state(course_id: int, state: int, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
+async def update(course_id: int, course_data: Course, token: str = Depends(api_key), course_usecase: CourseUseCase = Depends(_course_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        _course_target: Course
-        course = course_usecase.update(_course_target)
+        user_usecase.auth_verify(token)
+        if course_id != course_data.id:
+            raise HTTPException(
+                status_code=status.HTTP_406_NOT_ACCEPTABLE
+            )
+        course = await course_usecase.update(course_data)
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    except CredentialsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -123,9 +133,18 @@ async def change_state(course_id: int, state: int, auth_data: Dict, course_useca
         }
     }
 )
-async def delete(course_id: int, auth_data: Dict, course_usecase: CourseUseCase = Depends(_course_usecase)):
+async def delete(course_id: int, token: str = Depends(api_key), course_usecase: CourseUseCase = Depends(_course_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        course_usecase.delete(course_id)
+        user_usecase.auth_verify(token)
+        await course_usecase.delete(course_id)
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    except CredentialsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -139,7 +158,7 @@ async def delete(course_id: int, auth_data: Dict, course_usecase: CourseUseCase 
 )
 async def scraping(course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        course_usecase.periodically_scraper()
+        flg = await course_usecase.periodically_scraper()
     except Exception as e:
         logger.error(e)
         raise HTTPException(

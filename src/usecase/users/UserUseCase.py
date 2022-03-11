@@ -58,11 +58,11 @@ class UserUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def auth_verify(self, token: str) -> bool:
+    def auth_verify(self, token: str) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    async def create_token(self, name: str, password: str) -> Token:
+    def create_token(self, name: str, password: str) -> Token:
         raise NotImplementedError
 
 
@@ -142,10 +142,10 @@ class UserUseCaseImpl(UserUseCase):
             raise
         return user
 
-    async def auth_verify(self, token: str) -> bool:
-        flg = await self.driver.authenticate_token(token)
+    def auth_verify(self, token: str) -> bool:
+        flg = self.driver.authenticate_token(token)
         return True if flg is not None else False
 
-    async def create_token(self, name: str, password: str) -> Token:
-        token: Token = await self.driver.create_access_token(name, password)
+    def create_token(self, name: str, password: str) -> Token:
+        token: Token = self.driver.create_access_token(name, password)
         return token

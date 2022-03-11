@@ -8,21 +8,21 @@ from src.domain.submission import Submission
 class SchedulerRepository(ABC):
     """submission"""
     @abstractmethod
-    async def fetch(id: int) -> Optional[Scheduler]:
+    async def fetch(self, id: int) -> Optional[Scheduler]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(domain: Scheduler) -> List[Scheduler]:
+    async def fetch_all(self, domain: Scheduler) -> List[Scheduler]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(domain: Scheduler) -> Scheduler:
+    async def add(self, domain: Scheduler) -> Scheduler:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(domain: Scheduler) -> Scheduler:
+    async def update(self, domain: Scheduler) -> Scheduler:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> bool:
+    async def delete(self, id: int) -> bool:
         raise NotImplementedError
