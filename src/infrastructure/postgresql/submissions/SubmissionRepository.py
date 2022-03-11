@@ -49,6 +49,8 @@ class SubmissionRepositoryImpl(SubmissionRepository):
         try:
             q = self.session.query(SubmissionOrm)
             for attr, value in targets.items():
+                if attr == "id":
+                    continue
                 q = q.filter(getattr(SubmissionOrm, attr) == value)
             q = q.order_by(SubmissionOrm.updated_at)
             Submission_orms = q.all()
@@ -61,7 +63,7 @@ class SubmissionRepositoryImpl(SubmissionRepository):
         except Exception:
             raise
 
-    async def create(self, domain: Submission) -> Submission:
+    async def add(self, domain: Submission) -> Submission:
         try:
             Submission_orm = SubmissionOrm.from_domain(domain)
             self.session.add(Submission_orm)
@@ -77,6 +79,8 @@ class SubmissionRepositoryImpl(SubmissionRepository):
             updatables = [
                 "title",
                 "state",
+                "user_id",
+                "assignment_id",
                 "update_at"
             ]
             for attr in updatables:

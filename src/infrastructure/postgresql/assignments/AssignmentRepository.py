@@ -4,7 +4,6 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
 from src.domain.AssignmentRepository import AssignmentRepository
 from src.domain.assignment import Assignment
-from src.domain.course import Course
 from src.domain.assignment import ASSIGNMENT_STATE, Assignment
 from src.infrastructure.postgresql.assignments.AssignmentOrm import AssignmentOrm
 from src.usecase.assignments.AssignmentUseCase import AssignmentUseCaseUnitOfWork
@@ -59,6 +58,8 @@ class AssignmentRepositoryImpl(AssignmentRepository):
         try:
             q = self.session.query(AssignmentOrm)
             for attr, value in targets.items():
+                if attr == "id":
+                    continue
                 q = q.filter(getattr(AssignmentOrm, attr) == value)
             q = q.order_by(AssignmentOrm.updated_at)
             Assignment_orms = q.all()
@@ -71,7 +72,7 @@ class AssignmentRepositoryImpl(AssignmentRepository):
         except Exception:
             raise
 
-    async def create(self, domain: Assignment) -> Assignment:
+    async def add(self, domain: Assignment) -> Assignment:
         try:
             Assignment_orm = AssignmentOrm.from_domain(domain)
             self.session.add(Assignment_orm)
@@ -87,6 +88,10 @@ class AssignmentRepositoryImpl(AssignmentRepository):
             updatables = [
                 "title",
                 "state",
+                "end_at",
+                "info",
+                "url",
+                "course_id",
                 "update_at"
             ]
             for attr in updatables:
