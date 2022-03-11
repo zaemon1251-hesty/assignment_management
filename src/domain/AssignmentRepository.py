@@ -8,25 +8,25 @@ from src.domain.course import Course
 class AssignmentRepository(ABC):
     """Assignment"""
     @abstractmethod
-    async def fetch(id: int) -> Optional[Assignment]:
+    async def fetch(self, id: int) -> Optional[Assignment]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_by_title(title: str) -> Optional[Assignment]:
+    async def fetch_by_title(self, title: str) -> Optional[Assignment]:
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(domain: Optional[Assignment], course: Optional[Course]) -> List[Assignment]:
+    async def fetch_all(self, domain: Optional[Assignment], course: Optional[Course]) -> List[Assignment]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(domain: Assignment) -> Assignment:
+    async def add(self, domain: Assignment) -> Assignment:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(domain: Assignment) -> Assignment:
+    async def update(self, domain: Assignment) -> Assignment:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(id: int) -> bool:
+    async def delete(self, id: int) -> Assignment:
         raise NotImplementedError
