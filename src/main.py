@@ -1,14 +1,13 @@
 from typing import Iterator
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, status
 import json
-from sqlalchemy.orm.session import Session
 from src.infrastructure.postgresql.database import SessionLocal
 from src.interface.controller import api_router
-import service
+
 # config
 app = FastAPI(__name__)
 
-app.include_router(api_router, prefix="/api")
+app.include_router(api_router)
 
 
 @app.get(

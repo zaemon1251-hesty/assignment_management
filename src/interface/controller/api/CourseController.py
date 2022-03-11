@@ -7,12 +7,23 @@ from src.usecase.courses.CourseUseCase import CourseUseCase
 from src.interface.controller.ApiController import api_key
 from src.usecase.users.UserUseCase import UserUseCase
 
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.courses.CourseRepository import CourseRepositoryImpl, CourseUseCaseUnitOfWorkImpl
+from src.usecase.courses.CourseUseCase import CourseUseCase, CourseUseCaseImpl, CourseUseCaseUnitOfWork
+from src.domain.CourseRepository import CourseRepository
+from sqlalchemy.orm.session import Session
+from src.interface.controller.api.UserController import _user_usecase
 
-course_api_router = APIRouter()
 
-_course_usecase: CourseUseCase
+course_api_router = APIRouter(prefix="/courses")
 
-_user_usecase: UserUseCase
+
+def _course_usecase(session: Session = Depends(get_session)) -> CourseUseCase:
+    course_repository: CourseRepository = CourseRepositoryImpl(session)
+    uow: CourseUseCaseUnitOfWork = CourseUseCaseUnitOfWorkImpl(
+        session, course_repository=course_repository
+    )
+    return CourseUseCaseImpl(uow)
 
 
 @course_api_router.get(

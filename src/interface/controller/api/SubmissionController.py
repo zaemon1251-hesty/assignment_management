@@ -9,14 +9,25 @@ from src.usecase.submissions.SubmissionUseCase import SubmissionUseCase
 from src.interface.controller.ApiController import api_key
 from src.usecase.users.UserUseCase import UserUseCase
 
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.submissions.SubmissionRepository import SubmissionRepositoryImpl, SubmissionUseCaseUnitOfWorkImpl
+from src.usecase.submissions.SubmissionUseCase import SubmissionUseCase, SubmissionUseCaseImpl, SubmissionUseCaseUnitOfWork
+from src.domain.SubmissionRepository import SubmissionRepository
+from sqlalchemy.orm.session import Session
+from src.interface.controller.api.UserController import _user_usecase
 
-submission_api_router = APIRouter()
+
+submission_api_router = APIRouter(prefix="/submissions")
 
 
-_submission_usecase: SubmissionUseCase
-
-
-_user_usecase: UserUseCase
+def _submission_usecase(session: Session = Depends(
+        get_session)) -> SubmissionUseCase:
+    submission_repository: SubmissionRepository = SubmissionRepositoryImpl(
+        session)
+    uow: SubmissionUseCaseUnitOfWork = SubmissionUseCaseUnitOfWorkImpl(
+        session, submission_repository=submission_repository
+    )
+    return SubmissionUseCaseImpl(uow)
 
 
 @submission_api_router.get(

@@ -1,17 +1,28 @@
 from typing import Dict, List, Optional
+from sqlalchemy.orm.session import Session
 from fastapi import APIRouter, Depends, Form, HTTPException, status
-from fastapi.security import APIKeyHeader
 from src.domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException, UnauthorizedException
 from src.settings import logger
 from src.usecase.token import Token
-from src.usecase.users.UserUseCase import UserUseCase
+from src.usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
 from src.domain.user import AuthedUser, User
 from src.interface.controller.ApiController import api_key
 
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.users.UserRepository import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
+from src.usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
+from src.domain.UserRepository import UserRepository
+from sqlalchemy.orm.session import Session
 
-user_api_router = APIRouter()
+user_api_router = APIRouter(prefix="/users")
 
-_user_usecase: UserUseCase
+
+def _user_usecase(session: Session = Depends(get_session)) -> UserUseCase:
+    user_repository: UserRepository = UserRepositoryImpl(session)
+    uow: UserUseCaseUnitOfWork = UserUseCaseUnitOfWorkImpl(
+        session, user_repository=user_repository
+    )
+    return UserUseCaseImpl(uow)
 
 
 @user_api_router.get(
