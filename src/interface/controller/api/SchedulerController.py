@@ -8,11 +8,25 @@ from src.usecase.schedulers.SchedulerUseCase import SchedulerUseCase
 from src.interface.controller.ApiController import api_key
 from src.usecase.users.UserUseCase import UserUseCase
 
-scheduler_api_router = APIRouter()
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.schedulers.SchedulerRepository import SchedulerRepositoryImpl, SchedulerUseCaseUnitOfWorkImpl
+from src.usecase.schedulers.SchedulerUseCase import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork
+from src.domain.SchedulerRepository import SchedulerRepository
+from sqlalchemy.orm.session import Session
+from src.interface.controller.api.UserController import _user_usecase
 
-_scheduler_usecase: SchedulerUseCase
 
-_user_usecase: UserUseCase
+scheduler_api_router = APIRouter(prefix="/schedulers")
+
+
+def _scheduler_usecase(session: Session = Depends(
+        get_session)) -> SchedulerUseCase:
+    scheduler_repository: SchedulerRepository = SchedulerRepositoryImpl(
+        session)
+    uow: SchedulerUseCaseUnitOfWork = SchedulerUseCaseUnitOfWorkImpl(
+        session, scheduler_repository=scheduler_repository
+    )
+    return SchedulerUseCaseImpl(uow)
 
 
 @scheduler_api_router.get(

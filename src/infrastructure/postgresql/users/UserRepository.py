@@ -1,8 +1,6 @@
 from typing import List, Optional
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
-from src.domain import user
-
 from src.domain.UserRepository import UserRepository
 from src.domain.exception import TargetNotFoundException
 from src.domain.user import User, AuthedUser

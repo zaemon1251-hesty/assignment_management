@@ -11,20 +11,20 @@ from src.interface.controller.api import (
     scheduler_api_router
 )
 
-api_router = APIRouter()
+api_router = APIRouter(prefix="/api")
 
 routers = {}
 
-routers["/assignmets"] = assignment_api_router
-routers["/users"] = user_api_router
-routers["/courses"] = course_api_router
-routers["/submissions"] = submission_api_router
-routers["/schedulers"] = scheduler_api_router
+routers["assignments"] = assignment_api_router
+routers["users"] = user_api_router
+routers["courses"] = course_api_router
+routers["submissions"] = submission_api_router
+routers["schedulers"] = scheduler_api_router
 
 api_key = APIKeyHeader(name="Authorization", auto_error=False)
 
 for router_name, router in routers.items():
-    api_router.include_router(router, prefix=router_name)
+    api_router.include_router(router)
 
 
 @api_router.get(

@@ -9,11 +9,23 @@ from src.interface.controller.ApiController import api_key
 from src.usecase.users.UserUseCase import UserUseCase
 from src.usecase.assignments.AssignmentUseCase import AssignmentUseCase
 
-assignment_api_router = APIRouter()
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.assignments.AssignmentRepository import AssignmentRepositoryImpl, AssignmentUseCaseUnitOfWorkImpl
+from src.usecase.assignments.AssignmentUseCase import AssignmentUseCase, AssignmentUseCaseImpl, AssignmentUseCaseUnitOfWork
+from src.domain.AssignmentRepository import AssignmentRepository
+from sqlalchemy.orm.session import Session
+from src.interface.controller.api.UserController import _user_usecase
 
-_assignment_usecase: AssignmentUseCase
+assignment_api_router = APIRouter(prefix="/assignments")
 
-_user_usecase: UserUseCase
+
+def _assignment_usecase(session: Session = Depends(
+        get_session)) -> AssignmentUseCase:
+    user_repository: AssignmentRepository = AssignmentRepositoryImpl(session)
+    uow: AssignmentUseCaseUnitOfWork = AssignmentUseCaseUnitOfWorkImpl(
+        session, user_repository=user_repository
+    )
+    return AssignmentUseCaseImpl(uow)
 
 
 @assignment_api_router.get(
