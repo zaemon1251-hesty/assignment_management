@@ -72,7 +72,6 @@ async def get_all(submission_data: Optional[Submission], submission_usecase: Sub
             "model": "unauthorized this manipulate"
         }
     }
-
 )
 async def add(submission_data: Submission, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
