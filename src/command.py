@@ -6,7 +6,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import os
 
 
-async def make_superuser():
+def make_superuser():
     su = AuthedUser(
         name="admin",
         email=os.getenv("GMAIL_ACCOUNT"),

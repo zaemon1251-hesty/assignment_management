@@ -4,12 +4,19 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /src
 
-RUN pip install poetry
+COPY ./pyproject.toml ./pyproject.toml
+COPY ./poetry.lock ./poetry.lock
 
-COPY ../pyproject.toml* ../poetry.lock* ./
+RUN apt-get update && \
+    apt-get -y install locales && \
+    localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
 
-RUN poetry config virtualenvs.in-project true
-RUN if [ -f pyproject.toml ]; then poetry install; fi
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+RUN echo '$HOME/.poetry/bin:$PATH' >> ~/.bashrc
+RUN source /root/.profile && \
+    poetry config virtualenvs.in-project true && \
+    poetry install;
+# 管理者ユーザーの追加、テーブルの作成
 RUN poetry run python command.py
 
 # uvicornのサーバーを立ち上げる

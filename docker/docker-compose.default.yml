@@ -1,11 +1,15 @@
 version: "3"
 services:
   waitfordb:
+    container_name: wait-for-db
+    hostname: wait-for-db
     image: dadarek/wait-for-dependencies
     depends_on:
         - postgres
     command: postgres:5432
   postgres:
+    container_name: db-server
+    hostname: db-server
     image: postgres:10-alpine
     ports:
       - "5432:5432"
@@ -16,12 +20,16 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ja_JP.UTF-8"
     restart: always
   selenium:
+    container_name: selenium-server
+    hostname: selenium-server
     image: selenium/standalone-chrome-debug:3.2.0-actinium
     ports:
       - 4444:4444
       - 5900:5900
   app:
-    build: ./docker/app
+    build:
+      context: ./
+      dockerfile: docker/app/Dockerfile
     container_name: app-server
     hostname: app-server
     depends_on:
@@ -31,16 +39,16 @@ services:
       - "./src:/src"
       - "/dev/shm:/dev/shm"
       # loggerのログをホストOS側に出力
-      - "/tmp/application_log:./src/logs/application.log"
+      - "/tmp/application_log:/src/logs"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@moodle_postgres_1:5432/moodle
+      DATABASE_URL: postgresql://postgres:postgres@db-server:5432/moodle
       SELENIUM_URL: http://selenium:4444/wd/hub
       # moodleの認証情報
-      MOODLE_ID: "change me"
-      MOODLE_PASSWORD: "change me"
+      MOODLE_ID: 8436984367
+      MOODLE_PASSWORD: mOriyNo.1and00
       # smtpの認証情報
-      GMAIL_ACCOUNT: "change me"
-      GMAIL_PASSWORD: "change me"
+      GMAIL_ACCOUNT: supergbzx@gmail.com
+      GMAIL_PASSWORD: Mnbvcxz67
       TZ: "Asia/Tokyo"
     tty: true
     ports:
@@ -49,10 +57,10 @@ services:
   web:
     container_name: web-server
     hostname: web-server
-    build: ./docker/web
+    build: 
+        context: ./
+        dockerfile: docker/web/Dockerfile
     volumes:
-        - "./web/nginx.conf:/etc/nginx/nginx.conf"
-        - "./web/ssl:/etc/nginx/ssl"
         # nginxのログをホストOS側に出力
         - "/tmp/nginx_log:/var/log/nginx"
     depends_on:
@@ -60,10 +68,8 @@ services:
     links:
       - app
     ports:
-      #- "80:80"
+      - "80:80"
       - "${PORT:-8443:443}"
     environment:
       TZ: Asia/Tokyo
     restart: always
-
-    
