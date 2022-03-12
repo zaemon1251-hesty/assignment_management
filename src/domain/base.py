@@ -5,7 +5,7 @@ from sqlalchemy.orm import Query
 
 class OrmBase(BaseModel):
     """Common properties across orm models"""
-    id: Optional[int]
+    id: Optional[int] = None
 
     # Pre-processing validator that evaluates lazy relationships before any other validation
     # NOTE: If high throughput/performance is a concern, you can/should probably apply

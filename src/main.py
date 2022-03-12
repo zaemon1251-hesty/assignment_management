@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status
 import json
-from interface.controller import api_router
-from command import make_superuser, create_tables
+from src.interface.controller import api_router
+from src.command import make_superuser, create_tables
 
 app = FastAPI()
 
