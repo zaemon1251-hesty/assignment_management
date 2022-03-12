@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Union
 from domain.user import User, AuthedUser
 from infrastructure.postgresql.database import Base
 import sys
@@ -16,36 +16,20 @@ class UserOrm(Base):
     name->string
     """
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(200), nullable=False, unique=True)
+    id: Union[int, Column] = Column(
+        Integer, primary_key=True, autoincrement=True)
+    name: Union[str, Column] = Column(String(200), nullable=False, unique=True)
     email = Column(String(200), nullable=False, unique=True)
     hash_password = Column(String(2000), nullable=False)
     disabled = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
-    @classmethod
-    def to_domain(self) -> User:
-        return User(
-            id=self.id,
-            name=self.name,
-            email=self.email,
-            disabled=self.disabled,
-            created_at=self.created_at,
-            updated_at=self.updated_at
-        )
+    def to_domain(self,) -> User:
+        return User.from_orm(self)
 
-    @classmethod
     def to__authed(self) -> AuthedUser:
-        return AuthedUser(
-            id=self.id,
-            name=self.name,
-            email=self.email,
-            disabled=self.disabled,
-            hash_password=self.hash_password,
-            created_at=self.created_at,
-            updated_at=self.updated_at
-        )
+        return AuthedUser.from_orm(self)
 
     @staticmethod
     def from_domain(data: AuthedUser) -> "UserOrm":

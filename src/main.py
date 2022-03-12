@@ -1,12 +1,15 @@
-from typing import Iterator
 from fastapi import FastAPI, status
 import json
 from interface.controller import api_router
-from domain import AuthedUser
-# config
-app = FastAPI(__name__)
+from command import make_superuser, create_tables
+
+app = FastAPI()
 
 app.include_router(api_router)
+
+create_tables()
+
+make_superuser()
 
 
 @app.get(
@@ -14,4 +17,4 @@ app.include_router(api_router)
     status_code=status.HTTP_200_OK
 )
 async def healthz():
-    return json.dumps({"message": "I am Zaemon."})
+    return {"message": "I am Zaemon."}

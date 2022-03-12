@@ -33,11 +33,11 @@ def _scheduler_usecase(session: Session = Depends(
     "/{scheduler_id}",
     response_model=Optional[Scheduler],
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def get(scheduler_id: int, scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase)):
     try:
@@ -74,14 +74,14 @@ async def get_all(scheduler_data: Optional[Scheduler], scheduler_usecase: Schedu
     "/add",
     response_model=Scheduler,
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "already exists",
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "already exists",
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def add(scheduler_data: Scheduler, token: str = Depends(api_key), scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -107,17 +107,17 @@ async def add(scheduler_data: Scheduler, token: str = Depends(api_key), schedule
     "/{scheduler_id}",
     response_model=Scheduler,
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        },
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with data",
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     },
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with data",
+    #     }
+    # }
 )
 async def update(scheduler_id: int, scheduler_data: Scheduler, token: str = Depends(api_key), scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -146,14 +146,14 @@ async def update(scheduler_id: int, scheduler_data: Scheduler, token: str = Depe
 @scheduler_api_router.delete(
     "/{scheduler_id}",
     status_code=status.HTTP_202_ACCEPTED,
-    response={
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # response={
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def delete(scheduler_id: int, token: str = Depends(api_key), scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:

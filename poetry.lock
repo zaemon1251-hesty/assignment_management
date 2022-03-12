@@ -439,6 +439,17 @@ tomli = ">=1.0.0"
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.5"
+description = "A streaming multipart parser for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = ">=1.4.0"
+
+[[package]]
 name = "selenium"
 version = "4.1.2"
 description = ""
@@ -633,7 +644,7 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "30e8e2830c6c3c8edde494e73d9eb7d3ebef8af7a1ea36c40099a137e6327c16"
+content-hash = "ca9f252be1d64b2721d9b0c26ae0818c1570dc311a073007068c4ccb43ede542"
 
 [metadata.files]
 anyio = [
@@ -1014,6 +1025,9 @@ pysocks = [
 pytest = [
     {file = "pytest-7.0.1-py3-none-any.whl", hash = "sha256:9ce3ff477af913ecf6321fe337b93a2c0dcf2a0a1439c43f5452112c1e4280db"},
     {file = "pytest-7.0.1.tar.gz", hash = "sha256:e30905a0c131d3d94b89624a1cc5afec3e0ba2fbdb151867d8e0ebd49850f171"},
+]
+python-multipart = [
+    {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
 ]
 selenium = [
     {file = "selenium-4.1.2-py3-none-any.whl", hash = "sha256:7da6d7ab2c83a21e498deda02bb5e7fb0ac5da5e72438f6d01b015b185b5e1df"},

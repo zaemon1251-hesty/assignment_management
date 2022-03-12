@@ -32,11 +32,11 @@ def _assignment_usecase(session: Session = Depends(
     "/{assignment_id}",
     response_model=Optional[Assignment],
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def get(assignment_id: Optional[int], assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase)):
     try:
@@ -57,11 +57,11 @@ async def get(assignment_id: Optional[int], assignment_usecase: AssignmentUseCas
     "/",
     response_model=List[Assignment],
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def get_all(assignment_data: Optional[Assignment], assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase)):
     try:
@@ -78,14 +78,14 @@ async def get_all(assignment_data: Optional[Assignment], assignment_usecase: Ass
     "/add",
     response_model=Assignment,
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "already exists",
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "already exists",
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def add(assignment_data: Assignment, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -111,17 +111,17 @@ async def add(assignment_data: Assignment, token: str = Depends(api_key), assign
     "/{assingnment_id}",
     response_model=Assignment,
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with data",
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def update(assingnment_id: int, assignment_data: Assignment, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -151,14 +151,14 @@ async def update(assingnment_id: int, assignment_data: Assignment, token: str = 
     "/change/{assignment_id}/{state}",
     response_model=Assignment,
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def change_state(assignment_id: int, state: int, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -186,14 +186,14 @@ async def change_state(assignment_id: int, state: int, token: str = Depends(api_
 @assignment_api_router.delete(
     "/{assignment_id}",
     status_code=status.HTTP_202_ACCEPTED,
-    response={
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # response={
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def delete(assignment_id: int, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -217,17 +217,17 @@ async def delete(assignment_id: int, token: str = Depends(api_key), assignment_u
 @assignment_api_router.get(
     "/check_expire",
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with data",
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def check_expire(token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:

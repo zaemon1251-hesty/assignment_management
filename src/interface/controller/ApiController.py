@@ -22,4 +22,4 @@ for router_name, router in routers.items():
     status_code=status.HTTP_302_FOUND
 )
 async def redirects():
-    return RedirectResponse(api_router.url_path_for("/"), status_code=302)
+    return {"api":"root"}

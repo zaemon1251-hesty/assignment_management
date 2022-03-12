@@ -6,18 +6,18 @@ WORKDIR /src
 
 COPY ./pyproject.toml ./pyproject.toml
 COPY ./poetry.lock ./poetry.lock
+COPY ./docker/app/entrypoint.sh /bin/entrypoint.sh
 
 RUN apt-get update && \
     apt-get -y install locales && \
     localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
 
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-RUN echo '$HOME/.poetry/bin:$PATH' >> ~/.bashrc
-RUN source /root/.profile && \
+RUN echo 'PATH=$HOME/.poetry/bin:$PATH' >> ~/.bashrc
+RUN . /root/.profile && \
     poetry config virtualenvs.in-project true && \
     poetry install;
-# 管理者ユーザーの追加、テーブルの作成
-RUN poetry run python command.py
+
 
 # uvicornのサーバーを立ち上げる
-ENTRYPOINT ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
+ENTRYPOINT ["/root/.poetry/bin/poetry","run","uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8888","--reload"]

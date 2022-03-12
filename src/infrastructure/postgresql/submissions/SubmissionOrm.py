@@ -36,14 +36,13 @@ class SubmissionOrm(Base):
             'assignments.id',
             onupdate='CASCADE',
             ondelete='CASCADE',
-            nullable=False
-        )
+        ),
+        nullable=False
     )
     state = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
-    @classmethod
     def to_domain(self) -> Submission:
         """almost same as Domain.from_orm() """
         _user = User.from_orm(self.user)
@@ -57,7 +56,6 @@ class SubmissionOrm(Base):
             updated_at=self.updated_at
         )
 
-    @staticmethod
     def from_domain(data: Submission) -> "SubmissionOrm":
         now = datetime.utcnow()
         return SubmissionOrm(

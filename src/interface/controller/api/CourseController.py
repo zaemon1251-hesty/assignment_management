@@ -30,11 +30,11 @@ def _course_usecase(session: Session = Depends(get_session)) -> CourseUseCase:
     "/{course_id}",
     response_model=Optional[Course],
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def get(course_id: int, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
@@ -96,17 +96,17 @@ async def add(course_data: Course, token: str = Depends(api_key), course_usecase
     "/{course_id}",
     response_model=Course,
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with data",
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def update(course_id: int, course_data: Course, token: str = Depends(api_key), course_usecase: CourseUseCase = Depends(_course_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -135,14 +135,14 @@ async def update(course_id: int, course_data: Course, token: str = Depends(api_k
 @course_api_router.delete(
     "/{course_id}",
     status_code=status.HTTP_202_ACCEPTED,
-    response={
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # response={
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def delete(course_id: int, token: str = Depends(api_key), course_usecase: CourseUseCase = Depends(_course_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:

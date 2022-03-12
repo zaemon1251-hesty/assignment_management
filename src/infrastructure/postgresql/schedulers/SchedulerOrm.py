@@ -9,7 +9,7 @@ from datetime import timezone, datetime
 
 
 class SchedulerOrm(Base):
-    __tablename__ = 'cchedulers'
+    __tablename__ = 'shedulers'
     id = Column(Integer, primary_key=True, autoincrement=True)
     reminded = Column(Boolean, nullable=False)
     remind_at = Column(DateTime, nullable=False)
@@ -18,14 +18,13 @@ class SchedulerOrm(Base):
     submission_id = Column(
         Integer,
         ForeignKey(
-            'submission.id',
+            'submissions.id',
             onupdate='CASCADE',
             ondelete='CASCADE',
         ),
         nullable=False
     )
 
-    @classmethod
     def to_domain(self) -> Scheduler:
         """almost same as Domain.from_orm() """
         _submission = Submission.from_orm(self.submission)
