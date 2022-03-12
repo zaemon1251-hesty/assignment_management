@@ -7,6 +7,7 @@ from domain.exception import TargetNotFoundException
 from domain.user import User, AuthedUser
 from infrastructure.postgresql.users.UserOrm import UserOrm
 from usecase.users.UserUseCase import UserUseCaseUnitOfWork
+from settings import logger
 
 
 class UserUseCaseUnitOfWorkImpl(UserUseCaseUnitOfWork):
@@ -35,24 +36,27 @@ class UserRepositoryImpl(UserRepository):
 
     async def fetch(self, id: int) -> Optional[User]:
         try:
+            print("idが入力されました{}".format(id))
             user_orm = self.session.query(UserOrm).filter_by(id=id).one()
+            logger.info(user_orm)
             return user_orm.to_domain()
         except NoResultFound:
             return None
-        except Exception:
+        except Exception as e:
+            logger.error(e)
             raise
 
     async def fetch_by_name(self, name: str) -> Optional[AuthedUser]:
         try:
             user_orm = self.session.query(UserOrm).filter_by(name=name).one()
-            return user_orm.to_domain()
+            return user_orm.to__authed()
         except NoResultFound:
             return None
         except Exception:
             raise
 
     async def fetch_all(self, domain: Optional[User]) -> List[User]:
-        targets = dict(domain)
+        targets = dict(domain) if domain is not None else {}
         try:
             q = self.session.query(UserOrm)
             for attr, value in targets.items():

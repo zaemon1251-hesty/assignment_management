@@ -38,7 +38,6 @@ class AssignmentOrm(Base):
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
-    @classmethod
     def to_domain(self) -> Assignment:
         """almost same as Domain.from_orm() """
         _course = Assignment.from_orm(self.assignment)

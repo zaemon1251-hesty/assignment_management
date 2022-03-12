@@ -34,11 +34,11 @@ def _submission_usecase(session: Session = Depends(
     "/{submission_id}",
     response_model=Optional[Submission],
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
@@ -75,14 +75,14 @@ async def get_all(submission_data: Optional[Submission], submission_usecase: Sub
     "/add",
     response_model=Submission,
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "already exists",
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "already exists",
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def add(submission_data: Submission, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -108,17 +108,17 @@ async def add(submission_data: Submission, token: str = Depends(api_key), submis
     "/{submission_id}",
     response_model=Submission,
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with data",
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with data",
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def update(submission_id: int, submission_data: Submission, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -148,14 +148,14 @@ async def update(submission_id: int, submission_data: Submission, token: str = D
     "/change/{submission_id}/{state}",
     response_model=Submission,
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def change_state(submission_id: int, state: int, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -183,14 +183,14 @@ async def change_state(submission_id: int, state: int, token: str = Depends(api_
 @submission_api_router.delete(
     "/{submission_id}",
     status_code=status.HTTP_202_ACCEPTED,
-    response={
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # response={
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def delete(submission_id: int, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:

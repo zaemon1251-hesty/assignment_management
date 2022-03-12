@@ -32,11 +32,11 @@ def _user_usecase(session: Session = Depends(get_session)) -> UserUseCase:
     "/{user_id}",
     response_model=Optional[User],
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def get(user_id: int, user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -57,11 +57,11 @@ async def get(user_id: int, user_usecase: UserUseCase = Depends(_user_usecase)):
     "/_authenticate",
     response_model=Optional[AuthedUser],
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def authorize_user(token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -83,7 +83,7 @@ async def authorize_user(token: str = Depends(api_key), user_usecase: UserUseCas
     response_model=List[User],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(user_data: Optional[User], user_usecase: UserUseCase = Depends(_user_usecase)):
+async def get_all(user_data: Optional[User] = None, user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         users = await user_usecase.fetch_all(user_data)
     except Exception as e:
@@ -98,14 +98,14 @@ async def get_all(user_data: Optional[User], user_usecase: UserUseCase = Depends
     "/add",
     response_model=User,
     status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "already exists",
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "already exists",
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     }
+    # }
 )
 async def create(user_data: User, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -131,17 +131,17 @@ async def create(user_data: User, token: str = Depends(api_key), user_usecase: U
     "/{user_id}",
     response_model=User,
     status_code=status.HTTP_202_ACCEPTED,
-    responses={
-        status.HTTP_406_NOT_ACCEPTABLE: {
-            "model": "id contradicts with this data",
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorize this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with this data",
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorize this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def update(user_id: int, user_data: User, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -171,14 +171,14 @@ async def update(user_id: int, user_data: User, token: str = Depends(api_key), u
 @user_api_router.delete(
     "/{user_id}",
     status_code=status.HTTP_202_ACCEPTED,
-    response={
-        status.HTTP_403_FORBIDDEN: {
-            "model": "unauthorized this manipulate"
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # response={
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorized this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
 async def delete(user_id: int, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
@@ -203,16 +203,16 @@ async def delete(user_id: int, token: str = Depends(api_key), user_usecase: User
     "/login",
     status_code=status.HTTP_202_ACCEPTED,
     response_model=Token,
-    response={
-        status.HTTP_401_UNAUTHORIZED: {
-            "model": "failed to create token for some reasons."
-        },
-        status.HTTP_404_NOT_FOUND: {
-            "model": "not found"
-        }
-    }
+    # response={
+    #     status.HTTP_401_UNAUTHORIZED: {
+    #         "model": "failed to create token for some reasons."
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
 )
-async def create_token(name: Form(""), password: Form(""), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def create_token(name: str = Form(""), password: str = Form(""), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         token: Token = user_usecase.create_token(name, password)
         return token

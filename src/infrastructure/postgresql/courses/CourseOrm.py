@@ -25,7 +25,6 @@ class CourseOrm(Base):
 
     assignments = relationship("AssignmentOrm", backref="courses")
 
-    @classmethod
     def to_domain(self) -> Course:
         return Course(
             id=self.id,
