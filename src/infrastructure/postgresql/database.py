@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.orm.session import Session
 import os
 
-engine = create_async_engine(
+engine = create_engine(
     os.getenv('DATABASE_URL'),
     encoding="utf-8",
     echo=True  # Trueだと実行のたびにSQLが出力される
@@ -17,13 +17,20 @@ SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine,
-    class_=AsyncSession
+    # class_=AsyncSession
 )
 
 
 Base = declarative_base()
 
 
-async def get_session() -> Iterator[Session]:
-    async with SessionLocal() as session:
+# async def get_session() -> Iterator[Session]:
+#     async with SessionLocal() as session:
+#         yield session
+
+def get_session() -> Iterator[Session]:
+    session: Session = SessionLocal()
+    try:
         yield session
+    finally:
+        session.close()
