@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from src.domain.assignment import Assignment, ASSIGNMENT_STATE
-from infrastructure.postgresql.database import Base
+from src.infrastructure.postgresql.database import Base
 from src.domain.course import Course
 
 
