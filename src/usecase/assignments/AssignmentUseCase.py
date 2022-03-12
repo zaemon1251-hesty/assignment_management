@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
 
-from domain.assignment import Assignment, ASSIGNMENT_STATE
-from domain.course import Course
-from domain.AssignmentRepository import AssignmentRepository
-from domain.SubmissionRepository import SubmissionRepository
-from domain.exception import TargetAlreadyExsitException, TargetNotFoundException
-from domain.submission import SUBMISSION_STATE, Submission
+from src.domain import Assignment, ASSIGNMENT_STATE
+from src.domain import Course
+from src.domain import AssignmentRepository
+from src.domain import SubmissionRepository
+from src.domain import TargetAlreadyExsitException, TargetNotFoundException
+from src.domain import SUBMISSION_STATE, Submission
 
 
 class AssignmentUseCaseUnitOfWork(ABC):

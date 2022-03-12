@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
-from domain.AssignmentRepository import AssignmentRepository
-from domain.course import Course
-from domain.assignment import Assignment
 
-from domain.course import Course
-from domain.CourseRepository import CourseRepository
-from domain.exception import TargetAlreadyExsitException, TargetNotFoundException
-from usecase.assignments.AssignmentUseCase import AssignmentUseCase
-from usecase.driver.ScrapingDriver import ScrapeDriver
+from src.domain import AssignmentRepository
+from src.domain import Course
+from src.domain import Assignment
+from src.domain import Course
+from src.domain import CourseRepository
+from src.domain import TargetAlreadyExsitException, TargetNotFoundException
+from src.usecase.assignments import AssignmentUseCase
+from src.usecase.driver import ScrapeDriver
 
 
 class CourseUseCaseUnitOfWork(ABC):

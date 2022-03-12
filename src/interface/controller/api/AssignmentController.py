@@ -1,20 +1,19 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
-from domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 
-from settings import logger
-from domain.assignment import ASSIGNMENT_STATE, Assignment
-from .UserController import api_key
-from usecase.users.UserUseCase import UserUseCase
-from usecase.assignments.AssignmentUseCase import AssignmentUseCase
+from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
+from src.settings import logger
+from src.domain import ASSIGNMENT_STATE, Assignment
+from .UserController import api_key, _user_usecase
+from src.usecase.users.UserUseCase import UserUseCase
+from src.usecase.assignments.AssignmentUseCase import AssignmentUseCase
 
-from infrastructure.postgresql.database import get_session
-from infrastructure.postgresql.assignments.AssignmentRepository import AssignmentRepositoryImpl, AssignmentUseCaseUnitOfWorkImpl
-from usecase.assignments.AssignmentUseCase import AssignmentUseCase, AssignmentUseCaseImpl, AssignmentUseCaseUnitOfWork
-from domain.AssignmentRepository import AssignmentRepository
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.assignments import AssignmentRepositoryImpl, AssignmentUseCaseUnitOfWorkImpl
+from src.usecase.assignments import AssignmentUseCase, AssignmentUseCaseImpl, AssignmentUseCaseUnitOfWork
+from src.domain import AssignmentRepository
 from sqlalchemy.orm.session import Session
-from interface.controller.api.UserController import _user_usecase
 
 assignment_api_router = APIRouter(prefix="/assignments")
 

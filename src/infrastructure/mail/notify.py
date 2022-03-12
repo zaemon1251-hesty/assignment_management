@@ -1,12 +1,12 @@
-from settings import logger
+from src.settings import logger
 from datetime import datetime
 import os
 from typing import Dict, Optional
-from domain.assignment import ASSIGNMENT_STATE, Assignment
-from domain.scheduler import Scheduler
-from domain.submission import SUBMISSION_STATE
-from domain.user import User
-from usecase.driver.NotifyDriver import NotifyDriver
+from src.domain.assignment import ASSIGNMENT_STATE, Assignment
+from src.domain.scheduler import Scheduler
+from src.domain.submission import SUBMISSION_STATE
+from src.domain.user import User
+from src.usecase.driver.NotifyDriver import NotifyDriver
 from email.mime.text import MIMEText
 import smtplib
 

@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple
 
-from domain.assignment import Assignment
-from domain.course import Course
+from src.domain import (
+    Assignment,
+    Course
+)
 
 
 class ScrapeDriver(ABC):

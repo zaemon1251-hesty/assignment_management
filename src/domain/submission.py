@@ -3,10 +3,9 @@ from enum import Enum
 from typing import Optional
 from pydantic import validator
 
-from domain.base import OrmBase
-from domain import assignment
-from domain.assignment import Assignment, ASSIGNMENT_STATE
-from domain.user import User
+from src.domain.base import OrmBase
+from src.domain.assignment import Assignment, ASSIGNMENT_STATE
+from src.domain.user import User
 
 
 class StateContradictedException(Exception):

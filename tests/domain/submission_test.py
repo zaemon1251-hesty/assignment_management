@@ -1,8 +1,8 @@
 import tests
 from datetime import datetime
-from domain.assignment import ASSIGNMENT_STATE
-from domain.submission import SUBMISSION_STATE
-from domain import Submission, Assignment, Course, StateContradictedException, User
+from src.domain.assignment import ASSIGNMENT_STATE
+from src.domain.submission import SUBMISSION_STATE
+from src.domain import Submission, Assignment, Course, StateContradictedException, User
 import pytest
 
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from domain.base import OrmBase
+from src.domain.base import OrmBase
 
 
 class User(OrmBase):

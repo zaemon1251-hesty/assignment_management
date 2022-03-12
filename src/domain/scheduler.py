@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Optional
-from domain.base import OrmBase
+from src.domain.base import OrmBase
 
-from domain.submission import Submission
+from src.domain.submission import Submission
 
 
 class Scheduler(OrmBase):

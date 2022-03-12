@@ -2,12 +2,11 @@ import os
 from typing import List, Optional
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
-from domain.UserRepository import UserRepository
-from domain.exception import TargetNotFoundException
-from domain.user import User, AuthedUser
-from infrastructure.postgresql.users.UserOrm import UserOrm
-from usecase.users.UserUseCase import UserUseCaseUnitOfWork
-from settings import logger
+from src.domain.UserRepository import UserRepository
+from src.domain.exception import TargetNotFoundException
+from src.domain.user import User, AuthedUser
+from src.infrastructure.postgresql.users.UserOrm import UserOrm
+from src.usecase.users.UserUseCase import UserUseCaseUnitOfWork
 
 
 class UserUseCaseUnitOfWorkImpl(UserUseCaseUnitOfWork):
@@ -36,14 +35,11 @@ class UserRepositoryImpl(UserRepository):
 
     async def fetch(self, id: int) -> Optional[User]:
         try:
-            print("idが入力されました{}".format(id))
             user_orm = self.session.query(UserOrm).filter_by(id=id).one()
-            logger.info(user_orm)
             return user_orm.to_domain()
         except NoResultFound:
             return None
         except Exception as e:
-            logger.error(e)
             raise
 
     async def fetch_by_name(self, name: str) -> Optional[AuthedUser]:

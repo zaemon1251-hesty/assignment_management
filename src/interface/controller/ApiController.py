@@ -1,4 +1,4 @@
-from .api import assignment_api_router, user_api_router, course_api_router, submission_api_router, scheduler_api_router
+from src.interface.controller.api import assignment_api_router, user_api_router, course_api_router, submission_api_router, scheduler_api_router
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import RedirectResponse
 
@@ -22,4 +22,4 @@ for router_name, router in routers.items():
     status_code=status.HTTP_302_FOUND
 )
 async def redirects():
-    return {"api":"root"}
+    return {"api": "root"}

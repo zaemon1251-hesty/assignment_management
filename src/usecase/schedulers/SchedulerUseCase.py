@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
-from domain.AssignmentRepository import AssignmentRepository
-from domain.UserRepository import UserRepository
 
-from domain.assignment import Assignment
-from domain.submission import Submission
-from domain.exception import TargetNotFoundException
-from domain.scheduler import Scheduler
-from domain.SchedulerRepository import SchedulerRepository
-from domain.user import User
-from usecase.driver.NotifyDriver import NotifyDriver
+from src.domain.AssignmentRepository import AssignmentRepository
+from src.domain.UserRepository import UserRepository
+from src.domain.assignment import Assignment
+from src.domain.submission import Submission
+from src.domain.exception import TargetNotFoundException
+from src.domain.scheduler import Scheduler
+from src.domain.SchedulerRepository import SchedulerRepository
+from src.domain.user import User
+from src.usecase.driver.NotifyDriver import NotifyDriver
 
 
 class SchedulerUseCaseUnitOfWork(ABC):

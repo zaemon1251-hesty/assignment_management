@@ -3,14 +3,14 @@ import uuid
 import json
 from logging import config, getLogger
 
-with open("./logging.json", "r") as f:
+with open("src/logging.json", "r") as f:
     log_conf = json.load(f)
 config.dictConfig(log_conf)
 logger = getLogger(__name__)
 
 
 # openssl genrsa 2048 > private_key.pem
-PRIVATE_PEM = open("infrastructure/cert/private_key.pem", "r").read()
+PRIVATE_PEM = open("src/infrastructure/cert/private_key.pem", "r").read()
 
 TOKEN_EXPIRE = datetime.datetime.utcnow() + datetime.timedelta(days=7)
 

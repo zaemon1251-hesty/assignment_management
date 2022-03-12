@@ -1,16 +1,17 @@
 from typing import Dict, List, Optional
 from sqlalchemy.orm.session import Session
 from fastapi import APIRouter, Depends, Form, HTTPException, status
-from domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException, UnauthorizedException
-from settings import logger
-from usecase.token import Token
-from usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
-from domain.user import AuthedUser, User
 
-from infrastructure.postgresql.database import get_session
-from infrastructure.postgresql.users.UserRepository import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
-from usecase.users.UserUseCase import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
-from domain.UserRepository import UserRepository
+from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException, UnauthorizedException
+from src.settings import logger
+from src.usecase.token import Token
+from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
+from src.domain import AuthedUser, User
+
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.users import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
+from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
+from src.domain import UserRepository
 from sqlalchemy.orm.session import Session
 
 from fastapi.security import APIKeyHeader
