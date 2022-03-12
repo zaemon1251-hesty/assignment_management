@@ -1,20 +1,19 @@
 from fastapi import APIRouter
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
-from domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
-from settings import logger
-from domain.submission import SUBMISSION_STATE, Submission
-from domain.user import User
-from usecase.submissions.SubmissionUseCase import SubmissionUseCase
-from .UserController import api_key
-from usecase.users.UserUseCase import UserUseCase
+from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
+from src.settings import logger
+from src.domain.submission import SUBMISSION_STATE, Submission
+from src.domain.user import User
+from src.usecase.submissions import SubmissionUseCase
+from .UserController import api_key, _user_usecase
+from src.usecase.users import UserUseCase
 
-from infrastructure.postgresql.database import get_session
-from infrastructure.postgresql.submissions.SubmissionRepository import SubmissionRepositoryImpl, SubmissionUseCaseUnitOfWorkImpl
-from usecase.submissions.SubmissionUseCase import SubmissionUseCase, SubmissionUseCaseImpl, SubmissionUseCaseUnitOfWork
-from domain.SubmissionRepository import SubmissionRepository
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.submissions import SubmissionRepositoryImpl, SubmissionUseCaseUnitOfWorkImpl
+from src.usecase.submissions import SubmissionUseCase, SubmissionUseCaseImpl, SubmissionUseCaseUnitOfWork
+from src.domain import SubmissionRepository
 from sqlalchemy.orm.session import Session
-from interface.controller.api.UserController import _user_usecase
 
 
 submission_api_router = APIRouter(prefix="/submissions")

@@ -1,5 +1,5 @@
-from domain.assignment import Assignment
-from domain.course import Course
+from src.domain.assignment import Assignment
+from src.domain.course import Course
 from src.infrastructure.crawl.scraping import ScrapeDriverImpl
 
 

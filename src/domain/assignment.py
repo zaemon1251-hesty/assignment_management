@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
-from domain.base import OrmBase
-from domain import course
-from domain.course import Course
+from src.domain.base import OrmBase
+from src.domain import course
+from src.domain.course import Course
 
 
 class ASSIGNMENT_STATE(int, Enum):

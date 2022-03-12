@@ -6,9 +6,9 @@ from typing import Optional
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from domain.assignment import Assignment, ASSIGNMENT_STATE
+from src.domain.assignment import Assignment, ASSIGNMENT_STATE
 from infrastructure.postgresql.database import Base
-from domain.course import Course
+from src.domain.course import Course
 
 
 class AssignmentOrm(Base):

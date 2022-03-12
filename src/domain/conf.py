@@ -1,9 +1,9 @@
 from typing import Union
-from domain import User
-from domain import Course
-from domain import Assignment
-from domain import Submission
-from domain import Scheduler
+from src.domain import User
+from src.domain import Course
+from src.domain import Assignment
+from src.domain import Submission
+from src.domain import Scheduler
 
 DOMAINS = Union[
     User,

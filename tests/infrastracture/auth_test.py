@@ -1,7 +1,7 @@
 from typing import List, Optional
-from domain.user import AuthedUser, User
+from src.domain.user import AuthedUser, User
 from infrastructure.cert.auth import AuthDriverImpl
-from domain.UserRepository import UserRepository
+from src.domain.UserRepository import UserRepository
 from usecase.token import Token, TokenData
 
 user = User(

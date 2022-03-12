@@ -1,4 +1,4 @@
-from domain import User, AuthedUser
+from src.domain import User, AuthedUser
 
 
 class UserTest:

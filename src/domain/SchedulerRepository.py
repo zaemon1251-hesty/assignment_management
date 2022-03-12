@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from domain.scheduler import Scheduler
-from domain.submission import Submission
+from src.domain.scheduler import Scheduler
 
 
 class SchedulerRepository(ABC):

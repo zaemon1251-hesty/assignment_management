@@ -1,19 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
-from domain.exception import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
+from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 
-from settings import logger
-from domain.scheduler import Scheduler
-from usecase.schedulers.SchedulerUseCase import SchedulerUseCase
-from .UserController import api_key
-from usecase.users.UserUseCase import UserUseCase
+from src.settings import logger
+from src.domain import Scheduler
+from src.usecase.schedulers import SchedulerUseCase
+from .UserController import api_key, _user_usecase
+from src.usecase.users import UserUseCase
 
-from infrastructure.postgresql.database import get_session
-from infrastructure.postgresql.schedulers.SchedulerRepository import SchedulerRepositoryImpl, SchedulerUseCaseUnitOfWorkImpl
-from usecase.schedulers.SchedulerUseCase import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork
-from domain.SchedulerRepository import SchedulerRepository
+from src.infrastructure.postgresql.database import get_session
+from src.infrastructure.postgresql.schedulers import SchedulerRepositoryImpl, SchedulerUseCaseUnitOfWorkImpl
+from src.usecase.schedulers import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork
+from src.domain import SchedulerRepository
 from sqlalchemy.orm.session import Session
-from interface.controller.api.UserController import _user_usecase
 
 
 scheduler_api_router = APIRouter(prefix="/schedulers")

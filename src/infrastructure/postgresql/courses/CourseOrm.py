@@ -5,8 +5,8 @@ from typing import Optional
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from domain.course import Course
-from infrastructure.postgresql.database import Base
+from src.domain.course import Course
+from src.infrastructure.postgresql.database import Base
 
 
 class CourseOrm(Base):
