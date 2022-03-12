@@ -1,6 +1,9 @@
+.git
+
 .venv/
 __pycache__/
 .pytest_cache/
+
 
 src/venv
 src/poetry.lock
