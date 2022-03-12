@@ -2,7 +2,7 @@
 FROM python:3.9-buster
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /src
+WORKDIR /var/www
 
 COPY ./pyproject.toml ./pyproject.toml
 COPY ./poetry.lock ./poetry.lock
