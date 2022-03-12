@@ -39,7 +39,7 @@ services:
       - "./src:/var/www/src"
       - "/dev/shm:/dev/shm"
       # loggerのログをホストOS側に出力
-      - "/tmp/uvicorn\log:/var/log/uvicorn"
+      - "/tmp/uvicorn_log:/var/log/uvicorn"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db-server:5432/moodle
       SELENIUM_URL: http://selenium:4444/wd/hub

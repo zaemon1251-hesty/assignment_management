@@ -1,7 +1,7 @@
-from domain import AuthedUser
-from infrastructure.cert import AuthDriverImpl
-from infrastructure.postgresql.database import get_session, Base, engine
-from infrastructure.postgresql.users import UserOrm
+from src.domain import AuthedUser
+from src.infrastructure.cert import AuthDriverImpl
+from src.infrastructure.postgresql.database import get_session, Base, engine
+from src.infrastructure.postgresql.users import UserOrm
 from sqlalchemy.orm.exc import NoResultFound
 import os
 

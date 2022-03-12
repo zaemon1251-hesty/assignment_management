@@ -15,7 +15,7 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from domain import assignment
 from domain.assignment import Assignment
 from domain.course import Course
-from interface.driver.ScrapingDriver import ScrapeDriver
+from usecase.driver.ScrapingDriver import ScrapeDriver
 from settings import logger
 
 # config
