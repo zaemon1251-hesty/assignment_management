@@ -11,7 +11,7 @@ from src.domain import AuthedUser, User
 from src.infrastructure.cert.auth import AuthDriverImpl
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.users import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
-from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
+from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork, UserCommandModel
 from src.domain import UserRepository
 from sqlalchemy.orm.session import Session
 
@@ -98,7 +98,7 @@ async def get_all(user_data: Optional[User] = None, user_usecase: UserUseCase = 
 
 @user_api_router.post(
     "/add",
-    response_model=User,
+    response_model=UserCommandModel,
     status_code=status.HTTP_200_OK,
     # responses={
     #     status.HTTP_406_NOT_ACCEPTABLE: {
@@ -109,7 +109,7 @@ async def get_all(user_data: Optional[User] = None, user_usecase: UserUseCase = 
     #     }
     # }
 )
-async def create(user_data: User, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def create(user_data: UserCommandModel, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
         user = await user_usecase.create(user_data)
@@ -145,7 +145,7 @@ async def create(user_data: User, token: str = Depends(api_key), user_usecase: U
     #     }
     # }
 )
-async def update(user_id: int, user_data: User, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def update(user_id: int, user_data: UserCommandModel, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
         if user_id != user_data.id:
