@@ -8,6 +8,7 @@ from src.usecase.token import Token
 from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
 from src.domain import AuthedUser, User
 
+from src.infrastructure.cert.auth import AuthDriverImpl
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.users import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
 from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
@@ -26,7 +27,7 @@ def _user_usecase(session: Session = Depends(get_session)) -> UserUseCase:
     uow: UserUseCaseUnitOfWork = UserUseCaseUnitOfWorkImpl(
         session, user_repository=user_repository
     )
-    return UserUseCaseImpl(uow)
+    return UserUseCaseImpl(uow, AuthDriverImpl(user_repository))
 
 
 @user_api_router.get(
@@ -215,7 +216,7 @@ async def delete(user_id: int, token: str = Depends(api_key), user_usecase: User
 )
 async def create_token(name: str = Form(""), password: str = Form(""), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        token: Token = user_usecase.create_token(name, password)
+        token: Token = await user_usecase.create_token(name, password)
         return token
     except UnauthorizedException as e:
         logger.error(e)

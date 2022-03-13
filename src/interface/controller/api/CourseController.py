@@ -6,7 +6,7 @@ from src.settings import logger
 from src.usecase.courses import CourseUseCase
 from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
-
+from src.infrastructure.crawl import ScrapeDriverImpl
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.courses.CourseRepository import CourseRepositoryImpl, CourseUseCaseUnitOfWorkImpl
 from src.usecase.courses.CourseUseCase import CourseUseCase, CourseUseCaseImpl, CourseUseCaseUnitOfWork
@@ -22,7 +22,7 @@ def _course_usecase(session: Session = Depends(get_session)) -> CourseUseCase:
     uow: CourseUseCaseUnitOfWork = CourseUseCaseUnitOfWorkImpl(
         session, course_repository=course_repository
     )
-    return CourseUseCaseImpl(uow)
+    return CourseUseCaseImpl(uow, ScrapeDriverImpl())
 
 
 @course_api_router.get(
