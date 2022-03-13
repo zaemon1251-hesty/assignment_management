@@ -7,7 +7,7 @@ class AuthDriver(ABC):
     """driver (interface of the authorizing process)"""
 
     @abstractmethod
-    async def create_access_token(self, email: str, password: str) -> Token:
+    async def create_access_token(self, name: str, password: str) -> Token:
         raise NotImplementedError
 
     @abstractmethod

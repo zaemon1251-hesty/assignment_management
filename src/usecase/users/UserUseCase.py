@@ -67,7 +67,7 @@ class UserUseCase(ABC):
 
 
 class UserUseCaseImpl(UserUseCase):
-    def __init__(self, uow: UserUseCaseUnitOfWork, driver=AuthDriver):
+    def __init__(self, uow: UserUseCaseUnitOfWork, driver: AuthDriver):
         self.uow: UserUseCaseUnitOfWork = uow
         self.driver = driver
 

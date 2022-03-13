@@ -7,7 +7,7 @@ from src.domain import Scheduler
 from src.usecase.schedulers import SchedulerUseCase
 from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
-
+from src.infrastructure.mail import NotifyDriverImpl
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.schedulers import SchedulerRepositoryImpl, SchedulerUseCaseUnitOfWorkImpl
 from src.usecase.schedulers import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork
@@ -25,7 +25,7 @@ def _scheduler_usecase(session: Session = Depends(
     uow: SchedulerUseCaseUnitOfWork = SchedulerUseCaseUnitOfWorkImpl(
         session, scheduler_repository=scheduler_repository
     )
-    return SchedulerUseCaseImpl(uow)
+    return SchedulerUseCaseImpl(uow, NotifyDriverImpl())
 
 
 @scheduler_api_router.get(

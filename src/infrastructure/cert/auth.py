@@ -8,6 +8,7 @@ from src.domain.user import AuthedUser, User
 from src.usecase.driver.AuthDriver import AuthDriver, Token, TokenData
 from src.domain.UserRepository import UserRepository
 from src.settings import JWK, PRIVATE_PEM, TOKEN_EXPIRE
+from src.settings import logger
 
 
 class AuthDriverImpl(AuthDriver):
@@ -20,14 +21,16 @@ class AuthDriverImpl(AuthDriver):
         try:
             user: AuthedUser = await self.user_repository.fetch_by_name(name)
             if self.authenticate_password(password, user.hash_password):
-                payload = TokenData(user.name, TOKEN_EXPIRE.timestamp())
+                payload = TokenData(
+                    user_name=user.name,
+                    exp=TOKEN_EXPIRE.timestamp())
                 token = jwt.encode(
                     dict(payload),
                     PRIVATE_PEM,
                     algorithm=JWK["keys"][0]["alg"],
                     headers={"kid": JWK["keys"][0]["kid"]}
                 )
-                return Token({"access_token": token, "token_type": "Bearer"})
+                return Token(access_token=token, token_type="Bearer")
             else:
                 raise UnauthorizedException(
                     "Not the correct password: user-name '%s'" % name)
