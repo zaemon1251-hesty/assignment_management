@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import List, Optional
+from typing import Callable, List, Optional
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 
 from src.domain.user import User, AuthedUser
@@ -11,6 +11,20 @@ from src.usecase.token import Token
 
 class UserCommandModel(User):
     password: str = None
+
+    def to_authed(
+            self,
+            func: Callable[[str], str],
+            password: str) -> AuthedUser:
+        return AuthedUser(
+            id=self.id,
+            name=self.name,
+            email=self.email,
+            disabled=self.disabled,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            hash_password=func(password)
+        )
 
 
 class UserUseCaseUnitOfWork(ABC):
@@ -89,13 +103,14 @@ class UserUseCaseImpl(UserUseCase):
 
     async def create(self, domain: UserCommandModel) -> User:
         try:
-            if self.uow.user_repository.fetch_by_name(domain.name) is not None:
+            exist_user = await self.uow.user_repository.fetch_by_name(domain.name)
+            if exist_user is not None:
                 raise TargetAlreadyExsitException(
                     "name %s alraedy exists" % domain.name, User)
-            if domain.password is not None:
-                domain.password = self.driver.get_password_hash(
-                    domain.password)
-            domain: AuthedUser = AuthedUser(**dict(domain))
+            domain: AuthedUser = domain.to_authed(
+                self.driver.get_password_hash,
+                domain.password
+            )
             user = await self.uow.user_repository.create(domain)
             if user is None:
                 raise TargetNotFoundException("Not Found", User)

@@ -53,7 +53,7 @@ class CourseRepositoryImpl(CourseRepository):
             raise
 
     async def fetch_all(self, domain: Optional[Course]) -> List[Course]:
-        targets = dict(domain)
+        targets = dict(domain) if domain is not None else {}
         try:
             q = self.session.query(CourseOrm)
             for attr, value in targets.items():

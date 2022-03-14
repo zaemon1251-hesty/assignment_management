@@ -78,10 +78,11 @@ class CourseUseCaseImpl(CourseUseCase):
             raise
         return courses
 
-    async def create(self, domain: Course) -> Course:
+    async def add(self, domain: Course) -> Course:
         try:
-            if self.uow.course_repository.fetch_by_title(
-                    domain.title) is not None:
+            exist_course = await self.uow.course_repository.fetch_by_title(
+                domain.title)
+            if exist_course is not None:
                 raise TargetAlreadyExsitException(
                     "title %s already exists" % domain.title, Course)
             course = await self.uow.course_repository.add(domain)

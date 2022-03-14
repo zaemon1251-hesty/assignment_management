@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from typing import Dict, List, Optional
 from src.domain import Course
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
@@ -55,7 +55,7 @@ async def get(course_id: int, course_usecase: CourseUseCase = Depends(_course_us
     response_model=List[Course],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(course_data: Optional[Course], course_usecase: CourseUseCase = Depends(_course_usecase)):
+async def get_all(course_data: Optional[Course] = None, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
         courses = await course_usecase.fetch_all(course_data)
     except Exception as e:
@@ -166,9 +166,10 @@ async def delete(course_id: int, token: str = Depends(api_key), course_usecase: 
     "/auto_scraping",
     status_code=status.HTTP_200_OK
 )
-async def scraping(course_usecase: CourseUseCase = Depends(_course_usecase)):
+async def scraping(background_tasks: BackgroundTasks, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        flg = await course_usecase.periodically_scraper()
+        background_tasks.add_task(course_usecase.periodically_scraper)
+        return {"message": "Scraping and Saving courses run in the background."}
     except Exception as e:
         logger.error(e)
         raise HTTPException(

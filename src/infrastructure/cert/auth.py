@@ -76,12 +76,13 @@ class AuthDriverImpl(AuthDriver):
                 id_token,
                 public_key,
                 algorituhms=JWK["keys"][0]["alg"])
-            payload = TokenData(**payload)
-            if payload.exp <= datetime.utcnow().timestamp():
+            logger.info(payload)
+            token_data = TokenData(**payload)
+            if token_data.exp <= datetime.utcnow().timestamp():
                 raise CredentialsException("this token has expired.")
+            return token_data
         except Exception:
             CredentialsException("something went wrong.")
-        return payload
 
     @classmethod
     def get_password_hash(cls, password: str) -> str:
