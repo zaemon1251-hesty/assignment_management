@@ -9,7 +9,7 @@ class User(OrmBase):
 
     name: str
     email: str
-    disabled: bool = False
+    disabled: Optional[bool] = False
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

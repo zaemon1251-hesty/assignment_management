@@ -118,6 +118,7 @@ async def create(user_data: UserCommandModel, token: str = Depends(api_key), use
             status_code=status.HTTP_406_NOT_ACCEPTABLE
         )
     except CredentialsException as e:
+        logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
         )
