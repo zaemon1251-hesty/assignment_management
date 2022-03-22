@@ -11,6 +11,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, NoSuchWindowException
 from src.domain import assignment
 from src.domain.assignment import Assignment
@@ -54,9 +55,12 @@ class ScrapeDriverImpl(ScrapeDriver):
 
     def __init__(self):
         # Selenium サーバーへ接続する。
+        options = Options()
+        options.add_experimental_option("w3c", False)
         self.driver = webdriver.Remote(
             command_executor=os.environ["SELENIUM_URL"],
-            desired_capabilities=DesiredCapabilities.CHROME.copy()
+            desired_capabilities=DesiredCapabilities.CHROME.copy(),
+            options=options
         )
 
     class wait_for_all(object):
@@ -94,8 +98,8 @@ class ScrapeDriverImpl(ScrapeDriver):
                 assignments.append(self.parse_course(key, crude))
         except ValidationError as e:
             logger.warning(e.json())
-        except Exception as e:
-            logger.error(str(e))
+        # except Exception as e:
+        #     logger.error(e)
         return assignments, courses
 
     def parse_course(course_id: int, crude: crude_course) -> Course:
@@ -116,27 +120,32 @@ class ScrapeDriverImpl(ScrapeDriver):
         )
         return assign
 
-    async def login(self, url: str, id: str, passwd: str):
-        if not isinstance(id, str) or not isinstance(passwd, str):
-            raise Exception("id and password not vaild.")
+    async def login(self, url: str, mid: str, passwd: str):
+        if not isinstance(mid, str) or not isinstance(passwd, str):
+            raise Exception("moodle id or password not vaild.")
         # 任意のHTMLの要素が特定の状態になるまで待つ
         # ドライバとタイムアウト値を指定
         WebDriverWait(self.driver, 2)
         # ログインページにアクセス
         self.driver.get(url)
-        if "Maintenance" in self.driver.find_element(
-                By.TAG_NAME, 'title').text:
+        title_element = self.driver.find_element(By.TAG_NAME, 'title')
+        if "Maintenance" in getattr(title_element, "text", ""):
             logger.warning("Now Maintenance...")
             raise Exception("%s now in maintenace" % url)
         # ID/PASSを入力
-        id = self.driver.find_element_by_id("username")
-        id.send_keys(id)
-        password = self.driver.find_element_by_id("password")
-        password.send_keys(passwd)
-        time.sleep(1)
-        # ログインボタンをクリック
-        login_button = self.river.find_element_by_id("loginbtn")
-        login_button.click()
+        print([mid, passwd])
+        id_element = self.driver.find_element_by_id("username")
+        id_element.send_keys(mid)
+        password_element = self.driver.find_element_by_id("password")
+        try:
+            id_element.send_keys(mid)
+            password_element.send_keys(passwd)
+            time.sleep(1)
+            # ログインボタンをクリック
+            login_button = self.driver.find_element_by_id("loginbtn")
+            login_button.click()
+        except Exception:
+            raise
 
     async def get_assignments(self, userid: str, passwd: str, keywords: List[str] = ["2021"]) -> Tuple[Dict[int, crude_assignment], Dict[int, crude_course]]:
         """

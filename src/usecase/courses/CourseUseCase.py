@@ -53,7 +53,7 @@ class CourseUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def periodically_scraper(self, keywords) -> bool:
+    async def periodically_scraper(self, keywords: List[str]) -> bool:
         raise NotImplementedError
 
 
@@ -115,7 +115,7 @@ class CourseUseCaseImpl(CourseUseCase):
             raise
         return flg
 
-    async def periodically_scraper(self, keywords) -> bool:
+    async def periodically_scraper(self, keywords: List[str]) -> bool:
         assignments, courses = await self.driver.run(keywords)
         try:
             self.uow.begin()

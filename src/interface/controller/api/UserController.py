@@ -1,3 +1,4 @@
+import traceback
 from typing import Dict, List, Optional
 from sqlalchemy.orm.session import Session
 from fastapi import APIRouter, Depends, Form, HTTPException, status
@@ -220,6 +221,7 @@ async def create_token(name: str = Form(""), password: str = Form(""), user_usec
         token: Token = await user_usecase.create_token(name, password)
         return token
     except UnauthorizedException as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

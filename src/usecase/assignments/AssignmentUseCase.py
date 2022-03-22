@@ -71,10 +71,11 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
             raise
         return assignments
 
-    async def create(self, domain: Assignment) -> Assignment:
+    async def add(self, domain: Assignment) -> Assignment:
         try:
-            if self.uow.assignment_repository.fetch_by_title(
-                    domain.title) is not None:
+            exist_assignment = await self.uow.assignment_repository.fetch_by_title(
+                domain.title)
+            if exist_assignment is not None:
                 raise TargetAlreadyExsitException(
                     "title %s already exists" % domain.title, Course)
             assignment = await self.uow.assignment_repository.add(domain)

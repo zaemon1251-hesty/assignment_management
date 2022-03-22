@@ -162,16 +162,18 @@ async def delete(course_id: int, token: str = Depends(api_key), course_usecase: 
         )
 
 
-@course_api_router.get(
+@course_api_router.post(
     "/auto_scraping",
     status_code=status.HTTP_200_OK
 )
 async def scraping(background_tasks: BackgroundTasks, course_usecase: CourseUseCase = Depends(_course_usecase)):
     try:
-        background_tasks.add_task(course_usecase.periodically_scraper)
+        background_tasks.add_task(
+            course_usecase.periodically_scraper,
+            keywords=["2021"])
         return {"message": "Scraping and Saving courses run in the background."}
     except Exception as e:
-        logger.error(e)
+        logger.error(str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
