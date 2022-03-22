@@ -54,12 +54,12 @@ class Submission(OrmBase):
         return state == SUBMISSION_STATE.EXPIRED and \
             assignment_state == ASSIGNMENT_STATE.ALIVE
 
-    @validator("state")
-    async def _validate_state(cls, v, values, **kwargs):
-        if "assignment" in values and "state" in dict(values["assignment"]):
-            if cls.is_already_expired(v, values["assignment"].state) or \
-                    cls.is_still_alive(v, values["assignment"].state):
-                raise StateContradictedException(
-                    "submission_state:%s isn't acceptable because og the related assignment state: %s" % (v, values[
-                        "assignment"].state))
-        return v
+    # @validator("state")
+    # async def _validate_state(cls, v, values, **kwargs):
+    #     if "assignment" in values and "state" in dict(values["assignment"]):
+    #         if cls.is_already_expired(v, values["assignment"].state) or \
+    #                 cls.is_still_alive(v, values["assignment"].state):
+    #             raise StateContradictedException(
+    #                 "submission_state:%s isn't acceptable because og the related assignment state: %s" % (v, values[
+    #                     "assignment"].state))
+    #     return v
