@@ -27,15 +27,7 @@ class SchedulerOrm(Base):
 
     def to_domain(self) -> Scheduler:
         """almost same as Domain.from_orm() """
-        _submission = Submission.from_orm(self.submission)
-        return Scheduler(
-            id=self.id,
-            reminded=self.reminded,
-            remind_at=self.remind_at,
-            created_at=self.created_at,
-            updated_at=self.updated_at,
-            submission=_submission
-        )
+        return Scheduler.from_orm(self)
 
     @staticmethod
     def from_domain(data: Scheduler) -> "SchedulerOrm":
@@ -46,5 +38,5 @@ class SchedulerOrm(Base):
             remind_at=data.remind_at,
             created_at=now,
             updated_at=now,
-            submission_id=data.submission.id,
+            submission_id=data.submission_id,
         )

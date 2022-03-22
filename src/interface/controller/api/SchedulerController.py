@@ -1,3 +1,4 @@
+import traceback
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
@@ -58,7 +59,7 @@ async def get(scheduler_id: int, scheduler_usecase: SchedulerUseCase = Depends(_
     response_model=List[Scheduler],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(scheduler_data: Optional[Scheduler], scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase)):
+async def get_all(scheduler_data: Optional[Scheduler] = None, scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase)):
     try:
         schedulers = await scheduler_usecase.fetch_all(scheduler_data)
     except Exception as e:
@@ -95,6 +96,7 @@ async def add(scheduler_data: Scheduler, token: str = Depends(api_key), schedule
             status_code=status.HTTP_403_FORBIDDEN
         )
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
