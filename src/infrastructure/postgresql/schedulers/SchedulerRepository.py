@@ -14,7 +14,7 @@ class SchedulerUseCaseUnitOfWorkImpl(SchedulerUseCaseUnitOfWork):
         scheduler_repository: SchedulerRepository,
     ):
         self.session: Session = session
-        self.book_repository: SchedulerRepository = scheduler_repository
+        self.scheduler_repository: SchedulerRepository = scheduler_repository
 
     def begin(self):
         self.session.begin()
@@ -52,7 +52,7 @@ class SchedulerRepositoryImpl(SchedulerRepository):
             raise
 
     async def fetch_all(self, domain: Optional[Scheduler]) -> List[Scheduler]:
-        targets = dict(domain)
+        targets = dict(domain) if domain is not None else {}
         try:
             q = self.session.query(SchedulerOrm)
             for attr, value in targets.items():

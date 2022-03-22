@@ -80,7 +80,7 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
             raise
         return schedulers
 
-    async def create(self, domain: Scheduler) -> Scheduler:
+    async def add(self, domain: Scheduler) -> Scheduler:
         try:
             scheduler = await self.uow.scheduler_repository.add(domain)
             self.uow.commit()
@@ -91,11 +91,10 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
 
     async def update(self, id: int, domain: Scheduler) -> Scheduler:
         try:
-            if self.uow.scheduler_repository.fetch(id) is None:
+            exist = await self.uow.scheduler_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Scheduler)
             scheduler = await self.uow.scheduler_repository.update(domain)
-            if scheduler is None:
-                raise TargetNotFoundException("Not Found", Scheduler)
             domain.updated_at = datetime.utcnow()
             self.uow.commit()
         except Exception as e:
@@ -105,7 +104,8 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
 
     async def delete(self, id: int) -> bool:
         try:
-            if self.uow.scheduler_repository.fetch(id) is None:
+            exist = await self.uow.scheduler_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Scheduler)
             flg = await self.uow.scheduler_repository.delete(id)
             self.uow.commit()
@@ -127,19 +127,19 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
                     raise TargetNotFoundException()
                 assignment: Assignment = schedule.submission.assignment
                 if assignment is None:
-                    assignment = self.uow.assignment_repository.fetch(
+                    assignment = await self.uow.assignment_repository.fetch(
                         schedule.submission.assignment_id)
                 user: User = schedule.submission.user
                 if user is None:
-                    user = self.uow.user_repository.fetch(
+                    user = await self.uow.user_repository.fetch(
                         schedule.submission.user_id)
-                self.driver.notify(
+                await self.driver.notify(
                     user,
                     assignment,
                     schedule.submission.state
                 )
                 schedule.reminded = True
-                self.uow.scheduler_repository.update(schedule)
+                await self.uow.scheduler_repository.update(schedule)
             self.uow.commit()
         except TargetNotFoundException as e:
             pass
