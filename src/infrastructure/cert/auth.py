@@ -20,6 +20,8 @@ class AuthDriverImpl(AuthDriver):
     async def create_access_token(self, name: str, password: str) -> Token:
         try:
             user: AuthedUser = await self.user_repository.fetch_by_name(name)
+            if user is None:
+                raise TargetNotFoundException("not found", User)
             if self.authenticate_password(password, user.hash_password):
                 payload = TokenData(
                     user_name=user.name,
@@ -76,7 +78,6 @@ class AuthDriverImpl(AuthDriver):
                 id_token,
                 public_key,
                 algorituhms=JWK["keys"][0]["alg"])
-            logger.info(payload)
             token_data = TokenData(**payload)
             if token_data.exp <= datetime.utcnow().timestamp():
                 raise CredentialsException("this token has expired.")

@@ -6,7 +6,6 @@ authors = ["zaemon1251-hesty <hisakawa1251@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-selenium = "^4.1.2"
 lxml = "^4.8.0"
 urllib3 = "^1.26.8"
 psycopg2 = "^2.9.3"
@@ -17,10 +16,12 @@ fastapi = "^0.74.1"
 uvicorn = "^0.17.5"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 jose = "^1.0.0"
-PyJWT = "^2.3.0"
 python-multipart = "^0.0.5"
 aiomysql = "^0.0.22"
 asyncpg = "^0.25.0"
+selenium = "3.141.0"
+PyJWT = {extras = ["crypt"], version = "^2.3.0"}
+cryptography = "^36.0.2"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"

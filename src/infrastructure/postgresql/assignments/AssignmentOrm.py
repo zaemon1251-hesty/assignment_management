@@ -40,9 +40,10 @@ class AssignmentOrm(Base):
 
     def to_domain(self) -> Assignment:
         """almost same as Domain.from_orm() """
-        _course = Assignment.from_orm(self.assignment)
+        _course = Assignment.from_orm(self.course) if self.course else None
         return Assignment(
             id=self.id,
+            course_id=self.course_id,
             course=_course,
             title=self.title,
             info=self.info,
@@ -57,7 +58,7 @@ class AssignmentOrm(Base):
         now = datetime.utcnow()
         return AssignmentOrm(
             id=data.id,
-            course_id=data.course.id,
+            course_id=data.course_id,
             title=data.title,
             info=data.info,
             url=data.url,

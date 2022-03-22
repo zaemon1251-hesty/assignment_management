@@ -53,7 +53,7 @@ class AssignmentRepositoryImpl(AssignmentRepository):
             raise
 
     async def fetch_all(self, domain: Optional[Assignment]) -> List[Assignment]:
-        targets = dict(domain)
+        targets = dict(domain) if domain is not None else {}
         try:
             q = self.session.query(AssignmentOrm)
             for attr, value in targets.items():

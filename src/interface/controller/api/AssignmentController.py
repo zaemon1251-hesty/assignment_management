@@ -1,4 +1,5 @@
 from datetime import datetime
+import traceback
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
 
@@ -20,9 +21,10 @@ assignment_api_router = APIRouter(prefix="/assignments")
 
 def _assignment_usecase(session: Session = Depends(
         get_session)) -> AssignmentUseCase:
-    user_repository: AssignmentRepository = AssignmentRepositoryImpl(session)
+    assignment_repository: AssignmentRepository = AssignmentRepositoryImpl(
+        session)
     uow: AssignmentUseCaseUnitOfWork = AssignmentUseCaseUnitOfWorkImpl(
-        session, user_repository=user_repository
+        session, assignment_repository=assignment_repository
     )
     return AssignmentUseCaseImpl(uow)
 
@@ -39,7 +41,7 @@ def _assignment_usecase(session: Session = Depends(
 )
 async def get(assignment_id: Optional[int], assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase)):
     try:
-        assignment = assignment_usecase.fetch(assignment_id)
+        assignment = await assignment_usecase.fetch(assignment_id)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND
@@ -62,10 +64,11 @@ async def get(assignment_id: Optional[int], assignment_usecase: AssignmentUseCas
     #     }
     # }
 )
-async def get_all(assignment_data: Optional[Assignment], assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase)):
+async def get_all(assignment_data: Optional[Assignment] = None, assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase)):
     try:
-        assignment = assignment_usecase.fetch_all(assignment_data)
+        assignment = await assignment_usecase.fetch_all(assignment_data)
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -99,6 +102,7 @@ async def add(assignment_data: Assignment, token: str = Depends(api_key), assign
             status_code=status.HTTP_403_FORBIDDEN
         )
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
