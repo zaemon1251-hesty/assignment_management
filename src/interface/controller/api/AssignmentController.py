@@ -166,7 +166,7 @@ async def update(assingnment_id: int, assignment_data: Assignment, token: str = 
 async def change_state(assignment_id: int, state: int, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        _assignment_target: Assignment = assignment_usecase.fetch(
+        _assignment_target: Assignment = await assignment_usecase.fetch(
             assignment_id)
         _assignment_target.state = ASSIGNMENT_STATE(state)
         assignment = await assignment_usecase.update(_assignment_target)

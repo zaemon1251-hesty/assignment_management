@@ -122,7 +122,8 @@ class UserUseCaseImpl(UserUseCase):
 
     async def update(self, id: int, domain: UserCommandModel) -> User:
         try:
-            if self.uow.user_repository.fetch(id) is None:
+            exist = await self.uow.user_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", User)
             if domain.password is not None:
                 domain.password = self.driver.get_password_hash(
@@ -138,7 +139,8 @@ class UserUseCaseImpl(UserUseCase):
 
     async def delete(self, id: int) -> bool:
         try:
-            if self.uow.user_repository.fetch(id) is None:
+            exist = await self.uow.user_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", User)
 
             flg = await self.uow.user_repository.delete(id)

@@ -69,10 +69,11 @@ class SubmissionUseCaseImpl(SubmissionUseCase):
             raise
         return submissions
 
-    async def create(self, domain: Submission) -> Submission:
+    async def add(self, domain: Submission) -> Submission:
         try:
-            if self.uow.submission_repository.fetch_all(Submission(
-                    user_id=domain.user_id, assignment_id=domain.assignment_id)) is not []:
+            exist_submission = await self.uow.submission_repository.fetch_all(Submission(
+                user_id=domain.user_id, assignment_id=domain.assignment_id))
+            if exist_submission != []:
                 raise TargetAlreadyExsitException(
                     "target alraedy exists", Submission)
 
@@ -85,7 +86,8 @@ class SubmissionUseCaseImpl(SubmissionUseCase):
 
     async def update(self, id: int, domain: Submission) -> Submission:
         try:
-            if self.uow.submission_repository.fetch(id) is None:
+            exist = await self.uow.submission_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Submission)
             submission = await self.uow.submission_repository.update(domain)
             domain.updated_at = datetime.utcnow()
@@ -97,7 +99,8 @@ class SubmissionUseCaseImpl(SubmissionUseCase):
 
     async def delete(self, id: int) -> bool:
         try:
-            if self.uow.submission_repository.fetch(id) is None:
+            exist = await self.uow.submission_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Submission)
             flg = await self.uow.submission_repository.delete(id)
             self.uow.commit()
