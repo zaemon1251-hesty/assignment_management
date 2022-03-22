@@ -44,11 +44,16 @@ class SubmissionRepositoryImpl(SubmissionRepository):
             raise
 
     async def fetch_all(self, domain: Optional[Submission]) -> List[Submission]:
-        targets = dict(domain)
+        targets = dict(domain) if domain is not None else {}
         try:
+            ignore_params = {
+                "id",
+                "user",
+                "assignment"
+            }
             q = self.session.query(SubmissionOrm)
             for attr, value in targets.items():
-                if attr == "id":
+                if attr in ignore_params:
                     continue
                 q = q.filter(getattr(SubmissionOrm, attr) == value)
             q = q.order_by(SubmissionOrm.updated_at)

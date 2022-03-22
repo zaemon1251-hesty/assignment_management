@@ -45,24 +45,16 @@ class SubmissionOrm(Base):
 
     def to_domain(self) -> Submission:
         """almost same as Domain.from_orm() """
-        _user = User.from_orm(self.user)
-        _assignment = Assignment.from_orm(self.assignment)
-        return Submission(
-            id=self.id,
-            user=_user,
-            assignment=_assignment,
-            state=SUBMISSION_STATE(self.state),
-            created_at=self.created_at,
-            updated_at=self.updated_at
-        )
+        return Submission.from_orm(self)
 
+    @staticmethod
     def from_domain(data: Submission) -> "SubmissionOrm":
         now = datetime.utcnow()
         return SubmissionOrm(
             id=data.id,
-            user_id=data.user.id,
-            assignment_id=data.assignment.id,
-            state=int(data.state),
+            user_id=data.user_id,
+            assignment_id=data.assignment_id,
+            state=data.state.value,
             created_at=now,
             updated_at=now,
         )

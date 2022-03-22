@@ -1,3 +1,4 @@
+import traceback
 from fastapi import APIRouter
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -59,7 +60,7 @@ async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depend
     response_model=List[Submission],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(submission_data: Optional[Submission], submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
+async def get_all(submission_data: Optional[Submission] = None, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
         submissions = await submission_usecase.fetch_all(submission_data)
     except Exception as e:
@@ -96,6 +97,7 @@ async def add(submission_data: Submission, token: str = Depends(api_key), submis
             status_code=status.HTTP_403_FORBIDDEN
         )
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -159,7 +161,7 @@ async def update(submission_id: int, submission_data: Submission, token: str = D
 async def change_state(submission_id: int, state: int, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        _submission_target: Submission = submission_usecase.fetch(
+        _submission_target: Submission = await submission_usecase.fetch(
             submission_id)
         _submission_target.state = SUBMISSION_STATE(state)
         submission = await submission_usecase.update(_submission_target)
