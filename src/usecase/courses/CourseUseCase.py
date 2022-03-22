@@ -94,7 +94,8 @@ class CourseUseCaseImpl(CourseUseCase):
 
     async def update(self, id: int, domain: Course) -> Course:
         try:
-            if self.uow.course_repository.fetch(id) is None:
+            exist = self.uow.course_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Course)
             domain.updated_at = datetime.utcnow()
             course = await self.uow.course_repository.update(domain)
@@ -106,7 +107,8 @@ class CourseUseCaseImpl(CourseUseCase):
 
     async def delete(self, id: int) -> bool:
         try:
-            if self.uow.course_repository.fetch(id) is None:
+            exist = self.uow.course_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Course)
             flg = await self.uow.course_repository.delete(id)
             self.uow.commit()
@@ -120,21 +122,21 @@ class CourseUseCaseImpl(CourseUseCase):
         try:
             self.uow.begin()
             for course in courses:
-                course_ex = self.uow.course_repository.fetch(course.id)
+                course_ex = await self.uow.course_repository.fetch(course.id)
                 if course_ex:
-                    self.uow.course_repository.update(course)
+                    await self.uow.course_repository.update(course)
                 else:
-                    self.uow.course_repository.add(course)
+                    await self.uow.course_repository.add(course)
             self.uow.commit()
 
             self.uow.begin()
             for assignment in assignments:
-                assignment_ex = self.uow.assignment_repository.fetch(
+                assignment_ex = await self.uow.assignment_repository.fetch(
                     assignment.id)
                 if assignment_ex:
-                    self.uow.course_repository.update(course)
+                    await self.uow.course_repository.update(course)
                 else:
-                    self.uow.assignment_repository.add(assignment)
+                    await self.uow.assignment_repository.add(assignment)
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()

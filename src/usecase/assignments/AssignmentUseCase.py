@@ -94,6 +94,7 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
             assignment = await self.uow.assignment_repository.update(domain)
             if domain.state and domain.state != target.state:
                 submission_cond = Submission(assignment_id=assignment.id)
+                # コースの状態変化に合うように、紐づく課題も状態を変化させる
                 correct = None
                 if domain.state == ASSIGNMENT_STATE.DEAD:
                     submission_cond.state = [
@@ -118,7 +119,8 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
 
     async def delete(self, id: int) -> bool:
         try:
-            if self.uow.assignment_repository.fetch(id) is None:
+            exist = self.uow.assignment_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Assignment)
             flg = await self.uow.assignment_repository.delete(id)
             self.uow.commit()
