@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, cast
+from pydantic import BaseModel, Field, NoneBytes
+from pyparsing import Opt
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 
 from src.domain.user import User, AuthedUser
@@ -9,8 +11,14 @@ from src.usecase.driver.AuthDriver import AuthDriver
 from src.usecase.token import Token
 
 
-class UserCommandModel(User):
-    password: str = None
+class UserCommandModel(BaseModel):
+    id: Optional[int] = Field(default=None, example="0")
+    name: Optional[str] = Field(default=None, example="zaemon1251")
+    email: Optional[str] = Field(default=None, example="test@example.com")
+    disabled: Optional[bool] = Field(default=False)
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    password: Optional[str] = None
 
     def to_authed(
             self,
@@ -125,12 +133,15 @@ class UserUseCaseImpl(UserUseCase):
             exist = await self.uow.user_repository.fetch(id)
             if exist is None:
                 raise TargetNotFoundException("Not Found", User)
+            exist = await self.uow.user_repository.fetch_by_name(exist.name)
             if domain.password is not None:
                 domain.password = self.driver.get_password_hash(
                     domain.password)
-            domain: AuthedUser = AuthedUser(**dict(domain))
-            domain.updated_at = datetime.utcnow()
-            user = await self.uow.user_repository.update(domain)
+            for k, v in domain.dict().items():
+                if v:
+                    setattr(exist, k, v)
+            exist.updated_at = datetime.utcnow()
+            user = await self.uow.user_repository.update(exist)
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()
