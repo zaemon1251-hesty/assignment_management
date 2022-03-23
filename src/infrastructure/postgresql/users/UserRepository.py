@@ -87,7 +87,7 @@ class UserRepositoryImpl(UserRepository):
                 "email",
                 "disabled",
                 "hash_password",
-                "update_at",
+                "updated_at",
             ]
             for attr in updatables:
                 value = getattr(user_orm, attr)

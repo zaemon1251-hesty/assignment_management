@@ -150,10 +150,6 @@ async def create(user_data: UserCommandModel, token: str = Depends(api_key), use
 async def update(user_id: int, user_data: UserCommandModel, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        if user_id != user_data.id:
-            raise HTTPException(
-                status_code=status.HTTP_406_NOT_ACCEPTABLE
-            )
         user = await user_usecase.update(user_id, user_data)
     except CredentialsException as e:
         logger.error(e)
@@ -165,6 +161,7 @@ async def update(user_id: int, user_data: UserCommandModel, token: str = Depends
             status_code=status.HTTP_404_NOT_FOUND
         )
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
