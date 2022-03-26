@@ -1,1 +1,1 @@
-from .CourseUseCase import CourseUseCase, CourseUseCaseUnitOfWork, CourseUseCaseImpl
+from .CourseUseCase import CourseCommandModel, CourseUseCase, CourseUseCaseUnitOfWork, CourseUseCaseImpl

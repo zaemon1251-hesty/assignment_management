@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
+from pydantic import BaseModel
 
 from src.domain import AssignmentRepository
 from src.domain import Course
@@ -10,6 +11,12 @@ from src.domain import CourseRepository
 from src.domain import TargetAlreadyExsitException, TargetNotFoundException
 from src.usecase.assignments import AssignmentUseCase
 from src.usecase.driver import ScrapeDriver
+
+
+class CourseCommandModel(BaseModel):
+    """course represents your collection of course as an entity."""
+    title: str = None
+    url: str = None
 
 
 class CourseUseCaseUnitOfWork(ABC):
@@ -45,7 +52,7 @@ class CourseUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, id: int, domain: Course) -> Course:
+    async def update(self, id: int, domain: CourseCommandModel) -> Course:
         raise NotImplementedError
 
     @abstractmethod
@@ -92,13 +99,16 @@ class CourseUseCaseImpl(CourseUseCase):
             raise
         return course
 
-    async def update(self, id: int, domain: Course) -> Course:
+    async def update(self, id: int, domain: CourseCommandModel) -> Course:
         try:
-            exist = self.uow.course_repository.fetch(id)
+            exist = await self.uow.course_repository.fetch(id)
             if exist is None:
                 raise TargetNotFoundException("Not Found", Course)
-            domain.updated_at = datetime.utcnow()
-            course = await self.uow.course_repository.update(domain)
+            for k, v in domain.dict().items():
+                if v:
+                    setattr(exist, k, v)
+            exist.updated_at = datetime.utcnow()
+            course = await self.uow.course_repository.update(exist)
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()

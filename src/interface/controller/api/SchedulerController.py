@@ -11,7 +11,7 @@ from src.usecase.users import UserUseCase
 from src.infrastructure.mail import NotifyDriverImpl
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.schedulers import SchedulerRepositoryImpl, SchedulerUseCaseUnitOfWorkImpl
-from src.usecase.schedulers import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork
+from src.usecase.schedulers import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork, SchedulerCommandModel
 from src.domain import SchedulerRepository
 from sqlalchemy.orm.session import Session
 
@@ -120,14 +120,10 @@ async def add(scheduler_data: Scheduler, token: str = Depends(api_key), schedule
     #     }
     # }
 )
-async def update(scheduler_id: int, scheduler_data: Scheduler, token: str = Depends(api_key), scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def update(scheduler_id: int, scheduler_data: SchedulerCommandModel, token: str = Depends(api_key), scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        if scheduler_id != scheduler_data.id:
-            raise HTTPException(
-                status_code=status.HTTP_406_NOT_ACCEPTABLE
-            )
-        scheduler = scheduler_usecase.update(scheduler_data)
+        scheduler = await scheduler_usecase.update(scheduler_id, scheduler_data)
     except CredentialsException as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN

@@ -1,1 +1,1 @@
-from .SchedulerUseCase import SchedulerUseCase, SchedulerUseCaseUnitOfWork, SchedulerUseCaseImpl
+from .SchedulerUseCase import SchedulerCommandModel, SchedulerUseCase, SchedulerUseCaseUnitOfWork, SchedulerUseCaseImpl

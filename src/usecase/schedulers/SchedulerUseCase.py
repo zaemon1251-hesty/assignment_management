@@ -1,16 +1,25 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
+from pydantic import BaseModel
 
 from src.domain.AssignmentRepository import AssignmentRepository
 from src.domain.UserRepository import UserRepository
-from src.domain.assignment import Assignment
-from src.domain.submission import Submission
-from src.domain.exception import TargetNotFoundException
-from src.domain.scheduler import Scheduler
-from src.domain.SchedulerRepository import SchedulerRepository
-from src.domain.user import User
+from src.domain import Assignment
+from src.domain import Submission
+from src.domain import TargetNotFoundException
+from src.domain import Scheduler
+from src.domain import SchedulerRepository
+from src.domain import User
 from src.usecase.driver.NotifyDriver import NotifyDriver
+
+
+class SchedulerCommandModel(BaseModel):
+    """Scheduler represents what assignment should be reminded to whom at a certain time """
+
+    submission_id: int = None
+    remind_at: datetime = None
+    reminded: bool = None
 
 
 class SchedulerUseCaseUnitOfWork(ABC):
@@ -47,7 +56,7 @@ class SchedulerUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, id: int, domain: Scheduler) -> Scheduler:
+    async def update(self, id: int, domain: SchedulerCommandModel) -> Scheduler:
         raise NotImplementedError
 
     @abstractmethod
@@ -89,13 +98,16 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
             raise
         return scheduler
 
-    async def update(self, id: int, domain: Scheduler) -> Scheduler:
+    async def update(self, id: int, domain: SchedulerCommandModel) -> Scheduler:
         try:
             exist = await self.uow.scheduler_repository.fetch(id)
             if exist is None:
                 raise TargetNotFoundException("Not Found", Scheduler)
-            scheduler = await self.uow.scheduler_repository.update(domain)
-            domain.updated_at = datetime.utcnow()
+            for k, v in domain.dict().items():
+                if v:
+                    setattr(exist, k, v)
+            scheduler = await self.uow.scheduler_repository.update(exist)
+            exist.updated_at = datetime.utcnow()
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()
