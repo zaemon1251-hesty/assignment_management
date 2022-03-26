@@ -1,1 +1,1 @@
-from .AssignmentUseCase import AssignmentUseCase, AssignmentUseCaseUnitOfWork, AssignmentUseCaseImpl
+from .AssignmentUseCase import AssignmentCommandModel, AssignmentUseCase, AssignmentUseCaseUnitOfWork, AssignmentUseCaseImpl
