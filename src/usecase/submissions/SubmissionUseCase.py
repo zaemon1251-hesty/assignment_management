@@ -11,9 +11,9 @@ from src.domain import Submission, SubmissionRepository, SUBMISSION_STATE
 class SubmissionCommandModel(BaseModel):
     """submission represents your registerd assignment as an entity."""
 
-    user_id: int
-    assignment_id: int
-    state: Optional[SUBMISSION_STATE] = SUBMISSION_STATE.NORMAL
+    user_id: int = None
+    assignment_id: int = None
+    state: Optional[SUBMISSION_STATE] = None
 
 
 class SubmissionUseCaseUnitOfWork(ABC):

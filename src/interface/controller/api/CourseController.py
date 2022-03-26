@@ -9,7 +9,7 @@ from src.usecase.users import UserUseCase
 from src.infrastructure.crawl import ScrapeDriverImpl
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.courses.CourseRepository import CourseRepositoryImpl, CourseUseCaseUnitOfWorkImpl
-from src.usecase.courses.CourseUseCase import CourseUseCase, CourseUseCaseImpl, CourseUseCaseUnitOfWork
+from src.usecase.courses.CourseUseCase import CourseCommandModel, CourseUseCase, CourseUseCaseImpl, CourseUseCaseUnitOfWork
 from src.domain.CourseRepository import CourseRepository
 from sqlalchemy.orm.session import Session
 
@@ -107,14 +107,10 @@ async def add(course_data: Course, token: str = Depends(api_key), course_usecase
     #     }
     # }
 )
-async def update(course_id: int, course_data: Course, token: str = Depends(api_key), course_usecase: CourseUseCase = Depends(_course_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def update(course_id: int, course_data: CourseCommandModel, token: str = Depends(api_key), course_usecase: CourseUseCase = Depends(_course_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        if course_id != course_data.id:
-            raise HTTPException(
-                status_code=status.HTTP_406_NOT_ACCEPTABLE
-            )
-        course = await course_usecase.update(course_data)
+        course = await course_usecase.update(course_id, course_data)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND
