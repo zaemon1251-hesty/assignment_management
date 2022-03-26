@@ -5,8 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 from src.settings import logger
 from src.domain.submission import SUBMISSION_STATE, Submission
-from src.domain.user import User
-from src.usecase.submissions import SubmissionUseCase
+from src.usecase.submissions import SubmissionUseCase, SubmissionCommandModel
 from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
 
@@ -121,14 +120,10 @@ async def add(submission_data: Submission, token: str = Depends(api_key), submis
     #     }
     # }
 )
-async def update(submission_id: int, submission_data: Submission, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def update(submission_id: int, submission_data: SubmissionCommandModel, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        if submission_id != submission_data.id:
-            raise HTTPException(
-                status_code=status.HTTP_406_NOT_ACCEPTABLE
-            )
-        submission = await submission_usecase.update(submission_data)
+        submission = await submission_usecase.update(submission_id, submission_data)
     except CredentialsException as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
@@ -161,10 +156,9 @@ async def update(submission_id: int, submission_data: Submission, token: str = D
 async def change_state(submission_id: int, state: int, token: str = Depends(api_key), submission_usecase: SubmissionUseCase = Depends(_submission_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        _submission_target: Submission = await submission_usecase.fetch(
-            submission_id)
-        _submission_target.state = SUBMISSION_STATE(state)
-        submission = await submission_usecase.update(_submission_target)
+        _submission_target = SubmissionCommandModel(
+            state=SUBMISSION_STATE(state))
+        submission = await submission_usecase.update(submission_id, _submission_target)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND

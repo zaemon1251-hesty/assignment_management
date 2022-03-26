@@ -91,7 +91,7 @@ class AssignmentRepositoryImpl(AssignmentRepository):
                 "info",
                 "url",
                 "course_id",
-                "update_at"
+                "updated_at"
             ]
             for attr in updatables:
                 value = getattr(Assignment_orm, attr)
