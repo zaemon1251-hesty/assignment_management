@@ -13,7 +13,7 @@ class SubmissionCommandModel(BaseModel):
 
     user_id: int = None
     assignment_id: int = None
-    state: Optional[SUBMISSION_STATE] = None
+    state: int = None
 
 
 class SubmissionUseCaseUnitOfWork(ABC):

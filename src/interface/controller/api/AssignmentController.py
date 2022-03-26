@@ -8,7 +8,7 @@ from src.settings import logger
 from src.domain import ASSIGNMENT_STATE, Assignment
 from .UserController import api_key, _user_usecase
 from src.usecase.users.UserUseCase import UserUseCase
-from src.usecase.assignments.AssignmentUseCase import AssignmentUseCase
+from src.usecase.assignments.AssignmentUseCase import AssignmentCommandModel, AssignmentUseCase
 
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.assignments import AssignmentRepositoryImpl, AssignmentUseCaseUnitOfWorkImpl
@@ -126,14 +126,10 @@ async def add(assignment_data: Assignment, token: str = Depends(api_key), assign
     #     }
     # }
 )
-async def update(assingnment_id: int, assignment_data: Assignment, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def update(assingnment_id: int, assignment_data: AssignmentCommandModel, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        if assingnment_id != assignment_data.id:
-            raise HTTPException(
-                status_code=status.HTTP_406_NOT_ACCEPTABLE
-            )
-        assignment = await assignment_usecase.update(assignment_data)
+        assignment = await assignment_usecase.update(assingnment_id, assignment_data)
     except CredentialsException as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
@@ -166,10 +162,9 @@ async def update(assingnment_id: int, assignment_data: Assignment, token: str = 
 async def change_state(assignment_id: int, state: int, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        _assignment_target: Assignment = await assignment_usecase.fetch(
-            assignment_id)
-        _assignment_target.state = ASSIGNMENT_STATE(state)
-        assignment = await assignment_usecase.update(_assignment_target)
+        _assignment_target: Assignment = AssignmentCommandModel(
+            state=ASSIGNMENT_STATE(state))
+        assignment = await assignment_usecase.update(assignment_id, _assignment_target)
     except TargetNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
+from pydantic import BaseModel
 
 from src.domain import Assignment, ASSIGNMENT_STATE
 from src.domain import Course
@@ -8,6 +9,16 @@ from src.domain import AssignmentRepository
 from src.domain import SubmissionRepository
 from src.domain import TargetAlreadyExsitException, TargetNotFoundException
 from src.domain import SUBMISSION_STATE, Submission
+
+
+class AssignmentCommandModel(BaseModel):
+    """assignment represents your collection of assignment as an entity."""
+    title: str = None
+    url: str = None
+    info: str = None
+    state: int = None
+    course_id: int = None
+    end_at: datetime = None
 
 
 class AssignmentUseCaseUnitOfWork(ABC):
@@ -43,7 +54,7 @@ class AssignmentUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, id: int, domain: Assignment) -> Assignment:
+    async def update(self, id: int, domain: AssignmentCommandModel) -> Assignment:
         raise NotImplementedError
 
     @abstractmethod
@@ -85,31 +96,35 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
             raise
         return assignment
 
-    async def update(self, id: int, domain: Assignment) -> Assignment:
+    async def update(self, id: int, domain: AssignmentCommandModel) -> Assignment:
         try:
-            target = await self.uow.assignment_repository.fetch(id)
-            if target is None:
+            exist = await self.uow.assignment_repository.fetch(id)
+            if exist is None:
                 raise TargetNotFoundException("Not Found", Assignment)
-            domain.updated_at = datetime.utcnow()
+            for k, v in domain.dict().items():
+                if v:
+                    setattr(exist, k, v)
+            exist.updated_at = datetime.utcnow()
             assignment = await self.uow.assignment_repository.update(domain)
-            if domain.state and domain.state != target.state:
+
+            # コースの状態変化に合うように、紐づく課題も状態を変化させる
+            if domain.state and domain.state != exist.state:
                 submission_cond = Submission(assignment_id=assignment.id)
-                # コースの状態変化に合うように、紐づく課題も状態を変化させる
-                correct = None
+                correct_submission_state = None
                 if domain.state == ASSIGNMENT_STATE.DEAD:
                     submission_cond.state = [
                         SUBMISSION_STATE.NORMAL,
                         SUBMISSION_STATE.DANGER
                     ]
-                    correct = SUBMISSION_STATE.EXPIRED
+                    correct_submission_state = SUBMISSION_STATE.EXPIRED
                 elif domain.state == ASSIGNMENT_STATE.ALIVE:
                     submission_cond.state = SUBMISSION_STATE.EXPIRED
-                    correct = SUBMISSION_STATE.NORMAL
-                if correct:
+                    correct_submission_state = SUBMISSION_STATE.NORMAL
+                if correct_submission_state:
                     submissions: List[Submission] = await self.uow.submission_repository.fetch_all(
                         submission_cond)
                     for submission in submissions:
-                        submission.state = correct
+                        submission.state = correct_submission_state
                         await self.uow.submission_repository.update(submission)
             self.uow.commit()
         except Exception as e:
