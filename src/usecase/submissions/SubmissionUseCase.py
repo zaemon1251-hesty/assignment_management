@@ -1,12 +1,19 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
+from pydantic import BaseModel
 
 from src.domain.assignment import Assignment
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
-from src.domain.submission import Submission
-from src.domain.submission import Submission
-from src.domain.SubmissionRepository import SubmissionRepository
+from src.domain import Submission, SubmissionRepository, SUBMISSION_STATE
+
+
+class SubmissionCommandModel(BaseModel):
+    """submission represents your registerd assignment as an entity."""
+
+    user_id: int
+    assignment_id: int
+    state: Optional[SUBMISSION_STATE] = SUBMISSION_STATE.NORMAL
 
 
 class SubmissionUseCaseUnitOfWork(ABC):
@@ -41,7 +48,7 @@ class SubmissionUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, id: int, domain: Submission) -> Submission:
+    async def update(self, id: int, domain: SubmissionCommandModel) -> Submission:
         raise NotImplementedError
 
     @abstractmethod
@@ -84,13 +91,16 @@ class SubmissionUseCaseImpl(SubmissionUseCase):
             raise
         return submission
 
-    async def update(self, id: int, domain: Submission) -> Submission:
+    async def update(self, id: int, domain: SubmissionCommandModel) -> Submission:
         try:
             exist = await self.uow.submission_repository.fetch(id)
             if exist is None:
                 raise TargetNotFoundException("Not Found", Submission)
-            submission = await self.uow.submission_repository.update(domain)
-            domain.updated_at = datetime.utcnow()
+            for k, v in domain.dict().items():
+                if v:
+                    setattr(exist, k, v)
+            exist.updated_at = datetime.utcnow()
+            submission = await self.uow.submission_repository.update(exist)
             self.uow.commit()
         except Exception as e:
             self.uow.rollback()

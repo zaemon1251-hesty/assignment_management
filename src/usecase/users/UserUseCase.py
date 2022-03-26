@@ -12,12 +12,9 @@ from src.usecase.token import Token
 
 
 class UserCommandModel(BaseModel):
-    id: Optional[int] = Field(default=None, example="0")
     name: Optional[str] = Field(default=None, example="zaemon1251")
     email: Optional[str] = Field(default=None, example="test@example.com")
     disabled: Optional[bool] = Field(default=False)
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
     password: Optional[str] = None
 
     def to_authed(

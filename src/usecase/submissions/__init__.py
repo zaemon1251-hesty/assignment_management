@@ -1,1 +1,1 @@
-from .SubmissionUseCase import SubmissionUseCase, SubmissionUseCaseUnitOfWork, SubmissionUseCaseImpl
+from .SubmissionUseCase import SubmissionCommandModel, SubmissionUseCase, SubmissionUseCaseUnitOfWork, SubmissionUseCaseImpl

@@ -87,7 +87,7 @@ class SchedulerRepositoryImpl(SchedulerRepository):
                 "submission_id",
                 "remind_at",
                 "reminded",
-                "update_at"
+                "updated_at"
             ]
             for attr in updatables:
                 value = getattr(Scheduler_orm, attr)

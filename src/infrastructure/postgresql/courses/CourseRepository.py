@@ -87,7 +87,7 @@ class CourseRepositoryImpl(CourseRepository):
             updatables = [
                 "title",
                 "url",
-                "update_at"
+                "updated_at"
             ]
             for attr in updatables:
                 value = getattr(Course_orm, attr)

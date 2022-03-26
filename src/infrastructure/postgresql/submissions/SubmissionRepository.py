@@ -85,7 +85,7 @@ class SubmissionRepositoryImpl(SubmissionRepository):
                 "state",
                 "user_id",
                 "assignment_id",
-                "update_at"
+                "updated_at"
             ]
             for attr in updatables:
                 value = getattr(Submission_orm, attr)
