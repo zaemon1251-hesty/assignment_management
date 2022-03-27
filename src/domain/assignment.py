@@ -22,7 +22,8 @@ class Assignment(OrmBase):
     info: Optional[str]
     state: Optional[ASSIGNMENT_STATE] = ASSIGNMENT_STATE.ALIVE
     course_id: int
-    end_at: datetime = datetime.fromtimestamp(0) + timedelta(days=10**5)
+    end_at: Optional[datetime] = datetime.fromtimestamp(
+        0) + timedelta(days=10**5)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     course: Optional[Course]

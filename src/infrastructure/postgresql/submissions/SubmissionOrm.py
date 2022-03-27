@@ -39,6 +39,12 @@ class SubmissionOrm(Base):
         ),
         nullable=False
     )
+    assignment = relationship(
+        "AssignmentOrm",
+        backref="submissions",
+        lazy="joined",
+        foreign_keys=[assignment_id]
+    )
     state = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)

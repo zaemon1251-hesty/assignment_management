@@ -162,7 +162,7 @@ async def update(assingnment_id: int, assignment_data: AssignmentCommandModel, t
 async def change_state(assignment_id: int, state: int, token: str = Depends(api_key), assignment_usecase: AssignmentUseCase = Depends(_assignment_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
         user_usecase.auth_verify(token)
-        _assignment_target: Assignment = AssignmentCommandModel(
+        _assignment_target = AssignmentCommandModel(
             state=ASSIGNMENT_STATE(state))
         assignment = await assignment_usecase.update(assignment_id, _assignment_target)
     except TargetNotFoundException:
@@ -174,6 +174,7 @@ async def change_state(assignment_id: int, state: int, token: str = Depends(api_
             status_code=status.HTTP_403_FORBIDDEN
         )
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

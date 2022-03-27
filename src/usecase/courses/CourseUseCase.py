@@ -144,7 +144,7 @@ class CourseUseCaseImpl(CourseUseCase):
                 assignment_ex = await self.uow.assignment_repository.fetch(
                     assignment.id)
                 if assignment_ex:
-                    await self.uow.course_repository.update(course)
+                    await self.uow.assignment_repository.update(assignment)
                 else:
                     await self.uow.assignment_repository.add(assignment)
             self.uow.commit()

@@ -105,7 +105,7 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
                 if v:
                     setattr(exist, k, v)
             exist.updated_at = datetime.utcnow()
-            assignment = await self.uow.assignment_repository.update(domain)
+            assignment = await self.uow.assignment_repository.update(exist)
 
             # コースの状態変化に合うように、紐づく課題も状態を変化させる
             if domain.state and domain.state != exist.state:

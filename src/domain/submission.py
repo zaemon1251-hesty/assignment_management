@@ -31,8 +31,7 @@ class Submission(OrmBase):
     state: Optional[SUBMISSION_STATE] = SUBMISSION_STATE.NORMAL
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    user: Optional[User]
-    assignment: Optional[Assignment]
+    assignment: Optional[Assignment] = None
 
     @staticmethod
     def is_already_expired(state: SUBMISSION_STATE,
