@@ -28,30 +28,23 @@ class AssignmentOrm(Base):
     state = Column(Integer, nullable=False)
     info = Column(String(1000))
     url = Column(String(200))
+    end_at = Column(DateTime, default=None)
     course_id = Column(Integer, ForeignKey('courses.id'))
     course = relationship(
-        "SubmissionOrm",
+        "CourseOrm",
         backref="assignments",
-        lazy="joined"
+        lazy="joined",
+        foreign_keys=[course_id]
     )
-
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
+    def __repr__(self) -> str:
+        return "<Assignment: {}>".format(self.id)
+
     def to_domain(self) -> Assignment:
         """almost same as Domain.from_orm() """
-        _course = Assignment.from_orm(self.course) if self.course else None
-        return Assignment(
-            id=self.id,
-            course_id=self.course_id,
-            course=_course,
-            title=self.title,
-            info=self.info,
-            url=self.url,
-            state=ASSIGNMENT_STATE(self.state),
-            created_at=self.created_at,
-            updated_at=self.updated_at
-        )
+        return Assignment.from_orm(self)
 
     @staticmethod
     def from_domain(data: Assignment) -> "AssignmentOrm":

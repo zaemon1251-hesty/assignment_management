@@ -141,10 +141,8 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
                 if assignment is None:
                     assignment = await self.uow.assignment_repository.fetch(
                         schedule.submission.assignment_id)
-                user: User = schedule.submission.user
-                if user is None:
-                    user = await self.uow.user_repository.fetch(
-                        schedule.submission.user_id)
+                user = await self.uow.user_repository.fetch(
+                    schedule.submission.user_id)
                 await self.driver.notify(
                     user,
                     assignment,

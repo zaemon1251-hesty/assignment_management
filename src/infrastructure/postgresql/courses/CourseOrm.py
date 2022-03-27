@@ -1,9 +1,5 @@
-from datetime import datetime, timezone
-from pydantic.dataclasses import dataclass
-from pydantic import BaseModel
-from typing import Optional
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from src.domain.course import Course
 from src.infrastructure.postgresql.database import Base
@@ -23,16 +19,11 @@ class CourseOrm(Base):
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime)
 
-    assignments = relationship("AssignmentOrm", backref="courses")
+    def __repr__(self) -> str:
+        return "<Course: {}>".format(self.id)
 
     def to_domain(self) -> Course:
-        return Course(
-            id=self.id,
-            title=self.title,
-            url=self.url,
-            created_at=self.created_at,
-            updated_at=self.updated_at
-        )
+        return Course.from_orm(self)
 
     @staticmethod
     def from_domain(data: Course) -> "CourseOrm":
