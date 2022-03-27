@@ -1,20 +1,20 @@
+from datetime import datetime
 import traceback
 from typing import Dict, List, Optional
 from sqlalchemy.orm.session import Session
 from fastapi import APIRouter, Depends, Form, HTTPException, status
+from sqlalchemy.orm.session import Session
 
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException, UnauthorizedException
 from src.settings import logger
 from src.usecase.token import Token
 from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork
 from src.domain import AuthedUser, User
-
 from src.infrastructure.cert.auth import AuthDriverImpl
 from src.infrastructure.postgresql.database import get_session
-from src.infrastructure.postgresql.users import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl
-from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork, UserCommandModel
+from src.infrastructure.postgresql.users import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl, UserServiceImpl
+from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork, UserCommandModel, UserQueryModel
 from src.domain import UserRepository
-from sqlalchemy.orm.session import Session
 
 from fastapi.security import APIKeyHeader
 api_key = APIKeyHeader(name="Authorization", auto_error=False)
@@ -28,7 +28,11 @@ def _user_usecase(session: Session = Depends(get_session)) -> UserUseCase:
     uow: UserUseCaseUnitOfWork = UserUseCaseUnitOfWorkImpl(
         session, user_repository=user_repository
     )
-    return UserUseCaseImpl(uow, AuthDriverImpl(user_repository))
+    return UserUseCaseImpl(
+        UserServiceImpl(session),
+        uow,
+        AuthDriverImpl(user_repository)
+    )
 
 
 @user_api_router.get(
@@ -86,8 +90,20 @@ async def authorize_user(token: str = Depends(api_key), user_usecase: UserUseCas
     response_model=List[User],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(user_data: Optional[User] = None, user_usecase: UserUseCase = Depends(_user_usecase)):
+async def get_all(
+        id: Optional[List[int]] = None,
+        name: Optional[List[str]] = None,
+        email: Optional[List[str]] = None,
+        disabled: Optional[bool] = None,
+        created_at: Optional[List[datetime]] = None,
+        updated_at: Optional[List[datetime]] = None,
+        created_be: Optional[datetime] = None,
+        created_af: Optional[datetime] = None,
+        updated_be: Optional[datetime] = None,
+        updated_af: Optional[datetime] = None,
+        user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
+        user_data = UserQueryModel()
         users = await user_usecase.fetch_all(user_data)
     except Exception as e:
         logger.error(e)

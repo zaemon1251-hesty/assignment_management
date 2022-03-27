@@ -2,13 +2,12 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Callable, List, Optional, cast
 from pydantic import BaseModel, Field, NoneBytes
-from pyparsing import Opt
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
-
 from src.domain.user import User, AuthedUser
 from src.domain.UserRepository import UserRepository
 from src.usecase.driver.AuthDriver import AuthDriver
 from src.usecase.token import Token
+from .UserService import UserQueryModel, UserService
 
 
 class UserCommandModel(BaseModel):
@@ -86,7 +85,12 @@ class UserUseCase(ABC):
 
 
 class UserUseCaseImpl(UserUseCase):
-    def __init__(self, uow: UserUseCaseUnitOfWork, driver: AuthDriver):
+    def __init__(
+            self,
+            service: UserService,
+            uow: UserUseCaseUnitOfWork,
+            driver: AuthDriver):
+        self.service: UserService = service
         self.uow: UserUseCaseUnitOfWork = uow
         self.driver = driver
 
@@ -99,9 +103,9 @@ class UserUseCaseImpl(UserUseCase):
             raise
         return user
 
-    async def fetch_all(self, domain: Optional[User]) -> List[User]:
+    async def fetch_all(self, domain: Optional[UserQueryModel]) -> List[User]:
         try:
-            users = await self.uow.user_repository.fetch_all(domain)
+            users = await self.service.fetch_all(domain)
         except Exception:
             raise
         return users
