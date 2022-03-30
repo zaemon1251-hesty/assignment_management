@@ -1,6 +1,8 @@
 from datetime import datetime
+import re
 import traceback
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+from interface.presenter.ProcessRequest import process_users_query
 from sqlalchemy.orm.session import Session
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from sqlalchemy.orm.session import Session
@@ -91,20 +93,10 @@ async def authorize_user(token: str = Depends(api_key), user_usecase: UserUseCas
     status_code=status.HTTP_200_OK,
 )
 async def get_all(
-        id: Optional[List[int]] = None,
-        name: Optional[List[str]] = None,
-        email: Optional[List[str]] = None,
-        disabled: Optional[bool] = None,
-        created_at: Optional[List[datetime]] = None,
-        updated_at: Optional[List[datetime]] = None,
-        created_be: Optional[datetime] = None,
-        created_af: Optional[datetime] = None,
-        updated_be: Optional[datetime] = None,
-        updated_af: Optional[datetime] = None,
+        q: str = None,
         user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        user_data = UserQueryModel()
-        users = await user_usecase.fetch_all(user_data)
+        users = await user_usecase.fetch_all(process_users_query(q))
     except Exception as e:
         logger.error(e)
         raise HTTPException(
