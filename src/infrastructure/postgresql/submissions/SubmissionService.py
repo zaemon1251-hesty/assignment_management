@@ -8,6 +8,7 @@ from src.infrastructure.postgresql.assignments import AssignmentOrm
 from src.infrastructure.postgresql.courses import CourseOrm
 from src.usecase.assignments.AssignmentService import AssignmentQueryModel
 from src.infrastructure.postgresql.BaseService import make_conditions
+from usecase.courses.CourseService import CourseQueryModel
 
 
 class SubmissionServiceImpl(SubmissionService):
@@ -36,7 +37,7 @@ class SubmissionServiceImpl(SubmissionService):
                 and_filters.append(make_conditions(SubmissionOrm, attr, value))
 
             for attr, value in assignment_targets.items():
-                if isinstance(value, AssignmentQueryModel):
+                if isinstance(value, CourseQueryModel):
                     continue
                 and_filters.append(make_conditions(AssignmentOrm, attr, value))
 

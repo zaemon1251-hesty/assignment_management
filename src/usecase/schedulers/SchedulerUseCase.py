@@ -12,6 +12,7 @@ from src.domain import Scheduler
 from src.domain import SchedulerRepository
 from src.domain import User
 from src.usecase.driver.NotifyDriver import NotifyDriver
+from .SchedulerService import SchedulerQueryModel, SchedulerService
 
 
 class SchedulerCommandModel(BaseModel):
@@ -48,7 +49,7 @@ class SchedulerUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(self, domain: Scheduler) -> List[Scheduler]:
+    async def fetch_all(self, domain: SchedulerQueryModel) -> List[Scheduler]:
         raise NotImplementedError
 
     @abstractmethod
@@ -69,9 +70,14 @@ class SchedulerUseCase(ABC):
 
 
 class SchedulerUseCaseImpl(SchedulerUseCase):
-    def __init__(self, uow: SchedulerUseCaseUnitOfWork, driver: NotifyDriver):
+    def __init__(
+            self,
+            uow: SchedulerUseCaseUnitOfWork,
+            service: SchedulerService,
+            driver: NotifyDriver):
         self.uow: SchedulerUseCaseUnitOfWork = uow
         self.driver: NotifyDriver = driver
+        self.service: SchedulerService = service
 
     async def fetch(self, id: int) -> Optional[Scheduler]:
         try:
@@ -84,7 +90,7 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
 
     async def fetch_all(self, domain: Optional[Scheduler]) -> List[Scheduler]:
         try:
-            schedulers = await self.uow.scheduler_repository.fetch_all(domain)
+            schedulers = await self.service.fetch_all(domain)
         except Exception:
             raise
         return schedulers
@@ -127,11 +133,12 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
         return flg
 
     async def deadline_reminder(self) -> bool:
-        active_scheduler = Scheduler(
-            remind_at=datetime.utcnow().timestamp(),
+        """リマインドの実行"""
+        active_scheduler = SchedulerQueryModel(
+            remind_be=datetime.utcnow().timestamp(),
             reminded=False
         )
-        schedules: List[Scheduler] = await self.uow.scheduler_repository.fetch_all(active_scheduler)
+        schedules: List[Scheduler] = await self.service.fetch_all(active_scheduler)
         try:
             self.uow.begin()
             for schedule in schedules:
