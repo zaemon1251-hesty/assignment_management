@@ -9,6 +9,7 @@ from src.domain import AssignmentRepository
 from src.domain import SubmissionRepository
 from src.domain import TargetAlreadyExsitException, TargetNotFoundException
 from src.domain import SUBMISSION_STATE, Submission
+from src.usecase.submissions import SubmissionQueryModel, SubmissionService
 
 
 class AssignmentCommandModel(BaseModel):
@@ -63,8 +64,13 @@ class AssignmentUseCase(ABC):
 
 
 class AssignmentUseCaseImpl(AssignmentUseCase):
-    def __init__(self, uow: AssignmentUseCaseUnitOfWork):
+    def __init__(
+        self,
+        uow: AssignmentUseCaseUnitOfWork,
+        submission_service: SubmissionService
+    ):
         self.uow: AssignmentUseCaseUnitOfWork = uow
+        self.submission_service: SubmissionService = submission_service
 
     async def fetch(self, id: int) -> Optional[Assignment]:
         try:
@@ -109,19 +115,20 @@ class AssignmentUseCaseImpl(AssignmentUseCase):
 
             # コースの状態変化に合うように、紐づく課題も状態を変化させる
             if domain.state and domain.state != exist.state:
-                submission_cond = Submission(assignment_id=assignment.id)
+                submission_cond = SubmissionQueryModel(
+                    assignment_id=assignment.id)
                 correct_submission_state = None
                 if domain.state == ASSIGNMENT_STATE.DEAD:
                     submission_cond.state = [
-                        SUBMISSION_STATE.NORMAL,
-                        SUBMISSION_STATE.DANGER
+                        SUBMISSION_STATE.NORMAL.value,
+                        SUBMISSION_STATE.DANGER.value
                     ]
                     correct_submission_state = SUBMISSION_STATE.EXPIRED
                 elif domain.state == ASSIGNMENT_STATE.ALIVE:
-                    submission_cond.state = SUBMISSION_STATE.EXPIRED
+                    submission_cond.state = [SUBMISSION_STATE.EXPIRED.value]
                     correct_submission_state = SUBMISSION_STATE.NORMAL
                 if correct_submission_state:
-                    submissions: List[Submission] = await self.uow.submission_repository.fetch_all(
+                    submissions: List[Submission] = await self.submission_service.fetch_all(
                         submission_cond)
                     for submission in submissions:
                         submission.state = correct_submission_state
