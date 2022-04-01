@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 from src.domain.assignment import Assignment
-from usecase.courses.CourseService import CourseQueryModel
+from src.usecase.courses.CourseService import CourseQueryModel
 
 
 class AssignmentQueryModel(BaseModel):

@@ -1,5 +1,4 @@
 from typing import List
-from infrastructure.postgresql.BaseService import make_conditions
 from sqlalchemy.orm.session import Session
 from sqlalchemy import or_, and_
 from src.domain.submission import Submission
@@ -7,7 +6,8 @@ from src.usecase.submissions import SubmissionService, SubmissionQueryModel
 from src.infrastructure.postgresql.submissions import SubmissionOrm
 from src.infrastructure.postgresql.assignments import AssignmentOrm
 from src.infrastructure.postgresql.courses import CourseOrm
-from usecase.assignments.AssignmentService import AssignmentQueryModel
+from src.usecase.assignments.AssignmentService import AssignmentQueryModel
+from src.infrastructure.postgresql.BaseService import make_conditions
 
 
 class SubmissionServiceImpl(SubmissionService):

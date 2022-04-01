@@ -1,12 +1,13 @@
 import traceback
+import json
 from fastapi import APIRouter
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
+from src.interface.presenter.ProcessRequest import process_submissions_query
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 from src.settings import logger
 from src.domain.submission import SUBMISSION_STATE, Submission
-from src.usecase.submissions import SubmissionUseCase, SubmissionCommandModel
-from usecase.submissions import SubmissionQueryModel
+from src.usecase.submissions import SubmissionUseCase, SubmissionCommandModel, SubmissionQueryModel
 from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
 
@@ -60,9 +61,11 @@ async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depend
     response_model=List[Submission],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(submission_data: Optional[SubmissionQueryModel] = None, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
+async def get_all(q: str = None, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
-        submissions = await submission_usecase.fetch_all(submission_data)
+        data = json.loads(q)
+        query = SubmissionQueryModel(**data)
+        submissions = await submission_usecase.fetch_all(query)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
