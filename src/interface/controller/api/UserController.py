@@ -1,8 +1,8 @@
 from datetime import datetime
+import json
 import re
 import traceback
 from typing import Dict, List, Optional, Tuple
-from interface.presenter.ProcessRequest import process_users_query
 from sqlalchemy.orm.session import Session
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from sqlalchemy.orm.session import Session
@@ -16,6 +16,7 @@ from src.infrastructure.cert.auth import AuthDriverImpl
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.users import UserRepositoryImpl, UserUseCaseUnitOfWorkImpl, UserServiceImpl
 from src.usecase.users import UserUseCase, UserUseCaseImpl, UserUseCaseUnitOfWork, UserCommandModel, UserQueryModel
+from src.interface.presenter.ProcessRequest import process_users_query
 from src.domain import UserRepository
 
 from fastapi.security import APIKeyHeader
@@ -96,7 +97,9 @@ async def get_all(
         q: str = None,
         user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        users = await user_usecase.fetch_all(process_users_query(q))
+        data = json.loads(q)
+        query = UserQueryModel(**data)
+        users = await user_usecase.fetch_all(query)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
@@ -105,7 +108,7 @@ async def get_all(
     return users
 
 
-@user_api_router.post(
+@ user_api_router.post(
     "/add",
     response_model=UserCommandModel,
     status_code=status.HTTP_200_OK,

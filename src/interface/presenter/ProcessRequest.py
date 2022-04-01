@@ -1,11 +1,29 @@
-from domain.conf import DOMAINS
+from typing import Any
 from src.usecase.users import UserQueryModel
-from usecase.submissions.SubmissionService import SubmissionQueryModel
+from src.usecase.submissions import SubmissionQueryModel
+from src.usecase.assignments import AssignmentQueryModel
+from src.usecase.courses import CourseQueryModel
 
 
-def process_query(q: str, query: DOMAINS) -> DOMAINS:
+def process_query(q: str, query: Any) -> Any:
+    if query is None:
+        return None
+
+    QueryMap = {
+        "assignment": AssignmentQueryModel(),
+        "course": CourseQueryModel(),
+        "submission": SubmissionQueryModel()
+    }
+    
     for vs in q.split("+"):
         k, v = vs.split("=")
+        if k in QueryMap.keys():
+            try:
+                sub_q = process_query(v, QueryMap.get(k, None))
+                setattr(query, k, sub_q)
+            except Exception:
+                pass
+            continue
         attr = getattr(query, k)
         if hasattr(attr, "__iter__"):
             attr.append(v)
