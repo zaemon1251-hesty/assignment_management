@@ -84,8 +84,8 @@ class SubmissionUseCaseImpl(SubmissionUseCase):
 
     async def add(self, domain: Submission) -> Submission:
         try:
-            exist_submission = await self.uow.submission_repository.fetch_all(Submission(
-                user_id=domain.user_id, assignment_id=domain.assignment_id))
+            exist_submission = await self.service.fetch_all(SubmissionQueryModel(
+                user_id=[domain.user_id], assignment_id=[domain.assignment_id]))
             if exist_submission != []:
                 raise TargetAlreadyExsitException(
                     "target alraedy exists", Submission)
