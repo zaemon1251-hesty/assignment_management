@@ -60,7 +60,7 @@ class UserUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(self, domain: Optional[User]) -> List[User]:
+    async def fetch_all(self, domain: Optional[UserQueryModel]) -> List[User]:
         raise NotImplementedError
 
     @abstractmethod

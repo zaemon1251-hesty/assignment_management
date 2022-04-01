@@ -10,8 +10,8 @@ from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
 from src.infrastructure.mail import NotifyDriverImpl
 from src.infrastructure.postgresql.database import get_session
-from src.infrastructure.postgresql.schedulers import SchedulerRepositoryImpl, SchedulerUseCaseUnitOfWorkImpl
-from src.usecase.schedulers import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork, SchedulerCommandModel
+from src.infrastructure.postgresql.schedulers import SchedulerRepositoryImpl, SchedulerUseCaseUnitOfWorkImpl, SchedulerServiceImpl
+from src.usecase.schedulers import SchedulerUseCase, SchedulerUseCaseImpl, SchedulerUseCaseUnitOfWork, SchedulerCommandModel, SchedulerQueryModel, SchedulerService
 from src.domain import SchedulerRepository
 from sqlalchemy.orm.session import Session
 
@@ -26,7 +26,11 @@ def _scheduler_usecase(session: Session = Depends(
     uow: SchedulerUseCaseUnitOfWork = SchedulerUseCaseUnitOfWorkImpl(
         session, scheduler_repository=scheduler_repository
     )
-    return SchedulerUseCaseImpl(uow, NotifyDriverImpl())
+    return SchedulerUseCaseImpl(
+        uow,
+        SchedulerServiceImpl(session),
+        NotifyDriverImpl()
+    )
 
 
 @scheduler_api_router.get(
@@ -177,7 +181,7 @@ async def delete(scheduler_id: int, token: str = Depends(api_key), scheduler_use
 )
 async def deadline_reminder(scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase)):
     try:
-        await scheduler_usecase.deadline_reminder()
+        flg = await scheduler_usecase.deadline_reminder()
     except Exception as e:
         logger.error(e)
         raise HTTPException(

@@ -3,6 +3,7 @@ import json
 from fastapi import APIRouter
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
+from src.infrastructure.postgresql.submissions.SubmissionService import SubmissionServiceImpl
 from src.interface.presenter.ProcessRequest import process_submissions_query
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 from src.settings import logger
@@ -28,7 +29,7 @@ def _submission_usecase(session: Session = Depends(
     uow: SubmissionUseCaseUnitOfWork = SubmissionUseCaseUnitOfWorkImpl(
         session, submission_repository=submission_repository
     )
-    return SubmissionUseCaseImpl(uow)
+    return SubmissionUseCaseImpl(uow, SubmissionServiceImpl(session))
 
 
 @submission_api_router.get(
