@@ -1,15 +1,22 @@
+from domain.conf import DOMAINS
 from src.usecase.users import UserQueryModel
+from usecase.submissions.SubmissionService import SubmissionQueryModel
+
+
+def process_query(q: str, query: DOMAINS) -> DOMAINS:
+    for vs in q.split("+"):
+        k, v = vs.split("=")
+        attr = getattr(query, k)
+        if hasattr(attr, "__iter__"):
+            attr.append(v)
+        elif attr is not None:
+            setattr(query, k, v)
+    return query
 
 
 def process_users_query(q: str = None) -> UserQueryModel:
-    query = UserQueryModel()
+    return process_query(q, UserQueryModel())
 
-    for vs in q.split("+"):
-        k, v = vs.split("=")
-        if k in {'id', 'name', 'email', 'created_at', 'updated_at'}:
-            vec = getattr(query, k)
-            vec.append(v)
-        elif k in {'disabled', 'created_be', 'created_af', 'updated_be', 'updated_af'}:
-            setattr(query, k, v)
 
-    return query
+def process_submissions_query(q: str = None) -> SubmissionQueryModel:
+    return process_query(q, SubmissionQueryModel())
