@@ -6,6 +6,7 @@ from src.domain import CredentialsException, TargetAlreadyExsitException, Target
 from src.settings import logger
 from src.domain.submission import SUBMISSION_STATE, Submission
 from src.usecase.submissions import SubmissionUseCase, SubmissionCommandModel
+from usecase.submissions import SubmissionQueryModel
 from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
 
@@ -59,7 +60,7 @@ async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depend
     response_model=List[Submission],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(submission_data: Optional[Submission] = None, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
+async def get_all(submission_data: Optional[SubmissionQueryModel] = None, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
         submissions = await submission_usecase.fetch_all(submission_data)
     except Exception as e:
