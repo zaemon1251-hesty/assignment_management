@@ -1,1 +1,2 @@
 from .AssignmentUseCase import AssignmentCommandModel, AssignmentUseCase, AssignmentUseCaseUnitOfWork, AssignmentUseCaseImpl
+from .AssignmentService import AssignmentQueryModel, AssignmentService
