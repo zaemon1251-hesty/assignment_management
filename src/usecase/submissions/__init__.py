@@ -1,1 +1,2 @@
 from .SubmissionUseCase import SubmissionCommandModel, SubmissionUseCase, SubmissionUseCaseUnitOfWork, SubmissionUseCaseImpl
+from .SubmissionService import SubmissionQueryModel, SubmissionService

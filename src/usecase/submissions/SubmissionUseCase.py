@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from src.domain.assignment import Assignment
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 from src.domain import Submission, SubmissionRepository, SUBMISSION_STATE
+from .SubmissionService import SubmissionQueryModel, SubmissionService
 
 
 class SubmissionCommandModel(BaseModel):
@@ -40,7 +41,7 @@ class SubmissionUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def fetch_all(self, domain: Optional[Submission], submission: Optional[Submission], assignment: Optional[Assignment]) -> List[Submission]:
+    async def fetch_all(self, domain: Optional[SubmissionQueryModel]) -> List[Submission]:
         raise NotImplementedError
 
     @abstractmethod
@@ -57,8 +58,13 @@ class SubmissionUseCase(ABC):
 
 
 class SubmissionUseCaseImpl(SubmissionUseCase):
-    def __init__(self, uow: SubmissionUseCaseUnitOfWork):
+    def __init__(
+        self,
+        uow: SubmissionUseCaseUnitOfWork,
+        service: SubmissionService
+    ):
         self.uow: SubmissionUseCaseUnitOfWork = uow
+        self.service: SubmissionService = service
 
     async def fetch(self, id: int) -> Optional[Submission]:
         try:
@@ -69,9 +75,9 @@ class SubmissionUseCaseImpl(SubmissionUseCase):
             raise
         return submission
 
-    async def fetch_all(self, domain: Optional[Submission]) -> List[Submission]:
+    async def fetch_all(self, domain: Optional[SubmissionQueryModel]) -> List[Submission]:
         try:
-            submissions = await self.uow.submission_repository.fetch_all(domain)
+            submissions = await self.service.fetch_all(domain)
         except Exception:
             raise
         return submissions

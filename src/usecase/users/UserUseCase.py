@@ -21,12 +21,12 @@ class UserCommandModel(BaseModel):
             func: Callable[[str], str],
             password: str) -> AuthedUser:
         return AuthedUser(
-            id=self.id,
+            # id=self.id,
             name=self.name,
             email=self.email,
             disabled=self.disabled,
-            created_at=self.created_at,
-            updated_at=self.updated_at,
+            # created_at=self.created_at,
+            # updated_at=self.updated_at,
             hash_password=func(password)
         )
 
