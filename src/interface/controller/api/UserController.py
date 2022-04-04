@@ -94,11 +94,14 @@ async def authorize_user(token: str = Depends(api_key), user_usecase: UserUseCas
     status_code=status.HTTP_200_OK,
 )
 async def get_all(
-        q: str = None,
+        name: Optional[str] = None,
+        disabled: Optional[bool] = None,
         user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
-        data = json.loads(q)
-        query = UserQueryModel(**data)
+        query = UserQueryModel(
+            name=name,
+            disabled=disabled
+        )
         users = await user_usecase.fetch_all(query)
     except Exception as e:
         logger.error(e)

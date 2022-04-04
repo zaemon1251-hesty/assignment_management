@@ -1,3 +1,4 @@
+from datetime import datetime
 import traceback
 import json
 from fastapi import APIRouter
@@ -9,6 +10,7 @@ from src.domain import CredentialsException, TargetAlreadyExsitException, Target
 from src.settings import logger
 from src.domain.submission import SUBMISSION_STATE, Submission
 from src.usecase.submissions import SubmissionUseCase, SubmissionCommandModel, SubmissionQueryModel
+from usecase.assignments.AssignmentService import AssignmentQueryModel
 from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
 
@@ -62,10 +64,25 @@ async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depend
     response_model=List[Submission],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(q: str = None, submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
+async def get_all(
+        user_id: Optional[int] = None,
+        submission_state: Optional[int] = None,
+        assignment_state: Optional[int] = None,
+        assignment_end_at: Optional[datetime] = None,
+        assignment_end_af: Optional[datetime] = None,
+        assignment_end_be: Optional[datetime] = None,
+        submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
-        data = json.loads(q)
-        query = SubmissionQueryModel(**data)
+        query = SubmissionQueryModel(
+            user_id=user_id,
+            state=submission_state,
+            assignment=AssignmentQueryModel(
+                state=assignment_state,
+                end_at=[assignment_end_at],
+                end_be=assignment_end_be,
+                end_af=assignment_end_af
+            )
+        )
         submissions = await submission_usecase.fetch_all(query)
     except Exception as e:
         logger.error(e)

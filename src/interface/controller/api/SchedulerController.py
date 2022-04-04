@@ -1,3 +1,4 @@
+from datetime import datetime
 import traceback
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
@@ -63,9 +64,22 @@ async def get(scheduler_id: int, scheduler_usecase: SchedulerUseCase = Depends(_
     response_model=List[Scheduler],
     status_code=status.HTTP_200_OK,
 )
-async def get_all(scheduler_data: Optional[Scheduler] = None, scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase)):
+async def get_all(
+        submission_id: Optional[int] = None,
+        reminded: Optional[bool] = None,
+        remind_at: Optional[datetime] = None,
+        remind_af: Optional[datetime] = None,
+        remind_be: Optional[datetime] = None,
+        scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase)):
     try:
-        schedulers = await scheduler_usecase.fetch_all(scheduler_data)
+        query = SchedulerQueryModel(
+            submission_id=submission_id,
+            reminded=reminded,
+            remind_at=[remind_at],
+            remind_af=remind_af,
+            remind_be=remind_be
+        )
+        schedulers = await scheduler_usecase.fetch_all(query)
     except Exception as e:
         logger.error(e)
         raise HTTPException(
