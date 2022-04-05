@@ -1,34 +1,13 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Callable, List, Optional, cast
-from pydantic import BaseModel, Field, NoneBytes
+from typing import List, Optional
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 from src.domain.user import User, AuthedUser
 from src.domain.UserRepository import UserRepository
 from src.usecase.driver.AuthDriver import AuthDriver
 from src.usecase.token import Token
 from .UserService import UserQueryModel, UserService
-
-
-class UserCommandModel(BaseModel):
-    name: Optional[str] = Field(default=None, example="zaemon1251")
-    email: Optional[str] = Field(default=None, example="test@example.com")
-    disabled: Optional[bool] = Field(default=False)
-    password: Optional[str] = None
-
-    def to_authed(
-            self,
-            func: Callable[[str], str],
-            password: str) -> AuthedUser:
-        return AuthedUser(
-            # id=self.id,
-            name=self.name,
-            email=self.email,
-            disabled=self.disabled,
-            # created_at=self.created_at,
-            # updated_at=self.updated_at,
-            hash_password=func(password)
-        )
+from .UserModel import UserCommandModel
 
 
 class UserUseCaseUnitOfWork(ABC):

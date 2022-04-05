@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from src.domain.CourseRepository import CourseRepository
 from src.domain.course import Course
 from src.infrastructure.postgresql.courses.CourseOrm import CourseOrm
-from src.usecase.courses.CourseUseCase import CourseUseCaseUnitOfWork
+from src.usecase.courses import CourseUseCaseUnitOfWork
 
 
 class CourseUseCaseUnitOfWorkImpl(CourseUseCaseUnitOfWork):

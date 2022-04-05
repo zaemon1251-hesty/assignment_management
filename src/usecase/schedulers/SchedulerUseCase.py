@@ -13,14 +13,7 @@ from src.domain import SchedulerRepository
 from src.domain import User
 from src.usecase.driver.NotifyDriver import NotifyDriver
 from .SchedulerService import SchedulerQueryModel, SchedulerService
-
-
-class SchedulerCommandModel(BaseModel):
-    """Scheduler represents what assignment should be reminded to whom at a certain time """
-
-    submission_id: int = None
-    remind_at: datetime = None
-    reminded: bool = None
+from .SchedulerModel import SchedulerCommandModel
 
 
 class SchedulerUseCaseUnitOfWork(ABC):

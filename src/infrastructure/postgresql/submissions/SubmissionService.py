@@ -6,9 +6,9 @@ from src.usecase.submissions import SubmissionService, SubmissionQueryModel
 from src.infrastructure.postgresql.submissions import SubmissionOrm
 from src.infrastructure.postgresql.assignments import AssignmentOrm
 from src.infrastructure.postgresql.courses import CourseOrm
-from src.usecase.assignments.AssignmentService import AssignmentQueryModel
+from src.usecase.assignments import AssignmentQueryModel
 from src.infrastructure.postgresql.BaseService import make_conditions
-from usecase.courses.CourseService import CourseQueryModel
+from src.usecase.courses.CourseService import CourseQueryModel
 
 
 class SubmissionServiceImpl(SubmissionService):
