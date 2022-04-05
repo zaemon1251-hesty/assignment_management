@@ -1,8 +1,8 @@
 from typing import Any
 from src.usecase.users import UserQueryModel
-from src.usecase.submissions import SubmissionQueryModel
-from src.usecase.assignments import AssignmentQueryModel
 from src.usecase.courses import CourseQueryModel
+from src.usecase.assignments import AssignmentQueryModel
+from src.usecase.submissions import SubmissionQueryModel
 
 
 def process_query(q: str, query: Any) -> Any:
@@ -14,7 +14,7 @@ def process_query(q: str, query: Any) -> Any:
         "course": CourseQueryModel(),
         "submission": SubmissionQueryModel()
     }
-    
+
     for vs in q.split("+"):
         k, v = vs.split("=")
         if k in QueryMap.keys():

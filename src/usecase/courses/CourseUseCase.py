@@ -5,18 +5,11 @@ from pydantic import BaseModel
 
 from src.domain import AssignmentRepository
 from src.domain import Course
-from src.domain import Assignment
 from src.domain import Course
 from src.domain import CourseRepository
 from src.domain import TargetAlreadyExsitException, TargetNotFoundException
-from src.usecase.assignments import AssignmentUseCase
 from src.usecase.driver import ScrapeDriver
-
-
-class CourseCommandModel(BaseModel):
-    """course represents your collection of course as an entity."""
-    title: str = None
-    url: str = None
+from .CourseModel import CourseCommandModel
 
 
 class CourseUseCaseUnitOfWork(ABC):

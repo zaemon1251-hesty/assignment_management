@@ -6,7 +6,7 @@ from src.domain.UserRepository import UserRepository
 from src.domain.exception import TargetNotFoundException
 from src.domain.user import User, AuthedUser
 from src.infrastructure.postgresql.users.UserOrm import UserOrm
-from src.usecase.users.UserUseCase import UserUseCaseUnitOfWork
+from src.usecase.users import UserUseCaseUnitOfWork
 
 
 class UserUseCaseUnitOfWorkImpl(UserUseCaseUnitOfWork):

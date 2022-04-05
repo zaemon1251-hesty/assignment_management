@@ -1,2 +1,3 @@
-from .CourseUseCase import CourseCommandModel, CourseUseCase, CourseUseCaseUnitOfWork, CourseUseCaseImpl
-from .CourseService import CourseQueryModel, CourseService
+from .CourseModel import CourseCommandModel, CourseQueryModel
+from .CourseUseCase import CourseUseCase, CourseUseCaseUnitOfWork, CourseUseCaseImpl
+from .CourseService import CourseService

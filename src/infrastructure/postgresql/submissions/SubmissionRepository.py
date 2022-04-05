@@ -5,8 +5,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from src.domain.SubmissionRepository import SubmissionRepository
 from src.domain.assignment import Assignment
 from src.domain.submission import SUBMISSION_STATE, Submission
-from src.infrastructure.postgresql.submissions.SubmissionOrm import SubmissionOrm
-from src.usecase.submissions.SubmissionUseCase import SubmissionUseCaseUnitOfWork
+from src.infrastructure.postgresql.submissions import SubmissionOrm
+from src.usecase.submissions import SubmissionUseCaseUnitOfWork
 
 
 class SubmissionUseCaseUnitOfWorkImpl(SubmissionUseCaseUnitOfWork):

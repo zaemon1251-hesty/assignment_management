@@ -1,2 +1,3 @@
-from .SubmissionUseCase import SubmissionCommandModel, SubmissionUseCase, SubmissionUseCaseUnitOfWork, SubmissionUseCaseImpl
-from .SubmissionService import SubmissionQueryModel, SubmissionService
+from .SubmissionModel import SubmissionCommandModel, SubmissionQueryModel
+from .SubmissionUseCase import SubmissionUseCase, SubmissionUseCaseUnitOfWork, SubmissionUseCaseImpl
+from .SubmissionService import SubmissionService

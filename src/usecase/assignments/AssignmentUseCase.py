@@ -10,16 +10,7 @@ from src.domain import SubmissionRepository
 from src.domain import TargetAlreadyExsitException, TargetNotFoundException
 from src.domain import SUBMISSION_STATE, Submission
 from src.usecase.submissions import SubmissionQueryModel, SubmissionService
-
-
-class AssignmentCommandModel(BaseModel):
-    """assignment represents your collection of assignment as an entity."""
-    title: str = None
-    url: str = None
-    info: str = None
-    state: int = None
-    course_id: int = None
-    end_at: datetime = None
+from .AssignmentModel import AssignmentCommandModel
 
 
 class AssignmentUseCaseUnitOfWork(ABC):

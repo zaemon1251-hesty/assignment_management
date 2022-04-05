@@ -3,18 +3,10 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 
-from src.domain.assignment import Assignment
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
 from src.domain import Submission, SubmissionRepository, SUBMISSION_STATE
 from .SubmissionService import SubmissionQueryModel, SubmissionService
-
-
-class SubmissionCommandModel(BaseModel):
-    """submission represents your registerd assignment as an entity."""
-
-    user_id: int = None
-    assignment_id: int = None
-    state: int = None
+from .SubmissionModel import SubmissionCommandModel
 
 
 class SubmissionUseCaseUnitOfWork(ABC):

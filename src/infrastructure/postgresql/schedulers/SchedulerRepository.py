@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from src.domain.SchedulerRepository import SchedulerRepository
 from src.domain.scheduler import Scheduler
 from src.infrastructure.postgresql.schedulers.SchedulerOrm import SchedulerOrm
-from src.usecase.schedulers.SchedulerUseCase import SchedulerUseCaseUnitOfWork
+from src.usecase.schedulers import SchedulerUseCaseUnitOfWork
 
 
 class SchedulerUseCaseUnitOfWorkImpl(SchedulerUseCaseUnitOfWork):

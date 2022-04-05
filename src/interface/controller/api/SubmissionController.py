@@ -5,15 +5,13 @@ from fastapi import APIRouter
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from src.infrastructure.postgresql.submissions.SubmissionService import SubmissionServiceImpl
-from src.interface.presenter.ProcessRequest import process_submissions_query
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 from src.settings import logger
 from src.domain.submission import SUBMISSION_STATE, Submission
 from src.usecase.submissions import SubmissionUseCase, SubmissionCommandModel, SubmissionQueryModel
-from usecase.assignments.AssignmentService import AssignmentQueryModel
+from src.usecase.assignments import AssignmentQueryModel
 from .UserController import api_key, _user_usecase
 from src.usecase.users import UserUseCase
-
 from src.infrastructure.postgresql.database import get_session
 from src.infrastructure.postgresql.submissions import SubmissionRepositoryImpl, SubmissionUseCaseUnitOfWorkImpl
 from src.usecase.submissions import SubmissionUseCase, SubmissionUseCaseImpl, SubmissionUseCaseUnitOfWork
