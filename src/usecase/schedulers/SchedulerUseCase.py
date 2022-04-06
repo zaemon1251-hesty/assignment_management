@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 
-from src.domain.AssignmentRepository import AssignmentRepository
+from src.domain import SubmissionRepository
 from src.domain.UserRepository import UserRepository
 from src.domain import Assignment
 from src.domain import Submission
@@ -19,7 +19,7 @@ from .SchedulerModel import SchedulerCommandModel
 class SchedulerUseCaseUnitOfWork(ABC):
     """UseCaseUnitOfWork defines an interface based on Unit of Work pattern."""
     scheduler_repository: SchedulerRepository
-    assignment_repository: AssignmentRepository
+    submission_repository: SubmissionRepository
     user_repository: UserRepository
 
     @abstractmethod
@@ -133,19 +133,12 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
         )
         schedules: List[Scheduler] = await self.service.fetch_all(active_scheduler)
         try:
-            self.uow.begin()
             for schedule in schedules:
-                if schedule.submission is None:
-                    raise TargetNotFoundException()
-                assignment: Assignment = schedule.submission.assignment
-                if assignment is None:
-                    assignment = await self.uow.assignment_repository.fetch(
-                        schedule.submission.assignment_id)
-                user = await self.uow.user_repository.fetch(
-                    schedule.submission.user_id)
-                await self.driver.notify(
+                schedule.submission = await self.uow.submission_repository.fetch(schedule.submission_id)
+                user = await self.uow.user_repository.fetch(schedule.submission.user_id)
+                flg = await self.driver.notify(
                     user,
-                    assignment,
+                    schedule.submission.assignment,
                     schedule.submission.state
                 )
                 schedule.reminded = True

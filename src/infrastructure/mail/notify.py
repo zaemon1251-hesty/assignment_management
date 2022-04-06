@@ -49,8 +49,9 @@ class NotifyDriverImpl(NotifyDriver):
             assignment_title: str,
             end_at: datetime,
             state: SUBMISSION_STATE) -> str:
-        msg = "[{}]".format(state.name)
-        msg = "\n" + "{} さん、".format(name)
-        msg = "\n" + "{} の期限が近づいています.".format(assignment_title)
-        msg = "\n" + "終了日は, {} です.".format(end_at)
+        msg = ""
+        msg += "[{}]".format(state.name)
+        msg += "\n" + "{} さん、".format(name)
+        msg += "\n" + "{} の期限が近づいています.".format(assignment_title)
+        msg += "\n" + "終了日は, {} です.".format(end_at)
         return msg
