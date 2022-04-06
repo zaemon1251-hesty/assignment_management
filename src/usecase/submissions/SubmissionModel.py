@@ -12,9 +12,9 @@ class SubmissionQueryModel(BaseModel):
     assignment_id: Optional[List[int]] = None
     state: Optional[List[int]] = None
     created_at: Optional[List[datetime]] = None
-    updated_at: Optional[List[datetime]] = None
     created_be: Optional[datetime] = None
     created_af: Optional[datetime] = None
+    updated_at: Optional[List[datetime]] = None
     updated_be: Optional[datetime] = None
     updated_af: Optional[datetime] = None
     assignment: Optional[AssignmentQueryModel] = None

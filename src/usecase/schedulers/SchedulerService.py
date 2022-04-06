@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel
 from src.domain.scheduler import Scheduler
 from .SchedulerModel import SchedulerQueryModel
 

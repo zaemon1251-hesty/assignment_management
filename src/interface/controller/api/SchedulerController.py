@@ -75,12 +75,13 @@ async def get_all(
         query = SchedulerQueryModel(
             submission_id=submission_id,
             reminded=reminded,
-            remind_at=[remind_at],
+            remind_at=[remind_at] if remind_at is not None else None,
             remind_af=remind_af,
             remind_be=remind_be
         )
         schedulers = await scheduler_usecase.fetch_all(query)
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

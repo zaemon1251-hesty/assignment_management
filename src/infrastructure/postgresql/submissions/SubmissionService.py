@@ -22,26 +22,34 @@ class SubmissionServiceImpl(SubmissionService):
         self.session: Session = session
 
     async def fetch_all(self, query: SubmissionQueryModel) -> List[Submission]:
-        targets = dict(query) if query is not None else {}
-        assignment_targets = dict(query.assignment) \
-            if query is not None and query.assignment is not None else {}
-        course_targets = dict(query.assignment.course) \
-            if query.assignment is not None and query.assignment.course is not None else {}
+        targets = {}
+        assignment_targets = {}
+        course_targets = {}
+
+        if query is not None:
+            targets = query.dict()
+            if query.assignment is not None:
+                assignment_targets = query.assignment.dict()
+                if query.assignment.course is not None:
+                    course_targets = query.assignment.course.dict()
+
         try:
             and_filters = []
             q = self.session.query(SubmissionOrm)
 
             for attr, value in targets.items():
-                if isinstance(value, AssignmentQueryModel):
+                if isinstance(value, AssignmentQueryModel) or value is None:
                     continue
                 and_filters.append(make_conditions(SubmissionOrm, attr, value))
 
             for attr, value in assignment_targets.items():
-                if isinstance(value, CourseQueryModel):
+                if isinstance(value, CourseQueryModel) or value is None:
                     continue
                 and_filters.append(make_conditions(AssignmentOrm, attr, value))
 
             for attr, value in course_targets.items():
+                if value is None:
+                    continue
                 and_filters.append(make_conditions(CourseOrm, attr, value))
 
             q = q.filter(and_(*and_filters))
