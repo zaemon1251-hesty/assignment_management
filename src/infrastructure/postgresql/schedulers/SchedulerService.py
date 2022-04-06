@@ -24,33 +24,42 @@ class SchedulerServiceImpl(SchedulerService):
         self.session: Session = session
 
     async def fetch_all(self, query: SchedulerQueryModel) -> List[Scheduler]:
-        targets = dict(query) if query is not None else {}
-        submission_targets = dict(query.submission) \
-            if query is not None and query.submission is not None else {}
-        assignment_targets = dict(query.submission.assignment) \
-            if query is not None and query.submission.assignment is not None else {}
-        course_targets = dict(query.submission.assignment.course) \
-            if query.submission.assignment is not None and query.submission.assignment.course is not None else {}
+        targets = {}
+        submission_targets = {}
+        assignment_targets = {}
+        course_targets = {}
+
+        if query is not None:
+            targets = query.dict()
+            if query.submission is not None:
+                submission_targets = query.submission.dict()
+                if query.submission.assignment is not None:
+                    assignment_targets = query.submission.assignment.dict()
+                    if query.submission.assignment.course is not None:
+                        course_targets = query.submission.assignment.course.dict()
+
         try:
             and_filters = []
             q = self.session.query(SchedulerOrm)
 
             for attr, value in targets.items():
-                if isinstance(value, SubmissionQueryModel):
+                if isinstance(value, SubmissionQueryModel) or value is None:
                     continue
                 and_filters.append(make_conditions(SchedulerOrm, attr, value))
 
             for attr, value in submission_targets.items():
-                if isinstance(value, AssignmentQueryModel):
+                if isinstance(value, AssignmentQueryModel) or value is None:
                     continue
                 and_filters.append(make_conditions(SubmissionOrm, attr, value))
 
             for attr, value in assignment_targets.items():
-                if isinstance(value, CourseQueryModel):
+                if isinstance(value, CourseQueryModel) or value is None:
                     continue
                 and_filters.append(make_conditions(AssignmentOrm, attr, value))
 
             for attr, value in course_targets.items():
+                if value is None:
+                    continue
                 and_filters.append(make_conditions(CourseOrm, attr, value))
 
             q = q.filter(and_(*and_filters))

@@ -18,11 +18,13 @@ class UserServiceImpl(UserService):
         self.session: Session = session
 
     async def fetch_all(self, query: UserQueryModel) -> List[User]:
-        targets = dict(query) if query is not None else {}
+        targets = query.dict() if query is not None else {}
         try:
             and_filters = []
             q = self.session.query(UserOrm)
             for attr, value in targets.items():
+                if value is None:
+                    continue
                 and_filters.append(make_conditions(UserOrm, attr, value))
             q = q.filter(and_(*and_filters))
             q = q.order_by(UserOrm.updated_at)

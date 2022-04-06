@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from src.infrastructure.postgresql.submissions.SubmissionService import SubmissionServiceImpl
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 from src.settings import logger
-from src.domain.submission import SUBMISSION_STATE, Submission
+from src.domain import ASSIGNMENT_STATE, SUBMISSION_STATE, Submission
 from src.usecase.submissions import SubmissionUseCase, SubmissionCommandModel, SubmissionQueryModel
 from src.usecase.assignments import AssignmentQueryModel
 from .UserController import api_key, _user_usecase
@@ -64,25 +64,43 @@ async def get(submission_id: int, submission_usecase: SubmissionUseCase = Depend
 )
 async def get_all(
         user_id: Optional[int] = None,
-        submission_state: Optional[int] = None,
-        assignment_state: Optional[int] = None,
+        submission_state: Optional[str] = None,
+        assignment_state: Optional[str] = None,
         assignment_end_at: Optional[datetime] = None,
         assignment_end_af: Optional[datetime] = None,
         assignment_end_be: Optional[datetime] = None,
         submission_usecase: SubmissionUseCase = Depends(_submission_usecase)):
     try:
+        submission_state = [
+            SUBMISSION_STATE[submission_state]
+        ] if submission_state is not None else None
+        assignment_state = [
+            ASSIGNMENT_STATE[assignment_state]
+        ] if assignment_state is not None else None
+
         query = SubmissionQueryModel(
             user_id=user_id,
             state=submission_state,
             assignment=AssignmentQueryModel(
                 state=assignment_state,
-                end_at=[assignment_end_at],
+                end_at=[
+                    assignment_end_at] if assignment_end_at is not None else None,
                 end_be=assignment_end_be,
                 end_af=assignment_end_af
             )
         )
         submissions = await submission_usecase.fetch_all(query)
+
+    except KeyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="KEYERROR detected. you should confirm the state names are correct. (submission_state:{}, submission_state:{})".format(
+                SUBMISSION_STATE.__members__.keys(),
+                ASSIGNMENT_STATE.__members__.keys()
+            )
+        )
     except Exception as e:
+        traceback.print_exc()
         logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -90,7 +108,7 @@ async def get_all(
     return submissions
 
 
-@submission_api_router.post(
+@ submission_api_router.post(
     "/add",
     response_model=Submission,
     status_code=status.HTTP_200_OK,
