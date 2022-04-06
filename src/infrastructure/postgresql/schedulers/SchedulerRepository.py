@@ -5,6 +5,7 @@ from src.domain.SchedulerRepository import SchedulerRepository
 from src.domain.scheduler import Scheduler
 from src.infrastructure.postgresql.schedulers.SchedulerOrm import SchedulerOrm
 from src.usecase.schedulers import SchedulerUseCaseUnitOfWork
+from src.domain import SubmissionRepository, UserRepository
 
 
 class SchedulerUseCaseUnitOfWorkImpl(SchedulerUseCaseUnitOfWork):
@@ -12,9 +13,13 @@ class SchedulerUseCaseUnitOfWorkImpl(SchedulerUseCaseUnitOfWork):
         self,
         session: Session,
         scheduler_repository: SchedulerRepository,
+        submission_repository: SubmissionRepository,
+        user_repository: UserRepository
     ):
         self.session: Session = session
         self.scheduler_repository: SchedulerRepository = scheduler_repository
+        self.submission_repository: SubmissionRepository = submission_repository
+        self.user_repository: UserRepository = user_repository
 
     def begin(self):
         self.session.begin()
