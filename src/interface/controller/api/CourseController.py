@@ -166,7 +166,7 @@ async def scraping(background_tasks: BackgroundTasks, course_usecase: CourseUseC
     try:
         background_tasks.add_task(
             course_usecase.periodically_scraper,
-            keywords=["2021"])
+            keywords=["2021", "2019", "B"])
         return {"message": "Scraping and Saving courses run in the background."}
     except Exception as e:
         logger.error(str(e))
