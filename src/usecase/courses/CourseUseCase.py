@@ -121,6 +121,7 @@ class CourseUseCaseImpl(CourseUseCase):
         return flg
 
     async def periodically_scraper(self, keywords: List[str]) -> bool:
+        print("START periodically_scraper")
         assignments, courses = await self.driver.run(keywords)
         try:
             self.uow.begin()
@@ -144,4 +145,5 @@ class CourseUseCaseImpl(CourseUseCase):
         except Exception as e:
             self.uow.rollback()
             return False
+        print("END periodically_scraper")
         return True
