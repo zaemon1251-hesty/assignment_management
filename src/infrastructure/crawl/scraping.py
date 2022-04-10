@@ -16,9 +16,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, NoSuchWindowException
-from src.domain import assignment
-from src.domain.assignment import Assignment
+from selenium.common.exceptions import StaleElementReferenceException
+from src.domain import Assignment
 from src.domain.course import Course
 from src.usecase.driver.ScrapingDriver import ScrapeDriver
 from src.settings import logger
