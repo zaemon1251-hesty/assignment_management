@@ -1,3 +1,4 @@
+from traceback import print_exc
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from typing import Dict, List, Optional
 from src.domain import Course
@@ -162,14 +163,19 @@ async def delete(course_id: int, token: str = Depends(api_key), course_usecase: 
     "/auto_scraping",
     status_code=status.HTTP_200_OK
 )
-async def scraping(background_tasks: BackgroundTasks, course_usecase: CourseUseCase = Depends(_course_usecase)):
+async def scraping(background_tasks: BackgroundTasks, course_usecase: CourseUseCase = Depends(_course_usecase), token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
     try:
+        user_usecase.auth_verify(token)
         background_tasks.add_task(
             course_usecase.periodically_scraper,
             keywords=["2021", "2019", "B"])
         return {"message": "Scraping and Saving courses run in the background."}
+    except CredentialsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
     except Exception as e:
-        logger.error(str(e))
+        print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )

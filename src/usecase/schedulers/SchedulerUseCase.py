@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 from pydantic import BaseModel
 
-from src.domain import SubmissionRepository
+from src.domain import SubmissionRepository, ASSIGNMENT_STATE, SUBMISSION_STATE
+
 from src.domain.UserRepository import UserRepository
 from src.domain import Assignment
 from src.domain import Submission
@@ -12,6 +13,8 @@ from src.domain import Scheduler
 from src.domain import SchedulerRepository
 from src.domain import User
 from src.usecase.driver.NotifyDriver import NotifyDriver
+from src.usecase.assignments import AssignmentQueryModel
+from src.usecase.submissions import SubmissionQueryModel, SubmissionService
 from .SchedulerService import SchedulerQueryModel, SchedulerService
 from .SchedulerModel import SchedulerCommandModel
 
@@ -61,16 +64,22 @@ class SchedulerUseCase(ABC):
     async def deadline_reminder(self) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    async def add_remind_schedule(self, by: timedelta = timedelta(day=3)) -> List[Scheduler]:
+        raise NotImplementedError
+
 
 class SchedulerUseCaseImpl(SchedulerUseCase):
     def __init__(
             self,
             uow: SchedulerUseCaseUnitOfWork,
             service: SchedulerService,
+            submission_service: SubmissionService,
             driver: NotifyDriver):
         self.uow: SchedulerUseCaseUnitOfWork = uow
         self.driver: NotifyDriver = driver
         self.service: SchedulerService = service
+        self.submission_service: SubmissionService = submission_service
 
     async def fetch(self, id: int) -> Optional[Scheduler]:
         try:
@@ -150,3 +159,33 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
             self.uow.rollback()
             raise
         return True
+
+    async def add_remind_schedule(self, by: timedelta = timedelta(day=3)) -> List[Scheduler]:
+        new_scs: List[Scheduler] = []
+
+        query = SubmissionQueryModel(
+            state=[SUBMISSION_STATE.NORMAL],
+            assignment=AssignmentQueryModel(
+                state=[ASSIGNMENT_STATE.ALIVE],
+                end_be=datetime.utcnow() + by
+            )
+        )
+        submissions = await self.submission_service.fetch_all(query)
+        try:
+            for submission in submissions:
+                exist = await self.uow.scheduler_repository.fetch(submission.id)
+                if exist is not None:
+                    continue
+
+                schedule = Scheduler(
+                    submission_id=submission.id,
+                    remind_at=datetime.utcnow(),
+                    reminded=False
+                )
+
+                new_sc = await self.uow.scheduler_repository.update(schedule)
+                new_scs.append(new_sc)
+            self.uow.commit()
+        except Exception:
+            self.uow.rollback()
+        return new_scs
