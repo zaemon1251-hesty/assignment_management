@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from src.domain.exception import TargetAlreadyExsitException, TargetNotFoundException
-from src.domain import Submission, SubmissionRepository, SUBMISSION_STATE
+from src.domain import Scheduler, Submission, SubmissionRepository, SUBMISSION_STATE
 from .SubmissionService import SubmissionQueryModel, SubmissionService
 from .SubmissionModel import SubmissionCommandModel
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
@@ -202,11 +202,31 @@ async def delete(scheduler_id: int, token: str = Depends(api_key), scheduler_use
     "/deadline_reminder",
     status_code=status.HTTP_200_OK
 )
-async def deadline_reminder(token: str = Depends(api_key), scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
+async def deadline_reminder(scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase)):
     try:
-        user_usecase.auth_verify(token)
         flg = await scheduler_usecase.deadline_reminder()
         return flg
+    except CredentialsException as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
+    except Exception as e:
+        traceback.print_exc()
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@scheduler_api_router.post(
+    "/add_remind_schdule",
+    status_code=status.HTTP_200_OK
+)
+async def add_remind_schedule(by: Optional[timedelta] = None, token: str = Depends(api_key), scheduler_usecase: SchedulerUseCase = Depends(_scheduler_usecase), user_usecase: UserUseCase = Depends(_user_usecase)):
+    try:
+        user_usecase.auth_verify(token)
+        schdulers = await scheduler_usecase.add_remind_schedule(by=by)
+        return {"added_schedules": len(schdulers)}
     except CredentialsException as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN
