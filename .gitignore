@@ -11,3 +11,4 @@ src/settings.py
 docker-compose.yml
 
 .pytest_cache/
+node_modules/
