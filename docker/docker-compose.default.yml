@@ -73,3 +73,11 @@ services:
     environment:
       TZ: Asia/Tokyo
     restart: always
+  frontend:
+    image: node:16
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front:/var/www/front
+    working_dir: /var/www/front
+    command: /bin/sh -c "yarn && yarn start"
