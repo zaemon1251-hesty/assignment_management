@@ -111,7 +111,7 @@ async def get_all(
     return users
 
 
-@ user_api_router.post(
+@user_api_router.post(
     "/add",
     response_model=UserCommandModel,
     status_code=status.HTTP_200_OK,
@@ -165,6 +165,47 @@ async def update(user_id: int, user_data: UserCommandModel, token: str = Depends
     try:
         user_usecase.auth_verify(token)
         user = await user_usecase.update(user_id, user_data)
+    except CredentialsException as e:
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
+    except TargetNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        traceback.print_exc()
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    return user
+
+
+@user_api_router.patch(
+    "/change_password/{user_id}",
+    response_model=User,
+    status_code=status.HTTP_202_ACCEPTED,
+    # responses={
+    #     status.HTTP_406_NOT_ACCEPTABLE: {
+    #         "model": "id contradicts with this data",
+    #     },
+    #     status.HTTP_403_FORBIDDEN: {
+    #         "model": "unauthorize this manipulate"
+    #     },
+    #     status.HTTP_404_NOT_FOUND: {
+    #         "model": "not found"
+    #     }
+    # }
+)
+async def change_password(user_id: int, password: str, token: str = Depends(api_key), user_usecase: UserUseCase = Depends(_user_usecase)):
+    try:
+        user_usecase.auth_verify(token)
+        mdl = UserCommandModel(
+            password=password
+        )
+        user = await user_usecase.update(user_id, mdl)
     except CredentialsException as e:
         logger.error(e)
         raise HTTPException(
