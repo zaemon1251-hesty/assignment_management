@@ -30,7 +30,7 @@
     "fix": "yarn format && yarn lint:fix",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
-    "generate-client": "openapi --input http://localhost:80/openapi.json --output ./src/types/client --client axios"
+    "generate-client": "openapi --input http://localhost:80/openapi.json --output ./src/api/client --client axios"
   },
   "eslintConfig": {
     "extends": [
