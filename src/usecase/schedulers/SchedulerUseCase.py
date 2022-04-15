@@ -65,7 +65,7 @@ class SchedulerUseCase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def add_remind_schedule(self, by: timedelta = timedelta(day=3)) -> List[Scheduler]:
+    async def add_remind_schedule(self, by: timedelta) -> List[Scheduler]:
         raise NotImplementedError
 
 
@@ -160,7 +160,7 @@ class SchedulerUseCaseImpl(SchedulerUseCase):
             raise
         return True
 
-    async def add_remind_schedule(self, by: timedelta = timedelta(day=3)) -> List[Scheduler]:
+    async def add_remind_schedule(self, by: timedelta = timedelta(days=3)) -> List[Scheduler]:
         new_scs: List[Scheduler] = []
 
         query = SubmissionQueryModel(
