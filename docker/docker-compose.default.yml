@@ -46,7 +46,7 @@ services:
       # moodleの認証情報
       MOODLE_ID: ""
       MOODLE_PASSWORD: ""
-      # smtpの認証情報
+      # smtpの認証情報 ^ 管理者ユーザー
       GMAIL_ACCOUNT: ""
       GMAIL_PASSWORD: ""
       TZ: "Asia/Tokyo"
@@ -80,4 +80,7 @@ services:
     volumes:
       - ./front:/var/www/front
     working_dir: /var/www/front
+    environment:
+      ADMIN_ACCOUNT: ""
+      ADMIN_PASSWORD: ""
     command: /bin/sh -c "yarn && yarn start"

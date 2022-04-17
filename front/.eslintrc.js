@@ -29,6 +29,13 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    'react/function-component-definition': [
+      2,
+      {
+        namedComponents: 'function-declaration',
+        unnamedComponents: 'function-expression',
+      },
+    ],
     'no-use-before-define': "off",
     "@typescript-eslint/no-use-before-define": "off",
     'import/prefer-default-export': "off",
@@ -41,19 +48,19 @@ module.exports = {
           tsx: 'never',
         },
       ],
-      'react/jsx-filename-extension': [
-        'error',
-        {
-          extensions: ['.jsx', '.tsx'],
-        },
-      ],
-      'react/react-in-jsx-scope': 'off',
-      'no-void': [
-        'error',
-        {
-          allowAsStatement: true,
-        },
-      ],
+    'react/jsx-filename-extension': [
+      'error',
+      {
+        extensions: ['.jsx', '.tsx'],
+      },
+    ],
+    'react/react-in-jsx-scope': 'off',
+    'no-void': [
+      'error',
+      {
+        allowAsStatement: true,
+      },
+    ],
   },
   settings: {
     'import/resolver': {
