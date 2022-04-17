@@ -81,7 +81,7 @@ function App(): ReactElement  {
         }>Get subs</button>
         <ul>
           {submissions.map((submission) => (
-            <li>{submission.state}</li>
+            <li key={submission.id}>{submission.state}</li>
           ))}
         </ul>
         {fetchError && <p style={{ color: 'red' }}>{fetchError as string}</p>}
