@@ -43,10 +43,6 @@ export default function SignUp() {
       password: data.get('password'),
     });
   };
-  const BoxProp = {
-    mt: 3
-  } as SxProps;
-
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -65,7 +61,13 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={...BoxProp}>
+          <Box 
+            component="form" 
+            noValidate 
+            onSubmit={handleSubmit} 
+            sx={{
+                mt: 3,
+            }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -133,7 +135,7 @@ export default function SignUp() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
+        <Copyright props={{ mt: 5 } as Props} />
       </Container>
     </ThemeProvider>
   );
