@@ -7,7 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 import CourseDetail from "./course-detail";
-import { Assignment } from "./api/client";
+import { Assignment } from "../api/client";
 
 
 const rows = [] as Assignment[];

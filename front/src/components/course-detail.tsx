@@ -5,8 +5,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Assignment } from './api/client';
-import { ASSIGNMENT_STATE_NAME } from './constants';
+import { Course } from '../api/client';
 
 const style = {
   position: 'absolute',
@@ -21,18 +20,18 @@ const style = {
 };
 
 interface dummyProps {
-  data: Assignment
+  data: Course
 }
 
-function AssignmentDetail(props: dummyProps) {
+function CourseDetail(props: dummyProps) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const { data } = props;
-    const { title, state, end_at } = data;
+    const { title, url } = data;
     return (
         <>
-          <Button onClick={handleOpen}>Open Asm</Button>
+          <Button onClick={handleOpen}>Open Course</Button>
           <Modal
             open={open}
             onClose={handleClose}
@@ -44,12 +43,11 @@ function AssignmentDetail(props: dummyProps) {
                 {title}
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                {ASSIGNMENT_STATE_NAME[state]} <br />
-                {end_at}
+                {url}
               </Typography>
             </Box>
           </Modal>
         </>
     );
 };
-export default AssignmentDetail;
+export default CourseDetail;
