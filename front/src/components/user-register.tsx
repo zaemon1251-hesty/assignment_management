@@ -15,11 +15,11 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
-type Props = {
+interface dummyProps {
     mt:number
 };
 
-function Copyright(props: Props) {
+function Copyright(props: dummyProps) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
@@ -61,10 +61,10 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box 
-            component="form" 
-            noValidate 
-            onSubmit={handleSubmit} 
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
             sx={{
                 mt: 3,
             }}>
@@ -135,7 +135,7 @@ export default function SignUp() {
             </Grid>
           </Box>
         </Box>
-        <Copyright props={{ mt: 5 } as Props} />
+        <Copyright mt={5} />
       </Container>
     </ThemeProvider>
   );
