@@ -10,10 +10,13 @@ import { ReactElement } from "react";
 import { Submission } from "../api/client";
 import AssignmentDetail from './assignment-detail';
 
-const rows = [] as Submission[];
+interface dummyProps {
+  data:Submission[]
+}
 
 
-function SubmissionList():ReactElement {
+function SubmissionList(props: dummyProps):ReactElement {
+  const { data } = props;
   return (
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -25,7 +28,7 @@ function SubmissionList():ReactElement {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((sub) => (
+            {data.map((sub) => (
               <TableRow
                 key={sub.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

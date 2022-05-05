@@ -1,11 +1,16 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable camelcase */
-import { useState, ReactElement } from 'react'
+import { useState, ReactElement } from 'react';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+
 import axios from 'axios'
-import {DefaultService, Body_create_token_api_users_login_post, Submission } from './api/client'
-import logo from './logo.svg'
-import '../styles/App.css'
-import { ADMIN_USER, BACKEND_DOCKER_URL } from './constants'
+import {DefaultService, Body_create_token_api_users_login_post, Submission } from './api/client';
+import logo from './logo.svg';
+import '../styles/App.css';
+import { ADMIN_USER, BACKEND_DOCKER_URL } from './constants';
+import SubmissionList from './components/submission-list';
+import SignIn from './components/login';
+import AuthenticatedGuard from './components/AuthenticateGuard';
 
 axios.interceptors.request.use(
   // allowedOriginと通信するときにトークンを付与するようにする設定
@@ -28,12 +33,12 @@ function App(): ReactElement  {
   const [jwt, setJwt] = useState(storedJwt || null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [fetchError, setFetchError] = useState<unknown>(null)
-  
+
   const getJwt = async () => {
     try {
       const token = await DefaultService.createTokenApiUsersLoginPost(ADMIN_USER as Body_create_token_api_users_login_post)
       localStorage.setItem('token', token.access_token)
-      setJwt(token.access_token)  
+      setJwt(token.access_token)
     } catch (err) {
       setFetchError(err)
     }
@@ -48,7 +53,7 @@ function App(): ReactElement  {
       setFetchError(err)
     }
   }
-  
+
   return (
     <div className="App">
       <header className="App-header">
@@ -72,19 +77,22 @@ function App(): ReactElement  {
         )}
       </section>
       <section>
-        <button onClick={
-          () => {
-            void (async () => {
-              await getSubs();
-            })();
-          }
-        }>Get subs</button>
-        <ul>
-          {submissions.map((submission) => (
-            <li key={submission.id}>{submission.state}</li>
-          ))}
-        </ul>
-        {fetchError && <p style={{ color: 'red' }}>{fetchError as string}</p>}
+      <BrowserRouter>
+        <Switch>
+          <Route path="/login" exact component={SignIn} />
+            <AuthenticatedGuard>
+              <button onClick={
+                () => {
+                  void (async () => {
+                    await getSubs();
+                  })();
+                }
+              }>Get subs</button>
+              <SubmissionList data={submissions}/>
+              {fetchError && <p style={{ color: 'red' }}>{fetchError as string}</p>}
+            </AuthenticatedGuard>
+          </Switch>
+        </BrowserRouter>
       </section>
     </div>
   )
