@@ -5,11 +5,9 @@ module.exports = {
   },
   extends: [
     'plugin:react/recommended',
-    'airbnb',
-    'airbnb/hooks',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'prettier' 
+    'prettier'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -19,11 +17,11 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
     tsconfigRootDir: __dirname,
-    project: ['./tsconfig.json'] 
+    project: ['./tsconfig.json']
   },
   "ignorePatterns": [
     ".eslintrc.js"
-  ], 
+  ],
   plugins: [
     'react',
     '@typescript-eslint',
@@ -68,6 +66,6 @@ module.exports = {
         paths: ['src'],
         extensions: ['.js', '.jsx', '.ts', '.tsx']
       },
-    }, 
+    },
   },
 };

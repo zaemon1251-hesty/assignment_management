@@ -1,5 +1,3 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable camelcase */
 import { useState, ReactElement } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
