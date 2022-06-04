@@ -81,7 +81,6 @@ class SubmissionRepositoryImpl(SubmissionRepository):
             target = self.session.query(
                 SubmissionOrm).filter_by(id=domain.id).one()
             updatables = [
-                "title",
                 "state",
                 "user_id",
                 "assignment_id",

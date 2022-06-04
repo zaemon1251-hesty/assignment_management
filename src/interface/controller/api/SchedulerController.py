@@ -3,7 +3,7 @@ import traceback
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict, List, Optional
 
-from src.infrastructure.postgresql.submissions.SubmissionRepository import SubmissionRepositoryImpl
+from src.infrastructure.postgresql.submissions import SubmissionServiceImpl, SubmissionRepositoryImpl
 from src.infrastructure.postgresql.users.UserRepository import UserRepositoryImpl
 from src.domain import CredentialsException, TargetAlreadyExsitException, TargetNotFoundException
 from src.settings import logger
@@ -38,6 +38,7 @@ def _scheduler_usecase(session: Session = Depends(
     return SchedulerUseCaseImpl(
         uow,
         SchedulerServiceImpl(session),
+        SubmissionServiceImpl(session),
         NotifyDriverImpl()
     )
 
