@@ -2,13 +2,12 @@
 
 __pycache__/
 
-src/settings.py
 
-*.pem
-*.crt
+# *.pem
+# *.crt
 *.key
 
-docker-compose.yml
+.env
 
 .pytest_cache/
 node_modules/
