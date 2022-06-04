@@ -39,16 +39,23 @@ services:
       - "./src:/var/www/src"
       - "/dev/shm:/dev/shm"
       # loggerのログをホストOS側に出力
-      - "/tmp/uvicorn_log:/var/log/uvicorn"
+      - "/tmp/uvicorn/log:/var/log/uvicorn"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db-server:5432/moodle
       SELENIUM_URL: http://selenium-server:4444/wd/hub
-      # moodleの認証情報
-      MOODLE_ID: ""
-      MOODLE_PASSWORD: ""
-      # smtpの認証情報 ^ 管理者ユーザー
-      GMAIL_ACCOUNT: ""
-      GMAIL_PASSWORD: ""
+      # moodle account for scraping
+      MOODLE_ID: $MOODLE_ID
+      MOODLE_PASSWORD: $MOODLE_PASSWORD
+      # gmail account for smtp 
+      GMAIL_ACCOUNT: $GMAIL_ACCOUNT
+      GMAIL_PASSWORD: $GMAIL_PASSWORD
+      # jwt settings
+      SECRET_KEY: $SECRET_KEY
+      SECRET_N: $SECRET_N
+      SECRET_E: $SECRET_E
+      SECRET_KTY: $SECRET_KTY
+      
+      # time zone
       TZ: "Asia/Tokyo"
     tty: true
     ports:
@@ -61,6 +68,9 @@ services:
         context: ./
         dockerfile: docker/web/Dockerfile
     volumes:
+        - type: bind
+          source: "./docker/web/nginx.conf"
+          target: "/etc/nginx/nginx.conf"
         # nginxのログをホストOS側に出力
         - "/tmp/nginx_log:/var/log/nginx"
     depends_on:
@@ -81,6 +91,6 @@ services:
       - ./front:/var/www/front
     working_dir: /var/www/front
     environment:
-      ADMIN_ACCOUNT: ""
-      ADMIN_PASSWORD: ""
-    command: /bin/sh -c "yarn && yarn start"
+      ADMIN_ACCOUNT: $ADMIN_ACCOUNT
+      ADMIN_PASSWORD: $ADMIN_PASSWORD
+    command: /bin/sh -c "yarn && yarn generate-client && yarn start"

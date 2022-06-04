@@ -1,5 +1,6 @@
 import datetime
-import uuid
+import sys
+import os
 import json
 from logging import config, getLogger
 
@@ -8,14 +9,13 @@ with open("src/logging.json", "r") as f:
 config.dictConfig(log_conf)
 logger = getLogger(__name__)
 
-
 # openssl genrsa 2048 > private_key.pem
 PRIVATE_PEM = open("src/infrastructure/cert/private_key.pem", "r").read()
 
 TOKEN_EXPIRE = datetime.datetime.utcnow() + datetime.timedelta(days=7)
 
 # openssl rand -hex 32
-SECRET_KEY = "EXAMPLE"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # openssl rsa -in private_key.pem -pubout -out public_key.pem
 # npm install -g pem-jwk
@@ -26,10 +26,10 @@ JWK = {
         {
             "alg": "RS256",
             "kid": SECRET_KEY,
-            "n": "EXAMPLE",
+            "n": os.getenv("SECRET_N"),
             "use": "sig",
-            "e": "EXAMPLE",
-            "kty": "EXAMPLE"
+            "e": os.getenv("SECRET_E"),
+            "kty": os.getenv("SECRET_KTY")
         }
     ]
 }
