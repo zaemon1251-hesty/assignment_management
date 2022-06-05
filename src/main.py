@@ -1,5 +1,6 @@
 from fastapi import FastAPI, status
 import json
+from src.settings import logger
 from src.interface.controller import api_router
 
 app = FastAPI()
