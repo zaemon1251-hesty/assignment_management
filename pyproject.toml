@@ -22,8 +22,7 @@ asyncpg = "^0.25.0"
 selenium = "3.141.0"
 PyJWT = {extras = ["crypt"], version = "^2.3.0"}
 sqlalchemy-migrate = "^0.13.0"
-cryptography = "^37.0.2"
-pycryptodome = "3.10.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"
