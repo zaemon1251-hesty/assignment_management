@@ -59,7 +59,7 @@ services:
       TZ: "Asia/Tokyo"
     tty: true
     ports:
-      - 8888:8888
+      - 10000:10000
     restart: always
   web:
     container_name: web-server
