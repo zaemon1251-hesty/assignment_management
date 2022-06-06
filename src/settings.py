@@ -3,6 +3,14 @@ import sys
 import os
 import json
 from logging import config, getLogger
+from dotenv import load_dotenv
+
+# load current directory
+load_dotenv()
+
+# load secret directory
+load_dotenv(dotenv_path="/etc/secrets/.env")
+
 
 with open("src/logging.json", "r") as f:
     log_conf = json.load(f)
