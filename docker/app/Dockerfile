@@ -20,4 +20,4 @@ RUN . /root/.profile && \
 
 
 # uvicornのサーバーを立ち上げる
-ENTRYPOINT ["/root/.poetry/bin/poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8888", "--reload"]
+ENTRYPOINT ["/root/.poetry/bin/poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "10000", "--reload"]
