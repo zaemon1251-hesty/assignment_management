@@ -3,6 +3,10 @@ name = "assignment_management"
 version = "0.3.0"
 description = ""
 authors = ["zaemon1251-hesty <hisakawa1251@gmail.com>"]
+packages = [
+    { include = "src" },
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -29,6 +33,9 @@ autopep8 = "^1.6.0"
 flake8 = "^4.0.1"
 pytest = "^7.0.1"
 
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.982"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

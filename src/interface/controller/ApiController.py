@@ -23,3 +23,12 @@ for router_name, router in routers.items():
 )
 async def redirects():
     return {"api": "root"}
+
+
+@api_router.post(
+    "/judge_graduate",
+    status_code=status.HTTP_200_OK
+)
+async def judge_graduate():
+    
+    return

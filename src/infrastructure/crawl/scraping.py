@@ -1,16 +1,15 @@
-from datetime import datetime
+# from datetime import datetime
 import os
 import time
-import re
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union
-from unicodedata import category
+from typing import Dict, List, Optional, Tuple, Union
+# from unicodedata import category
 from urllib import parse
 from pydantic import BaseModel, ValidationError
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -351,4 +350,4 @@ class ScrapeDriverImpl(ScrapeDriver):
 
 if __name__ == '__main__':
     sd = ScrapeDriverImpl()
-    sd.run()
+    sd.run().close()
